@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "job-ai-assistant"
+version = "0.1.0"
+description = ""
+authors = ["ShadFyt <doanryan10@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.115.8"
+sqlmodel = "^0.0.22"
+
+[tool.poetry.dev-dependencies]
+uvicorn = "^0.34.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
