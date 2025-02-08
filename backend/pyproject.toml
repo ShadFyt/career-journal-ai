@@ -8,9 +8,18 @@ authors = ["ShadFyt <doanryan10@gmail.com>"]
 python = "^3.10"
 fastapi = "^0.115.8"
 sqlmodel = "^0.0.22"
+pydantic = "^2.10.6"
 
 [tool.poetry.dev-dependencies]
 uvicorn = "^0.34.0"
+black = "^25.1.0"
+pre-commit = "^4.1.0"
+
+[tool.black]
+line-length = 88
+target-version = ['py38', 'py39', 'py310']
+include = '\.pyi?$'
+exclude = 'tests/'
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
