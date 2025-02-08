@@ -4,24 +4,24 @@ repos:
     rev: 25.1.0  # Replace with the latest version
     hooks:
       - id: black
-        stages: [commit]
+        stages: [pre-commit]
         additional_dependencies: ["toml"]
         files: ^backend/.*\.py$
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0  # Update to the latest version
     hooks:
       - id: trailing-whitespace
-        stages: [commit]
+        stages: [pre-commit]
         files: ^backend/
       - id: end-of-file-fixer
-        stages: [commit]
+        stages: [pre-commit]
         files: ^backend/
       - id: check-yaml
-        stages: [commit]
+        stages: [pre-commit]
         files: ^backend/
       - id: check-toml
-        stages: [commit]
+        stages: [pre-commit]
         files: ^backend/
       - id: check-added-large-files
-        stages: [commit]
+        stages: [pre-commit]
         files: ^backend/
