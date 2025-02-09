@@ -12,6 +12,7 @@ class Technology(SQLModel, table=True):
 
 
 class JournalEntry(SQLModel, table=True):
+    __tablename__ = "journal_entry"
     id: str = Field(primary_key=True, default_factory=uuid4, nullable=False)
     content: str
     date: datetime = Field(default_factory=datetime.now)
@@ -31,5 +32,5 @@ class Project(SQLModel, table=True):
 
 
 class JournalEntryTechnologyLink(SQLModel, table=True):
-    journal_entry_id: str = Field(foreign_key="journal_entry.id")
-    technology_id: str = Field(foreign_key="technology.id")
+    journal_entry_id: str = Field(foreign_key="journal_entry.id", primary_key=True)
+    technology_id: str = Field(foreign_key="technology.id", primary_key=True)
