@@ -1,6 +1,6 @@
-# Job AI Assistant
+# Career Journal AI
 
-Job AI Assistant is a professional growth tracking application designed to help you log your career journey and gain actionable insights through AI-powered summarization.
+Career Journal AI is a professional growth tracking application designed to help you log your career journey and gain actionable insights through AI-powered summarization.
 
 ## Overview
 
