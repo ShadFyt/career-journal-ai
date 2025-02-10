@@ -25,3 +25,11 @@ The application is divided into two primary features:
 - **Database Models**: The foundation of data management is detailed in [backend/database/models.py](backend/database/models.py), including models for Journal Entries, Projects, and Technologies.
 - **AI Agent**: Processes journal entries to extract actionable insights and trends.
 
+## Technology
+
+This project leverages the following technologies:
+
+- [**Python**](https://www.python.org/): The core programming language used for the backend development.
+- [**Poetry**](https://python-poetry.org/): Dependency management and packaging tool.
+- [**FastAPI**](https://fastapi.tiangolo.com/): Modern, fast (high-performance) web framework for building APIs.
+- [**SQLModel**](https://sqlmodel.tiangolo.com/): SQL databases in Python, designed for simplicity and compatibility with Pydantic and SQLAlchemy.
