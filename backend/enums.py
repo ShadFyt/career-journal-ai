@@ -6,3 +6,7 @@ class Language(str, Enum):
     JAVASCRIPT = "javascript"
     TYPESCRIPT = "typescript"
     GO = "golang"
+    CSS = "css"
+    HTML = "html"
+    SQL = "sql"
+    NODEJS = "nodejs"
