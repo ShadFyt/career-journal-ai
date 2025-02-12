@@ -1,12 +1,13 @@
-from fastapi import APIRouter
-from sqlmodel import select
-
-from database.session import SessionDep
 from database.models import Technology
+from domain.technology.dependencies import get_technology_service
+from domain.technology.technology_service import TechnologyService
+from fastapi import APIRouter, Depends
 
 router = APIRouter()
 
 
 @router.get("/")
-async def get_technologies(session: SessionDep) -> list[Technology]:
-    return session.exec(select(Technology)).all()
+async def get_technologies(
+    service: TechnologyService = Depends(get_technology_service),
+) -> list[Technology]:
+    return service.get_technologies()

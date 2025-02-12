@@ -173,3 +173,5 @@ cython_debug/
 road-map.md
 
 *.db
+
+settings.json
