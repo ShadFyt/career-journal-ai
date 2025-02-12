@@ -6,7 +6,7 @@ authors = ["ShadFyt <doanryan10@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.115.8"
+fastapi = {extras = ["standard"], version = "^0.115.8"}
 sqlmodel = "^0.0.22"
 pydantic = "^2.10.6"
 alembic = "^1.14.1"
@@ -16,6 +16,7 @@ python-dotenv = "^1.0.1"
 uvicorn = "^0.34.0"
 black = "^25.1.0"
 pre-commit = "^4.1.0"
+flake8 = "^7.1.1"
 
 [tool.black]
 line-length = 88

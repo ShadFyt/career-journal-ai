@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlmodel import Field, SQLModel, Relationship
 from uuid import uuid4
-from backend.enums import Language
+from enums import Language
 from typing import List
 
 
