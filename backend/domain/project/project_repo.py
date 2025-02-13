@@ -9,9 +9,22 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 class ProjectRepo:
     def __init__(self, session: SessionDep):
+        """Initialize the Project repository.
+
+        Args:
+            session (SessionDep): Database session dependency
+        """
         self.session = session
 
     def get_projects(self) -> list[Project]:
+        """Get all projects sorted by last entry date and name.
+
+        Returns:
+            list[Project]: List of all projects
+
+        Raises:
+            ProjectDatabaseError: If database operation fails
+        """
         try:
             statement = select(Project).order_by(
                 Project.last_entry_date.desc(), Project.name
@@ -21,6 +34,17 @@ class ProjectRepo:
             raise ProjectDatabaseError(f"Failed to fetch projects: {str(e)}")
 
     def get_project(self, id: str) -> Project:
+        """Get a single project by ID.
+
+        Args:
+            id (str): Project ID
+
+        Returns:
+            Project: The requested project
+
+        Raises:
+            ProjectDatabaseError: If project not found or database operation fails
+        """
         try:
             found_project = self.session.get(Project, id)
             if not found_project:
@@ -33,6 +57,17 @@ class ProjectRepo:
             raise ProjectDatabaseError(f"Failed to fetch project: {str(e)}")
 
     def add_project(self, project: Project_Create) -> Project:
+        """Add a new project to the database.
+
+        Args:
+            project (Project_Create): Project creation data
+
+        Returns:
+            Project: The newly created project
+
+        Raises:
+            ProjectDatabaseError: If project name already exists or database operation fails
+        """
         try:
             db_project = Project(**project.model_dump())
             self.session.add(db_project)
@@ -52,6 +87,14 @@ class ProjectRepo:
             raise ProjectDatabaseError(f"Failed to add project: {str(e)}")
 
     def delete_project(self, id: str):
+        """Delete a project by ID.
+
+        Args:
+            id (str): Project ID
+
+        Raises:
+            ProjectDatabaseError: If project has associated journal entries or database operation fails
+        """
         try:
             project = self.get_project(id)
             has_journal_entries = len(project.journal_entries) > 0
