@@ -1,6 +1,9 @@
 from database.models import JournalEntryTechnologyLink, Technology
 from database.session import SessionDep
-from domain.technology.exceptions import TechnologyDatabaseError
+from domain.technology.exceptions import (
+    TechnologyDatabaseError,
+    TechnologyNotFoundError,
+)
 from domain.technology.technology_models import Technology_Create, TechnologyWithCount
 from enums import Language
 from fastapi import status
@@ -22,7 +25,7 @@ class TechnologyRepo:
             language: Optional filter by programming language
 
         Returns:
-            list[TechnologyWithCount]: List of all technologies with their usage counts
+            list[TechnologyWithCount]: List of  all technologies with their usage counts
 
         Raises:
             TechnologyDatabaseError: If database operation fails
@@ -37,6 +40,24 @@ class TechnologyRepo:
 
         except SQLAlchemyError as e:
             raise TechnologyDatabaseError(f"Failed to fetch technologies: {str(e)}")
+
+    def get_technology(self, id: str) -> Technology:
+        """Get a technology from the database by its ID.
+
+        Args:
+            id: Unique identifier of the technology to retrieve
+
+        Raises:
+            TechnologyNotFoundError: If technology with given ID does not exist
+            TechnologyDatabaseError: If database operation fails
+        """
+        try:
+            foundTechnology = self.session.get(Technology, id)
+            if not foundTechnology:
+                raise TechnologyNotFoundError(status_code=status.HTTP_404_NOT_FOUND)
+            return foundTechnology
+        except SQLAlchemyError as e:
+            raise TechnologyDatabaseError(f"Failed to fetch technology: {str(e)}")
 
     def add_technology(self, technology: Technology_Create) -> Technology:
         """Add a new technology to the database.
@@ -64,6 +85,31 @@ class TechnologyRepo:
         except SQLAlchemyError as e:
             self.session.rollback()
             raise TechnologyDatabaseError(f"Failed to add technology: {str(e)}")
+
+    def delete_technology(self, id: str):
+        """Delete a technology from the database by its ID.
+
+        Args:
+            id: Unique identifier of the technology to delete
+
+        Raises:
+            TechnologyNotFoundError: If technology with given ID does not exist
+            TechnologyDatabaseError: If technology is referenced by journal entries
+                or if database operation fails
+        """
+        try:
+            technology = self.get_technology(id)
+            has_journal_entries = len(technology.journal_entries) > 0
+            if has_journal_entries:
+                raise TechnologyDatabaseError(
+                    f"Technology '{technology.name}' cannot be deleted because it is used in journal entries",
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                )
+            self.session.delete(technology)
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            raise TechnologyDatabaseError(f"Failed to delete technology: {str(e)}")
 
     def _build_usage_count_subquery(self):
         """Build a subquery to count technology usage in journal entries.
