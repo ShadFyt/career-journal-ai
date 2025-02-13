@@ -1,7 +1,7 @@
 from database.models import Technology
 from domain.technology.dependencies import get_technology_service
 from domain.technology.exceptions import TechnologyError
-from domain.technology.technology_models import Technology_Create
+from domain.technology.technology_models import Technology_Create, TechnologyWithCount
 from domain.technology.technology_service import TechnologyService
 from enums import Language
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -13,14 +13,14 @@ router = APIRouter()
 async def get_technologies(
     language: Language | None = None,
     service: TechnologyService = Depends(get_technology_service),
-) -> list[Technology]:
-    """Get all technologies.
+) -> list[TechnologyWithCount]:
+    """Get all technologies with their usage counts.
 
     Args:
         language: Optional filter by programming language
 
     Returns:
-        list[Technology]: List of all available technologies
+        list[TechnologyWithCount]: List of technologies with their usage counts
 
     Raises:
         HTTPException: If the request fails

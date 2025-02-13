@@ -1,7 +1,6 @@
 from database.models import Technology
 from enums import Language
 
-
 TECHNOLOGY_SEED_DATA: list[Technology] = [
     {
         "name": "HTML",
@@ -90,6 +89,5 @@ TECHNOLOGY_SEED_DATA: list[Technology] = [
         "name": "Docker",
         "description": "Docker is a platform for developing, testing, and\
         deploying containerized applications.",
-        "language": Language.GO,
     },
 ]

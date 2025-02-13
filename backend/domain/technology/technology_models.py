@@ -8,3 +8,13 @@ class Technology_Create(SQLModel):
     name: str
     description: str | None = None
     language: Language | None = None
+
+
+class TechnologyWithCount(SQLModel):
+    """Technology data with usage count"""
+
+    id: str
+    name: str
+    description: str | None = None
+    language: Language | None = None
+    usage_count: int

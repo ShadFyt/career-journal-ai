@@ -1,9 +1,10 @@
-from database.models import Technology
+from database.models import Technology, JournalEntryTechnologyLink
 from database.session import SessionDep
 from domain.technology.exceptions import TechnologyDatabaseError
-from domain.technology.technology_models import Technology_Create
+from domain.technology.technology_models import Technology_Create, TechnologyWithCount
 from enums import Language
 from fastapi import status
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import select
 
@@ -12,23 +13,60 @@ class TechnologyRepo:
     def __init__(self, session: SessionDep):
         self.session = session
 
-    def get_technologies(self, language: Language | None = None) -> list[Technology]:
-        """Get all technologies from the database.
+    def get_technologies(
+        self, language: Language | None = None
+    ) -> list[TechnologyWithCount]:
+        """Get all technologies from the database with their usage counts.
 
         Args:
             language: Optional filter by programming language
 
         Returns:
-            list[Technology]: List of all technologies
+            list[TechnologyWithCount]: List of all technologies with their usage counts
 
         Raises:
             TechnologyDatabaseError: If database operation fails
         """
         try:
-            statement = select(Technology)
+            # Create a subquery to count journal entries
+            usage_count = (
+                select(func.count(JournalEntryTechnologyLink.journal_entry_id))
+                .where(JournalEntryTechnologyLink.technology_id == Technology.id)
+                .scalar_subquery()
+                .label("usage_count")
+            )
+
+            # Base query with the count
+            statement = select(
+                Technology.id,
+                Technology.name,
+                Technology.description,
+                Technology.language,
+                usage_count,
+            )
+
+            # Apply language filter if provided
             if language is not None:
                 statement = statement.where(Technology.language == language)
-            return self.session.exec(statement).all()
+
+            # Order by language, name, and usage count
+            statement = statement.order_by(
+                Technology.language, Technology.name, usage_count.desc()
+            )
+
+            results = self.session.exec(statement).all()
+
+            # Convert results to TechnologyWithCount objects
+            return [
+                TechnologyWithCount(
+                    id=id_,
+                    name=name,
+                    description=description,
+                    language=language,
+                    usage_count=count or 0,
+                )
+                for id_, name, description, language, count in results
+            ]
         except SQLAlchemyError as e:
             raise TechnologyDatabaseError(f"Failed to fetch technologies: {str(e)}")
 
