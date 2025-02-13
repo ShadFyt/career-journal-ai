@@ -1,7 +1,7 @@
-from sqlmodel import Session, select
+from database.db import engine
 from database.models import Technology
 from database.technology_seed_data import TECHNOLOGY_SEED_DATA
-from database.db import engine
+from sqlmodel import Session, select
 
 
 def seed_database():

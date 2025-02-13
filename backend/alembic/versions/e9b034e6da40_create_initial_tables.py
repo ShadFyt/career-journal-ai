@@ -1,8 +1,8 @@
 """create initial tables
 
-Revision ID: d3ef8004083f
+Revision ID: e9b034e6da40
 Revises:
-Create Date: 2025-02-09 22:56:46.435706
+Create Date: 2025-02-12 23:00:57.882320
 
 """
 
@@ -14,7 +14,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = "d3ef8004083f"
+revision: str = "e9b034e6da40"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -58,7 +58,7 @@ def upgrade() -> None:
     op.create_index(
         op.f("ix_technology_language"), "technology", ["language"], unique=False
     )
-    op.create_index(op.f("ix_technology_name"), "technology", ["name"], unique=False)
+    op.create_index(op.f("ix_technology_name"), "technology", ["name"], unique=True)
     op.create_table(
         "journal_entry",
         sa.Column("id", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
