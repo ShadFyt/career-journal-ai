@@ -3,6 +3,7 @@ from domain.technology.dependencies import get_technology_service
 from domain.technology.exceptions import TechnologyError
 from domain.technology.technology_models import Technology_Create
 from domain.technology.technology_service import TechnologyService
+from enums import Language
 from fastapi import APIRouter, Depends, HTTPException, status
 
 router = APIRouter()
@@ -10,9 +11,13 @@ router = APIRouter()
 
 @router.get("/")
 async def get_technologies(
+    language: Language | None = None,
     service: TechnologyService = Depends(get_technology_service),
 ) -> list[Technology]:
     """Get all technologies.
+
+    Args:
+        language: Optional filter by programming language
 
     Returns:
         list[Technology]: List of all available technologies
@@ -21,7 +26,7 @@ async def get_technologies(
         HTTPException: If the request fails
     """
     try:
-        return service.get_technologies()
+        return service.get_technologies(language=language)
     except TechnologyError as e:
         # Domain exceptions are already properly formatted with status code and detail
         raise e

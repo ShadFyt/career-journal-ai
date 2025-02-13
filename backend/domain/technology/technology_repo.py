@@ -2,6 +2,7 @@ from database.models import Technology
 from database.session import SessionDep
 from domain.technology.exceptions import TechnologyDatabaseError
 from domain.technology.technology_models import Technology_Create
+from enums import Language
 from fastapi import status
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import select
@@ -11,8 +12,11 @@ class TechnologyRepo:
     def __init__(self, session: SessionDep):
         self.session = session
 
-    def get_technologies(self) -> list[Technology]:
+    def get_technologies(self, language: Language | None = None) -> list[Technology]:
         """Get all technologies from the database.
+
+        Args:
+            language: Optional filter by programming language
 
         Returns:
             list[Technology]: List of all technologies
@@ -21,7 +25,10 @@ class TechnologyRepo:
             TechnologyDatabaseError: If database operation fails
         """
         try:
-            return self.session.exec(select(Technology)).all()
+            statement = select(Technology)
+            if language is not None:
+                statement = statement.where(Technology.language == language)
+            return self.session.exec(statement).all()
         except SQLAlchemyError as e:
             raise TechnologyDatabaseError(f"Failed to fetch technologies: {str(e)}")
 

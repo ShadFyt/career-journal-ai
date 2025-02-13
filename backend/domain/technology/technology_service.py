@@ -2,14 +2,18 @@ from database.models import Technology
 from domain.technology.exceptions import TechnologyError
 from domain.technology.technology_models import Technology_Create
 from domain.technology.technology_repo import TechnologyRepo
+from enums import Language
 
 
 class TechnologyService:
     def __init__(self, repo: TechnologyRepo) -> None:
         self.repo = repo
 
-    def get_technologies(self) -> list[Technology]:
+    def get_technologies(self, language: Language | None = None) -> list[Technology]:
         """Get all technologies.
+
+        Args:
+            language: Optional filter by programming language
 
         Returns:
             list[Technology]: List of all technologies
@@ -19,7 +23,7 @@ class TechnologyService:
             Exception: If an unexpected error occurs
         """
         try:
-            return self.repo.get_technologies()
+            return self.repo.get_technologies(language=language)
         except TechnologyError as e:
             raise e
         except Exception as e:
