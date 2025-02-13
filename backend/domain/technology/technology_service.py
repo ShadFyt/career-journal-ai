@@ -41,3 +41,21 @@ class TechnologyService:
             raise e
         except Exception as e:
             raise Exception(f"Unexpected error in technology service: {str(e)}")
+
+    def delete_technology(self, id: str):
+        """Delete a technology from the database by its ID.
+
+        Args:
+            id: Unique identifier of the technology to delete
+
+        Raises:
+            TechnologyNotFoundError: If technology with given ID does not exist
+            TechnologyDatabaseError: If technology is referenced by journal entries
+                or if database operation fails
+        """
+        try:
+            self.repo.delete_technology(id)
+        except TechnologyError as e:
+            raise e
+        except Exception as e:
+            raise Exception(f"Unexpected error in technology service: {str(e)}")

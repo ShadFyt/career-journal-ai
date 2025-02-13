@@ -62,3 +62,29 @@ async def add_technology(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Internal server error: {str(e)}",
         )
+
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_technology(
+    id: str,
+    service: TechnologyService = Depends(get_technology_service),
+) -> None:
+    """Delete a technology from the database by its ID.
+
+    Args:
+        id: Unique identifier of the technology to delete
+
+    Raises:
+        HTTPException: If the request fails
+    """
+    try:
+        service.delete_technology(id)
+    except TechnologyError as e:
+        # Domain exceptions are already properly formatted with status code and detail
+        raise e
+    except Exception as e:
+        # Convert unexpected errors to 500 Internal Server Error
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal server error: {str(e)}",
+        )

@@ -13,8 +13,12 @@ class TechnologyError(HTTPException):
 class TechnologyNotFoundError(TechnologyError):
     """Raised when technology resource is not found"""
 
-    def __init__(self, detail: str = "Technology not found"):
-        super().__init__(detail=detail, status_code=status.HTTP_404_NOT_FOUND)
+    def __init__(
+        self,
+        detail: str = "Technology not found",
+        status_code: int = status.HTTP_404_NOT_FOUND,
+    ):
+        super().__init__(detail=detail, status_code=status_code)
 
 
 class TechnologyDatabaseError(TechnologyError):
