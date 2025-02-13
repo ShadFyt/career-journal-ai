@@ -1,6 +1,7 @@
 from database.models import Technology
 from domain.technology.dependencies import get_technology_service
 from domain.technology.exceptions import TechnologyError
+from domain.technology.technology_models import Technology_Create
 from domain.technology.technology_service import TechnologyService
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -21,6 +22,32 @@ async def get_technologies(
     """
     try:
         return service.get_technologies()
+    except TechnologyError as e:
+        # Domain exceptions are already properly formatted with status code and detail
+        raise e
+    except Exception as e:
+        # Convert unexpected errors to 500 Internal Server Error
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal server error: {str(e)}",
+        )
+
+
+@router.post("/")
+async def add_technology(
+    technology: Technology_Create,
+    service: TechnologyService = Depends(get_technology_service),
+) -> Technology:
+    """Create a new technology.
+
+    Returns:
+        Technology: The newly created technology
+
+    Raises:
+        HTTPException: If the request fails
+    """
+    try:
+        return service.add_technology(technology)
     except TechnologyError as e:
         # Domain exceptions are already properly formatted with status code and detail
         raise e
