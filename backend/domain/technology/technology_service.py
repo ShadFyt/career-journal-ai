@@ -1,5 +1,5 @@
 from database.models import Technology
-from domain.technology.exceptions import TechnologyDatabaseError, TechnologyError
+from domain.technology.exceptions import TechnologyError
 from domain.technology.technology_models import Technology_Create, TechnologyWithCount
 from domain.technology.technology_repo import TechnologyRepo
 from enums import Language
@@ -21,7 +21,7 @@ class TechnologyService:
             list[TechnologyWithCount]: List of technologies with their usage counts
 
         Raises:
-            TechnologyDatabaseError: If database operation fails
+            TechnologyError: If database operation fails
         """
         return self.repo.get_technologies(language=language)
 

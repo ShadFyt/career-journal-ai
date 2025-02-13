@@ -1,10 +1,10 @@
-from database.models import Technology, JournalEntryTechnologyLink
+from database.models import JournalEntryTechnologyLink, Technology
 from database.session import SessionDep
 from domain.technology.exceptions import TechnologyDatabaseError
 from domain.technology.technology_models import Technology_Create, TechnologyWithCount
 from enums import Language
 from fastapi import status
-from sqlalchemy import func
+from sqlalchemy import func, label, text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import select
 
@@ -28,45 +28,13 @@ class TechnologyRepo:
             TechnologyDatabaseError: If database operation fails
         """
         try:
-            # Create a subquery to count journal entries
-            usage_count = (
-                select(func.count(JournalEntryTechnologyLink.journal_entry_id))
-                .where(JournalEntryTechnologyLink.technology_id == Technology.id)
-                .scalar_subquery()
-                .label("usage_count")
-            )
+            usage_count = self._build_usage_count_subquery()
+            query = self._build_base_query(usage_count)
+            query = self._apply_filters(query, language)
 
-            # Base query with the count
-            statement = select(
-                Technology.id,
-                Technology.name,
-                Technology.description,
-                Technology.language,
-                usage_count,
-            )
+            results = self.session.exec(query).all()
+            return self._map_to_domain(results)
 
-            # Apply language filter if provided
-            if language is not None:
-                statement = statement.where(Technology.language == language)
-
-            # Order by language, name, and usage count
-            statement = statement.order_by(
-                Technology.language, Technology.name, usage_count.desc()
-            )
-
-            results = self.session.exec(statement).all()
-
-            # Convert results to TechnologyWithCount objects
-            return [
-                TechnologyWithCount(
-                    id=id_,
-                    name=name,
-                    description=description,
-                    language=language,
-                    usage_count=count or 0,
-                )
-                for id_, name, description, language, count in results
-            ]
         except SQLAlchemyError as e:
             raise TechnologyDatabaseError(f"Failed to fetch technologies: {str(e)}")
 
@@ -96,3 +64,69 @@ class TechnologyRepo:
         except SQLAlchemyError as e:
             self.session.rollback()
             raise TechnologyDatabaseError(f"Failed to add technology: {str(e)}")
+
+    def _build_usage_count_subquery(self):
+        """Build a subquery to count technology usage in journal entries.
+
+        Returns:
+            Label: SQLAlchemy label for the usage count subquery
+        """
+        return (
+            select(func.count(JournalEntryTechnologyLink.journal_entry_id))
+            .where(JournalEntryTechnologyLink.technology_id == Technology.id)
+            .scalar_subquery()
+            .label("usage_count")
+        )
+
+    def _build_base_query(self, usage_count: label) -> select:
+        """Build the base query for fetching technologies with their counts.
+
+        Args:
+            usage_count: The usage count subquery label
+
+        Returns:
+            Select: Base SQLAlchemy select statement
+        """
+        return select(
+            Technology.id,
+            Technology.name,
+            Technology.description,
+            Technology.language,
+            usage_count,
+        )
+
+    def _apply_filters(self, query: select, language: Language | None) -> select:
+        """Apply filters to the technology query.
+
+        Args:
+            query: Base SQLAlchemy select statement
+            language: Optional language filter
+
+        Returns:
+            Select: Filtered SQLAlchemy select statement
+        """
+        if language is not None:
+            query = query.where(Technology.language == language)
+        return query.order_by(
+            Technology.language, Technology.name, text("usage_count DESC")
+        )
+
+    def _map_to_domain(self, results: list[tuple]) -> list[TechnologyWithCount]:
+        """Map database results to domain objects.
+
+        Args:
+            results: List of database result tuples
+
+        Returns:
+            list[TechnologyWithCount]: List of domain objects
+        """
+        return [
+            TechnologyWithCount(
+                id=id_,
+                name=name,
+                description=description,
+                language=language,
+                usage_count=count or 0,
+            )
+            for id_, name, description, language, count in results
+        ]
