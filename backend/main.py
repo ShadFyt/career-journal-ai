@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from domain.technology.router import router as technology_router
 from database.db import create_db_and_tables
+from core.exceptions import add_exception_handlers
 
 app = FastAPI()
+add_exception_handlers(app)
 
 # Register routers
 app.include_router(technology_router, prefix="/api/technologies", tags=["technologies"])
