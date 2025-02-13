@@ -1,8 +1,9 @@
 from datetime import datetime
-from sqlmodel import Field, SQLModel, Relationship
-from uuid import uuid4
-from enums import Language
 from typing import List
+from uuid import uuid4
+
+from enums import Language
+from sqlmodel import Field, Relationship, SQLModel
 
 
 class JournalEntryTechnologyLink(SQLModel, table=True):
@@ -16,7 +17,7 @@ class Technology(SQLModel, table=True):
     id: str = Field(
         default_factory=lambda: str(uuid4()), primary_key=True, nullable=False
     )
-    name: str = Field(index=True)
+    name: str = Field(index=True, unique=True)
     description: str | None = Field(default=None)
     language: Language | None = Field(default=None, index=True)
     journal_entries: List["JournalEntry"] = Relationship(
@@ -43,7 +44,7 @@ class Project(SQLModel, table=True):
     id: str = Field(
         default_factory=lambda: str(uuid4()), primary_key=True, nullable=False
     )
-    name: str = Field(index=True)
+    name: str = Field(index=True, unique=True)
     description: str | None = Field(default=None)
     link: str | None = Field(default=None)
     is_private: bool = Field(default=True)

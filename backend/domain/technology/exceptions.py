@@ -20,7 +20,9 @@ class TechnologyNotFoundError(TechnologyError):
 class TechnologyDatabaseError(TechnologyError):
     """Raised when database operations fail"""
 
-    def __init__(self, detail: str = "Database operation failed"):
-        super().__init__(
-            detail=detail, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+    def __init__(
+        self,
+        detail: str = "Database operation failed",
+        status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR,
+    ):
+        super().__init__(detail=detail, status_code=status_code)
