@@ -7,7 +7,7 @@ from domain.technology.exceptions import (
     TechnologyDatabaseError,
     TechnologyNotFoundError,
 )
-from domain.technology.technology_models import TechnologyWithCount
+from domain.technology.technology_models import TechnologyWithCount, Technology_Create
 from database.models import Technology, JournalEntryTechnologyLink
 from enums import Language
 from fastapi import status
@@ -148,3 +148,73 @@ def test_get_technology_database_error(technology_repo: TechnologyRepo, mocker):
     with pytest.raises(TechnologyDatabaseError) as exc_info:
         technology_repo.get_technology("any-id")
     assert "Failed to fetch technology" in str(exc_info.value)
+
+
+def test_add_technology_success(technology_repo: TechnologyRepo):
+    """Test successfully adding a new technology."""
+    new_tech = Technology_Create(
+        name="TypeScript",
+        description="JavaScript with types",
+        language=Language.JAVASCRIPT,
+    )
+
+    # Add the technology
+    result = technology_repo.add_technology(new_tech)
+
+    # Verify the result
+    assert result is not None
+    assert result.name == new_tech.name
+    assert result.description == new_tech.description
+    assert result.language == new_tech.language
+    assert isinstance(result.id, str)  # Should have generated UUID
+
+
+def test_add_technology_duplicate_name(
+    technology_repo: TechnologyRepo, sample_technologies
+):
+    """Test that adding a technology with duplicate name raises correct error."""
+    duplicate_tech = Technology_Create(
+        name="Python",  # Same name as in sample_technologies
+        description="Different description",
+        language=Language.PYTHON,
+    )
+
+    with pytest.raises(TechnologyDatabaseError) as exc_info:
+        technology_repo.add_technology(duplicate_tech)
+
+    assert "already exists" in str(exc_info.value)
+    assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_add_technology_database_error(technology_repo: TechnologyRepo, mocker):
+    """Test handling of database errors when adding technology."""
+    # Mock the session to raise a database error
+    mocker.patch.object(
+        technology_repo.session,
+        "add",
+        side_effect=SQLAlchemyError("Database error"),
+    )
+
+    new_tech = Technology_Create(
+        name="NewTech",
+        description="Test tech",
+        language=Language.PYTHON,
+    )
+
+    with pytest.raises(TechnologyDatabaseError) as exc_info:
+        technology_repo.add_technology(new_tech)
+
+    assert "Failed to add technology" in str(exc_info.value)
+
+
+def test_add_technology_with_minimal_data(technology_repo: TechnologyRepo):
+    """Test adding a technology with only required fields."""
+    minimal_tech = Technology_Create(name="MinimalTech")
+
+    result = technology_repo.add_technology(minimal_tech)
+
+    assert result is not None
+    assert result.name == "MinimalTech"
+    assert result.description is None
+    assert result.language is None
+    assert isinstance(result.id, str)
