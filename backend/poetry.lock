@@ -549,6 +549,20 @@ docs = ["sphinx (>=5.3)", "sphinx-rtd-theme (>=1)"]
 testing = ["coverage (>=6.2)", "hypothesis (>=5.7.1)"]
 
 [[package]]
+name = "pytest-mock"
+version = "3.14.0"
+description = "Thin-wrapper around the mock package for easier use with pytest"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+pytest = ">=6.2.5"
+
+[package.extras]
+dev = ["pre-commit", "pytest-asyncio", "tox"]
+
+[[package]]
 name = "python-dotenv"
 version = "1.0.1"
 description = "Read key-value pairs from a .env file and set them as environment variables"
@@ -788,7 +802,7 @@ python-versions = ">=3.9"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "c3d083933edc016d63f91f33beca97184af783bffb0bdb4fa2a352a6482bcd05"
+content-hash = "f08bc814efb6661981302bf24bb47a77289e76c4f9ee711a2aa52bc21034ec61"
 
 [metadata.files]
 alembic = []
@@ -835,6 +849,7 @@ pyflakes = []
 pygments = []
 pytest = []
 pytest-asyncio = []
+pytest-mock = []
 python-dotenv = []
 python-multipart = []
 pyyaml = []
