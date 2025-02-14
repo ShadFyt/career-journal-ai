@@ -305,6 +305,14 @@ python-versions = ">=3.6"
 all = ["ruff (>=0.6.2)", "mypy (>=1.11.2)", "pytest (>=8.3.2)", "flake8 (>=7.1.1)"]
 
 [[package]]
+name = "iniconfig"
+version = "2.0.0"
+description = "brain-dead simple config-ini parsing"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
 name = "jinja2"
 version = "3.1.5"
 description = "A very fast and expressive template engine."
@@ -399,7 +407,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7
 name = "packaging"
 version = "24.2"
 description = "Core utilities for Python packages"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -423,6 +431,18 @@ python-versions = ">=3.8"
 docs = ["furo (>=2024.8.6)", "proselint (>=0.14)", "sphinx-autodoc-typehints (>=2.4)", "sphinx (>=8.0.2)"]
 test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest-cov (>=5)", "pytest-mock (>=3.14)", "pytest (>=8.3.2)"]
 type = ["mypy (>=1.11.2)"]
+
+[[package]]
+name = "pluggy"
+version = "1.5.0"
+description = "plugin and hook calling mechanisms for python"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+dev = ["pre-commit", "tox"]
+testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "pre-commit"
@@ -493,6 +513,40 @@ python-versions = ">=3.8"
 
 [package.extras]
 windows-terminal = ["colorama (>=0.4.6)"]
+
+[[package]]
+name = "pytest"
+version = "8.3.4"
+description = "pytest: simple powerful testing with Python"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+colorama = {version = "*", markers = "sys_platform == \"win32\""}
+exceptiongroup = {version = ">=1.0.0rc8", markers = "python_version < \"3.11\""}
+iniconfig = "*"
+packaging = "*"
+pluggy = ">=1.5,<2"
+tomli = {version = ">=1", markers = "python_version < \"3.11\""}
+
+[package.extras]
+dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
+
+[[package]]
+name = "pytest-asyncio"
+version = "0.25.3"
+description = "Pytest support for asyncio"
+category = "main"
+optional = false
+python-versions = ">=3.9"
+
+[package.dependencies]
+pytest = ">=8.2,<9"
+
+[package.extras]
+docs = ["sphinx (>=5.3)", "sphinx-rtd-theme (>=1)"]
+testing = ["coverage (>=6.2)", "hypothesis (>=5.7.1)"]
 
 [[package]]
 name = "python-dotenv"
@@ -633,7 +687,7 @@ full = ["httpx (>=0.27.0,<0.29.0)", "itsdangerous", "jinja2", "python-multipart 
 name = "tomli"
 version = "2.2.1"
 description = "A lil' TOML parser"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -734,7 +788,7 @@ python-versions = ">=3.9"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "db7a641ed811a872239d33f60a7c48a81bcf156189de039fc404525d0ef1ceb0"
+content-hash = "c3d083933edc016d63f91f33beca97184af783bffb0bdb4fa2a352a6482bcd05"
 
 [metadata.files]
 alembic = []
@@ -760,6 +814,7 @@ httptools = []
 httpx = []
 identify = []
 idna = []
+iniconfig = []
 jinja2 = []
 mako = []
 markdown-it-py = []
@@ -771,12 +826,15 @@ nodeenv = []
 packaging = []
 pathspec = []
 platformdirs = []
+pluggy = []
 pre-commit = []
 pycodestyle = []
 pydantic = []
 pydantic-core = []
 pyflakes = []
 pygments = []
+pytest = []
+pytest-asyncio = []
 python-dotenv = []
 python-multipart = []
 pyyaml = []
