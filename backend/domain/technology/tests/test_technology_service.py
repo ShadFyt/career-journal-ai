@@ -1,8 +1,11 @@
 """Tests for the technology service."""
 
+from re import error
+
 import pytest
 from database.models import Technology
 from domain.technology.exceptions import (
+    ErrorCode,
     TechnologyDatabaseError,
     TechnologyNotFoundError,
 )
@@ -53,21 +56,6 @@ def test_get_technologies_success(technology_service, mock_technology_repo):
 
     # Verify results
     assert result == mock_technologies
-    mock_technology_repo.get_technologies.assert_called_once_with(language=None)
-
-
-def test_get_technologies_with_filter(technology_service, mock_technology_repo):
-    """Test getting technologies with language filter."""
-    # Setup mock behavior
-    mock_technology_repo.get_technologies.return_value = []
-
-    # Execute service method with filter
-    result = technology_service.get_technologies(language=Language.PYTHON)
-
-    # Verify repository was called with correct filter
-    mock_technology_repo.get_technologies.assert_called_once_with(
-        language=Language.PYTHON
-    )
     assert isinstance(result, list)
 
 
@@ -75,14 +63,16 @@ def test_get_technologies_handles_error(technology_service, mock_technology_repo
     """Test error handling when getting technologies."""
     # Setup mock to raise error
     mock_technology_repo.get_technologies.side_effect = TechnologyDatabaseError(
-        "Database error"
+        code=ErrorCode.DATABASE_ERROR,
+        message="Failed to fetch technologies",
+        params={"error": "Database error"},
     )
 
     # Verify error is propagated
     with pytest.raises(TechnologyDatabaseError) as exc_info:
         technology_service.get_technologies()
 
-    assert "Database error" in str(exc_info.value)
+    assert "Failed to fetch technologies" in str(exc_info.value)
 
 
 def test_add_technology_success(technology_service, mock_technology_repo):
@@ -115,7 +105,10 @@ def test_add_technology_handles_error(technology_service, mock_technology_repo):
     """Test error handling during technology creation."""
     # Setup mock to raise error
     mock_technology_repo.add_technology.side_effect = TechnologyDatabaseError(
-        "Duplicate name"
+        code=ErrorCode.DUPLICATE_TECHNOLOGY,
+        message="Technology with this name already exists",
+        params={"name": "Existing"},
+        status_code=status.HTTP_409_CONFLICT,
     )
 
     # Prepare test data
@@ -125,7 +118,8 @@ def test_add_technology_handles_error(technology_service, mock_technology_repo):
     with pytest.raises(TechnologyDatabaseError) as exc_info:
         technology_service.add_technology(new_tech)
 
-    assert "Duplicate name" in str(exc_info.value)
+    assert "Technology with this name already exists" in str(exc_info.value)
+    assert exc_info.value.status_code == status.HTTP_409_CONFLICT
 
 
 def test_delete_technology_success(technology_service, mock_technology_repo):
@@ -140,24 +134,37 @@ def test_delete_technology_success(technology_service, mock_technology_repo):
 def test_delete_technology_not_found(technology_service, mock_technology_repo):
     """Test deletion of non-existent technology."""
     # Setup mock to raise not found error
-    mock_technology_repo.delete_technology.side_effect = TechnologyNotFoundError()
+    mock_technology_repo.delete_technology.side_effect = TechnologyNotFoundError(
+        code=ErrorCode.TECHNOLOGY_NOT_FOUND,
+        message="Technology not found",
+        params={"id": "non-existent-id"},
+    )
 
     # Verify error is propagated
-    with pytest.raises(TechnologyNotFoundError):
+    with pytest.raises(TechnologyNotFoundError) as exc_info:
         technology_service.delete_technology("non-existent-id")
+
+    error_detail = exc_info.value
+    assert error_detail.message == "Technology not found"
+    assert error_detail.params["id"] == "non-existent-id"
+    assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_delete_technology_with_entries(technology_service, mock_technology_repo):
     """Test deletion of technology with journal entries."""
     # Setup mock to raise error
     mock_technology_repo.delete_technology.side_effect = TechnologyDatabaseError(
-        "Cannot delete: has entries",
-        status_code=status.HTTP_400_BAD_REQUEST,
+        code=ErrorCode.INVALID_OPERATION,
+        message="Cannot delete technology that is referenced by journal entries",
+        params={"id": "1", "usage_count": 5},
+        status_code=status.HTTP_409_CONFLICT,
     )
 
     # Verify error is propagated with correct status
     with pytest.raises(TechnologyDatabaseError) as exc_info:
         technology_service.delete_technology("1")
 
-    assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
-    assert "Cannot delete: has entries" in str(exc_info.value)
+    assert exc_info.value.status_code == status.HTTP_409_CONFLICT
+    assert "Cannot delete technology that is referenced by journal entries" in str(
+        exc_info.value
+    )

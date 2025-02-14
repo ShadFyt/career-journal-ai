@@ -1,6 +1,7 @@
 from database.models import JournalEntryTechnologyLink, Technology
 from database.session import SessionDep
 from domain.technology.exceptions import (
+    ErrorCode,
     TechnologyDatabaseError,
     TechnologyNotFoundError,
 )
@@ -39,7 +40,11 @@ class TechnologyRepo:
             return self._map_to_domain(results)
 
         except SQLAlchemyError as e:
-            raise TechnologyDatabaseError(f"Failed to fetch technologies: {str(e)}")
+            raise TechnologyDatabaseError(
+                code=ErrorCode.DATABASE_ERROR,
+                message="Failed to fetch technologies",
+                params={"error": str(e)},
+            )
 
     def get_technology(self, id: str) -> Technology:
         """Get a technology from the database by its ID.
@@ -47,132 +52,150 @@ class TechnologyRepo:
         Args:
             id: Unique identifier of the technology to retrieve
 
+        Returns:
+            Technology: The requested technology
+
         Raises:
             TechnologyNotFoundError: If technology with given ID does not exist
             TechnologyDatabaseError: If database operation fails
         """
         try:
-            foundTechnology = self.session.get(Technology, id)
-            if not foundTechnology:
-                raise TechnologyNotFoundError(status_code=status.HTTP_404_NOT_FOUND)
-            return foundTechnology
+            technology = self.session.get(Technology, id)
+            if not technology:
+                raise TechnologyNotFoundError(
+                    code=ErrorCode.TECHNOLOGY_NOT_FOUND,
+                    message="Technology not found",
+                    params={"id": id},
+                )
+            return technology
+
         except SQLAlchemyError as e:
-            raise TechnologyDatabaseError(f"Failed to fetch technology: {str(e)}")
+            raise TechnologyDatabaseError(
+                code=ErrorCode.DATABASE_ERROR,
+                message="Failed to fetch technology",
+                params={"error": str(e)},
+            )
 
     def add_technology(self, technology: Technology_Create) -> Technology:
         """Add a new technology to the database.
+
+        Args:
+            technology: Technology data to add
 
         Returns:
             Technology: The newly created technology
 
         Raises:
-            TechnologyDatabaseError: If database operation fails or technology name already exists
+            TechnologyDatabaseError: If database operation fails or technology with same name exists
         """
         try:
-            db_technology = Technology(**technology.model_dump())
-            self.session.add(db_technology)
+            new_technology = Technology(
+                name=technology.name,
+                description=technology.description,
+                language=technology.language,
+            )
+            self.session.add(new_technology)
             self.session.commit()
-            self.session.refresh(db_technology)
-            return db_technology
+            self.session.refresh(new_technology)
+            return new_technology
+
         except IntegrityError as e:
             self.session.rollback()
-            if "UNIQUE constraint failed" in str(e.orig):
+            if "unique constraint" in str(e).lower():
                 raise TechnologyDatabaseError(
-                    f"Technology with name '{technology.name}' already exists",
-                    status_code=status.HTTP_400_BAD_REQUEST,
+                    code=ErrorCode.DUPLICATE_TECHNOLOGY,
+                    message="Technology with this name already exists",
+                    params={"name": technology.name},
+                    status_code=status.HTTP_409_CONFLICT,
                 )
-            raise TechnologyDatabaseError(f"Database integrity error: {str(e)}")
+            raise TechnologyDatabaseError(
+                code=ErrorCode.DATABASE_ERROR,
+                message="Failed to add technology",
+                params={"error": str(e)},
+            )
+
         except SQLAlchemyError as e:
             self.session.rollback()
-            raise TechnologyDatabaseError(f"Failed to add technology: {str(e)}")
+            raise TechnologyDatabaseError(
+                code=ErrorCode.DATABASE_ERROR,
+                message="Failed to add technology",
+                params={"error": str(e)},
+            )
 
-    def delete_technology(self, id: str):
-        """Delete a technology from the database by its ID.
+    def delete_technology(self, id: str) -> None:
+        """Delete a technology from the database.
 
         Args:
             id: Unique identifier of the technology to delete
 
         Raises:
             TechnologyNotFoundError: If technology with given ID does not exist
-            TechnologyDatabaseError: If technology is referenced by journal entries
-                or if database operation fails
+            TechnologyDatabaseError: If database operation fails or technology has journal entries
         """
         try:
             technology = self.get_technology(id)
             has_journal_entries = len(technology.journal_entries) > 0
             if has_journal_entries:
                 raise TechnologyDatabaseError(
-                    f"Technology '{technology.name}' cannot be deleted because it is used in journal entries",
-                    status_code=status.HTTP_400_BAD_REQUEST,
+                    code=ErrorCode.INVALID_OPERATION,
+                    message="Cannot delete technology that is referenced by journal entries",
+                    params={"id": id, "usage_count": len(technology.journal_entries)},
+                    status_code=status.HTTP_409_CONFLICT,
                 )
+
             self.session.delete(technology)
             self.session.commit()
+
         except SQLAlchemyError as e:
             self.session.rollback()
-            raise TechnologyDatabaseError(f"Failed to delete technology: {str(e)}")
+            raise TechnologyDatabaseError(
+                code=ErrorCode.DATABASE_ERROR,
+                message="Failed to delete technology",
+                params={"error": str(e)},
+            )
 
     def _build_usage_count_subquery(self):
-        """Build a subquery to count technology usage in journal entries.
-
-        Returns:
-            Label: SQLAlchemy label for the usage count subquery
-        """
+        """Build a subquery to count technology usage in journal entries."""
         return (
-            select(func.count(JournalEntryTechnologyLink.journal_entry_id))
-            .where(JournalEntryTechnologyLink.technology_id == Technology.id)
-            .scalar_subquery()
-            .label("usage_count")
+            select(
+                JournalEntryTechnologyLink.technology_id,
+                func.count(JournalEntryTechnologyLink.journal_entry_id).label(
+                    "usage_count"
+                ),
+            )
+            .group_by(JournalEntryTechnologyLink.technology_id)
+            .subquery()
         )
 
-    def _build_base_query(self, usage_count: label) -> select:
-        """Build the base query for fetching technologies with their counts.
-
-        Args:
-            usage_count: The usage count subquery label
-
-        Returns:
-            Select: Base SQLAlchemy select statement
-        """
-        return select(
-            Technology.id,
-            Technology.name,
-            Technology.description,
-            Technology.language,
-            usage_count,
+    def _build_base_query(self, usage_count):
+        """Build the base query for retrieving technologies with usage counts."""
+        return (
+            select(
+                Technology,
+                label("usage_count", func.coalesce(usage_count.c.usage_count, 0)),
+            )
+            .outerjoin(
+                usage_count,
+                Technology.id == usage_count.c.technology_id,
+            )
+            .order_by(text("usage_count DESC"), Technology.name)
         )
 
-    def _apply_filters(self, query: select, language: Language | None) -> select:
-        """Apply filters to the technology query.
+    def _apply_filters(self, query, language: Language | None):
+        """Apply filters to the query."""
+        if language:
+            query = query.filter(Technology.language == language)
+        return query
 
-        Args:
-            query: Base SQLAlchemy select statement
-            language: Optional language filter
-
-        Returns:
-            Select: Filtered SQLAlchemy select statement
-        """
-        if language is not None:
-            query = query.where(Technology.language == language)
-        return query.order_by(
-            Technology.language, Technology.name, text("usage_count DESC")
-        )
-
-    def _map_to_domain(self, results: list[tuple]) -> list[TechnologyWithCount]:
-        """Map database results to domain objects.
-
-        Args:
-            results: List of database result tuples
-
-        Returns:
-            list[TechnologyWithCount]: List of domain objects
-        """
+    def _map_to_domain(self, results) -> list[TechnologyWithCount]:
+        """Map database results to domain models."""
         return [
             TechnologyWithCount(
-                id=id_,
-                name=name,
-                description=description,
-                language=language,
-                usage_count=count or 0,
+                id=tech.id,
+                name=tech.name,
+                description=tech.description,
+                language=tech.language,
+                usage_count=count,
             )
-            for id_, name, description, language, count in results
+            for tech, count in results
         ]

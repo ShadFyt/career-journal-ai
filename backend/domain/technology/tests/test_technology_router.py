@@ -1,5 +1,7 @@
 """Tests for the technology router endpoints."""
 
+from mailbox import Message
+
 import pytest
 from database.models import Technology
 from domain.technology.dependencies import get_technology_service
@@ -94,15 +96,17 @@ def test_get_technologies_handles_error(client, mock_technology_service):
     """Test error handling in GET /api/technologies."""
     # Setup mock to raise error
     mock_technology_service.get_technologies.side_effect = TechnologyDatabaseError(
-        "Database error"
+        message="Database error",
     )
 
     # Make request
     response = client.get("/api/technologies")
 
+    error_detail = response.json()["detail"]
+
     # Verify error response
     assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-    assert "Database error" in response.json()["detail"]
+    assert error_detail["message"] == "Database error"
 
 
 def test_add_technology_success(client, mock_technology_service):
@@ -145,7 +149,7 @@ def test_add_technology_handles_error(client, mock_technology_service):
     """Test error handling in POST /api/technologies."""
     # Setup mock to raise error
     mock_technology_service.add_technology.side_effect = TechnologyDatabaseError(
-        "Duplicate name",
+        message="Duplicate name",
         status_code=status.HTTP_400_BAD_REQUEST,
     )
 
@@ -157,7 +161,8 @@ def test_add_technology_handles_error(client, mock_technology_service):
 
     # Verify error response
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert "Duplicate name" in response.json()["detail"]
+    error_detail = response.json()["detail"]
+    assert error_detail["message"] == "Duplicate name"
 
 
 def test_delete_technology_success(client, mock_technology_service):
@@ -187,14 +192,14 @@ def test_delete_technology_with_entries(client, mock_technology_service):
     """Test DELETE /api/technologies/{id} with journal entries."""
     # Setup mock to raise error
     mock_technology_service.delete_technology.side_effect = TechnologyDatabaseError(
-        "Cannot delete: has entries",
+        message="Cannot delete: has entries",
         status_code=status.HTTP_400_BAD_REQUEST,
     )
 
     # Make request
     response = client.delete("/api/technologies/1")
-    print(response.json())
 
     # Verify error response
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert "Cannot delete: has entries" in response.json()["detail"]
+    error_detail = response.json()["detail"]
+    assert error_detail["message"] == "Cannot delete: has entries"

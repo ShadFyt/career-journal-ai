@@ -1,16 +1,17 @@
 """Tests for the technology repository."""
 
 import pytest
-from sqlalchemy.exc import SQLAlchemyError
-from domain.technology.technology_repo import TechnologyRepo
+from database.models import JournalEntry, JournalEntryTechnologyLink, Technology
 from domain.technology.exceptions import (
+    ErrorCode,
     TechnologyDatabaseError,
     TechnologyNotFoundError,
 )
-from domain.technology.technology_models import TechnologyWithCount, Technology_Create
-from database.models import Technology, JournalEntry, JournalEntryTechnologyLink
+from domain.technology.technology_models import Technology_Create, TechnologyWithCount
+from domain.technology.technology_repo import TechnologyRepo
 from enums import Language
 from fastapi import status
+from sqlalchemy.exc import SQLAlchemyError
 
 
 @pytest.fixture
@@ -206,8 +207,11 @@ def test_add_technology_duplicate_name(
     with pytest.raises(TechnologyDatabaseError) as exc_info:
         technology_repo.add_technology(duplicate_tech)
 
-    assert "already exists" in str(exc_info.value)
-    assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
+    error = exc_info.value
+    assert error.message == "Technology with this name already exists"
+    assert error.code == ErrorCode.DUPLICATE_TECHNOLOGY
+    assert error.params["name"] == "Python"
+    assert error.status_code == status.HTTP_409_CONFLICT
 
 
 def test_add_technology_database_error(technology_repo: TechnologyRepo, mocker):
@@ -271,10 +275,14 @@ def test_delete_technology_with_journal_entries(
     with pytest.raises(TechnologyDatabaseError) as exc_info:
         technology_repo.delete_technology(tech_with_entries.id)
 
-    assert "cannot be deleted because it is used in journal entries" in str(
-        exc_info.value
+    error = exc_info.value
+
+    assert (
+        error.message
+        == "Cannot delete technology that is referenced by journal entries"
     )
-    assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
+    assert error.status_code == status.HTTP_409_CONFLICT
+    assert error.code == ErrorCode.INVALID_OPERATION
 
     # Verify technology still exists
     tech = technology_repo.get_technology(tech_with_entries.id)
