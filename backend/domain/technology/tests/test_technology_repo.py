@@ -8,7 +8,7 @@ from domain.technology.exceptions import (
     TechnologyNotFoundError,
 )
 from domain.technology.technology_models import TechnologyWithCount, Technology_Create
-from database.models import Technology, JournalEntryTechnologyLink
+from database.models import Technology, JournalEntry, JournalEntryTechnologyLink
 from enums import Language
 from fastapi import status
 
@@ -40,17 +40,41 @@ def sample_technologies(db_session):
 
 
 @pytest.fixture
-def sample_tech_usage(db_session, sample_technologies):
+def sample_journal_entries(db_session):
+    """Create sample journal entries for testing."""
+    entries = [
+        JournalEntry(
+            id="entry1",
+            content="Test entry 1",
+            project_id="project1",
+        ),
+        JournalEntry(
+            id="entry2",
+            content="Test entry 2",
+            project_id="project1",
+        ),
+    ]
+    for entry in entries:
+        db_session.add(entry)
+    db_session.commit()
+    return entries
+
+
+@pytest.fixture
+def sample_tech_usage(db_session, sample_technologies, sample_journal_entries):
     """Create sample technology usage records."""
     usages = [
         JournalEntryTechnologyLink(
-            journal_entry_id="entry1", technology_id=sample_technologies[0].id
+            journal_entry_id=sample_journal_entries[0].id,
+            technology_id=sample_technologies[0].id,
         ),
         JournalEntryTechnologyLink(
-            journal_entry_id="entry2", technology_id=sample_technologies[0].id
+            journal_entry_id=sample_journal_entries[1].id,
+            technology_id=sample_technologies[0].id,
         ),
         JournalEntryTechnologyLink(
-            journal_entry_id="entry1", technology_id=sample_technologies[1].id
+            journal_entry_id=sample_journal_entries[0].id,
+            technology_id=sample_technologies[1].id,
         ),
     ]
     for usage in usages:
@@ -218,3 +242,64 @@ def test_add_technology_with_minimal_data(technology_repo: TechnologyRepo):
     assert result.description is None
     assert result.language is None
     assert isinstance(result.id, str)
+
+
+def test_delete_technology_success(
+    technology_repo: TechnologyRepo, sample_technologies
+):
+    """Test successfully deleting a technology."""
+    # Get a technology without journal entries (React from sample data)
+    tech_to_delete = sample_technologies[2]  # React technology
+
+    # Delete the technology
+    technology_repo.delete_technology(tech_to_delete.id)
+
+    # Verify technology is deleted
+    with pytest.raises(TechnologyNotFoundError):
+        technology_repo.get_technology(tech_to_delete.id)
+
+
+def test_delete_technology_with_journal_entries(
+    technology_repo: TechnologyRepo,
+    sample_technologies,
+    sample_tech_usage,
+):
+    """Test that deleting a technology with journal entries raises correct error."""
+    # Try to delete Python which has journal entries in sample_tech_usage
+    tech_with_entries = sample_technologies[0]  # Python technology
+
+    with pytest.raises(TechnologyDatabaseError) as exc_info:
+        technology_repo.delete_technology(tech_with_entries.id)
+
+    assert "cannot be deleted because it is used in journal entries" in str(
+        exc_info.value
+    )
+    assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
+
+    # Verify technology still exists
+    tech = technology_repo.get_technology(tech_with_entries.id)
+    assert tech is not None
+    assert tech.id == tech_with_entries.id
+
+
+def test_delete_technology_not_found(technology_repo: TechnologyRepo):
+    """Test deleting a non-existent technology raises correct error."""
+    with pytest.raises(TechnologyNotFoundError):
+        technology_repo.delete_technology("non-existent-id")
+
+
+def test_delete_technology_database_error(
+    technology_repo: TechnologyRepo, sample_technologies, mocker
+):
+    """Test handling of database errors when deleting technology."""
+    # Mock the session delete to raise an error
+    mocker.patch.object(
+        technology_repo.session,
+        "delete",
+        side_effect=SQLAlchemyError("Database error"),
+    )
+
+    with pytest.raises(TechnologyDatabaseError) as exc_info:
+        technology_repo.delete_technology(sample_technologies[2].id)  # React technology
+
+    assert "Failed to delete technology" in str(exc_info.value)
