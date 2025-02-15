@@ -1,4 +1,4 @@
-from database.db import engine
+from database.db import engine, create_db_and_tables
 from database.models import Technology
 from database.technology_seed_data import TECHNOLOGY_SEED_DATA
 from sqlmodel import Session, select
@@ -26,4 +26,5 @@ def seed_database():
 
 # Run the seeder
 if __name__ == "__main__":
+    create_db_and_tables()
     seed_database()
