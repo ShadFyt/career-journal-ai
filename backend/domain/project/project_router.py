@@ -2,8 +2,7 @@ from database.models import Project
 from domain.project.dependencies import ProjectServiceDep
 from domain.project.exceptions import ProjectError
 from domain.project.project_models import Project_Create, Project_Update
-from fastapi import APIRouter
-from starlette import status
+from fastapi import APIRouter, status
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
