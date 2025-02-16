@@ -1,6 +1,6 @@
+from database.models import Project
 from database.session import SessionDep
 from domain.project.exceptions import ProjectDatabaseError
-from domain.project.project import Project
 from domain.project.project_models import Project_Create
 from fastapi import status
 from sqlalchemy import select
