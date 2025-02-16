@@ -1,7 +1,7 @@
 from database.models import Project
 from domain.project.dependencies import get_project_service
 from domain.project.exceptions import ProjectError
-from domain.project.project_models import Project_Create, Project_Read
+from domain.project.project_models import Project_Create
 from domain.project.project_service import ProjectService
 from fastapi import APIRouter, Depends
 from starlette import status
@@ -12,11 +12,11 @@ router = APIRouter(prefix="/projects", tags=["projects"])
 @router.get("")
 async def get_projects(
     service: ProjectService = Depends(get_project_service),
-) -> list[Project_Read]:
+) -> list[Project]:
     """Get all projects sorted by last entry date and name.
 
     Returns:
-        list[Project_Read]: List of all projects
+        list[Project]: List of all projects
 
     Raises:
         ProjectDatabaseError: If database operation fails
@@ -31,7 +31,7 @@ async def get_projects(
 async def add_project(
     project: Project_Create,
     service: ProjectService = Depends(get_project_service),
-) -> Project_Read:
+) -> Project:
     """Add a new project.
 
     Args:
@@ -39,7 +39,7 @@ async def add_project(
         service: Project service instance
 
     Returns:
-        Project_Read: The newly created project
+        Project: The newly created project
     """
     try:
         return service.add_project(project)
@@ -59,9 +59,29 @@ async def get_project(
         service: Project service instance
 
     Returns:
-        Project_Read: The requested project
+        Project: The requested project
     """
     try:
         return service.get_project(id)
+    except ProjectError as e:
+        raise e
+
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_project(
+    id: str,
+    service: ProjectService = Depends(get_project_service),
+) -> None:
+    """Delete a project from the database by its ID.
+
+    Args:
+        id: Unique identifier of the project to delete
+        service: Project service instance
+
+    Raises:
+        HTTPException: If the request fails
+    """
+    try:
+        service.delete_project(id)
     except ProjectError as e:
         raise e
