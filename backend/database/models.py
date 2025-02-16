@@ -36,7 +36,7 @@ class JournalEntry(SQLModel, table=True):
     technologies: List["Technology"] = Relationship(
         back_populates="journal_entries", link_model=JournalEntryTechnologyLink
     )
-    project_id: str = Field(foreign_key="project.id", index=True)
+    project_id: str | None = Field(default=None, foreign_key="project.id", index=True)
 
 
 class Project(SQLModel, table=True):
