@@ -3,8 +3,8 @@ from database.session import SessionDep
 from domain.project.exceptions import ProjectDatabaseError
 from domain.project.project_models import Project_Create
 from fastapi import status
-from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlmodel import select
 
 
 class ProjectRepo:
@@ -27,9 +27,10 @@ class ProjectRepo:
         """
         try:
             statement = select(Project).order_by(
-                Project.last_entry_date.desc(), Project.name
+                Project.last_entry_date.desc().nulls_last(), Project.name
             )
             return self.session.exec(statement).all()
+
         except SQLAlchemyError as e:
             raise ProjectDatabaseError(message=f"Failed to fetch projects: {str(e)}")
 
