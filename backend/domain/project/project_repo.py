@@ -31,7 +31,7 @@ class ProjectRepo:
             )
             return self.session.exec(statement).all()
         except SQLAlchemyError as e:
-            raise ProjectDatabaseError(f"Failed to fetch projects: {str(e)}")
+            raise ProjectDatabaseError(message=f"Failed to fetch projects: {str(e)}")
 
     def get_project(self, id: str) -> Project:
         """Get a single project by ID.
@@ -49,12 +49,12 @@ class ProjectRepo:
             found_project = self.session.get(Project, id)
             if not found_project:
                 raise ProjectDatabaseError(
-                    f"Project with ID '{id}' not found",
+                    message=f"Project with ID '{id}' not found",
                     status_code=status.HTTP_404_NOT_FOUND,
                 )
             return found_project
         except SQLAlchemyError as e:
-            raise ProjectDatabaseError(f"Failed to fetch project: {str(e)}")
+            raise ProjectDatabaseError(message=f"Failed to fetch project: {str(e)}")
 
     def add_project(self, project: Project_Create) -> Project:
         """Add a new project to the database.
@@ -78,13 +78,13 @@ class ProjectRepo:
             self.session.rollback()
             if "UNIQUE constraint failed" in str(e.orig):
                 raise ProjectDatabaseError(
-                    f"Project with name '{project.name}' already exists",
+                    message=f"Project with name '{project.name}' already exists",
                     status_code=status.HTTP_400_BAD_REQUEST,
                 )
-            raise ProjectDatabaseError(f"Database integrity error: {str(e)}")
+            raise ProjectDatabaseError(message=f"Database integrity error: {str(e)}")
         except SQLAlchemyError as e:
             self.session.rollback()
-            raise ProjectDatabaseError(f"Failed to add project: {str(e)}")
+            raise ProjectDatabaseError(message=f"Failed to add project: {str(e)}")
 
     def delete_project(self, id: str):
         """Delete a project by ID.
@@ -100,11 +100,11 @@ class ProjectRepo:
             has_journal_entries = len(project.journal_entries) > 0
             if has_journal_entries:
                 raise ProjectDatabaseError(
-                    f"Project '{project.name}' cannot be deleted because it is used in journal entries",
+                    message=f"Project '{project.name}' cannot be deleted because it is used in journal entries",
                     status_code=status.HTTP_400_BAD_REQUEST,
                 )
             self.session.delete(project)
             self.session.commit()
         except SQLAlchemyError as e:
             self.session.rollback()
-            raise ProjectDatabaseError(f"Failed to delete project: {str(e)}")
+            raise ProjectDatabaseError(message=f"Failed to delete project: {str(e)}")
