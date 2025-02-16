@@ -1,5 +1,5 @@
 from database.models import Project
-from domain.project.project_models import Project_Create
+from domain.project.project_models import Project_Create, Project_Update
 from domain.project.project_repo import ProjectRepo
 
 
@@ -23,3 +23,7 @@ class ProjectService:
     def delete_project(self, id: str) -> None:
         """Delete a project."""
         return self.repo.delete_project(id)
+
+    def update_project(self, id: str, project: Project_Update) -> Project:
+        """Update an existing project and convert result to DTO."""
+        return self.repo.update_project(id, project)

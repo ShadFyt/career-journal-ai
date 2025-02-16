@@ -1,7 +1,7 @@
 from database.models import Project
 from database.session import SessionDep
 from domain.project.exceptions import ProjectDatabaseError
-from domain.project.project_models import Project_Create
+from domain.project.project_models import Project_Create, Project_Update
 from fastapi import status
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import select
@@ -67,25 +67,47 @@ class ProjectRepo:
             Project: The newly created project
 
         Raises:
-            ProjectDatabaseError: If project name already exists or database operation fails
+            ProjectDatabaseError: If database operation fails or project name already exists
         """
         try:
-            db_project = Project(**project.model_dump())
-            self.session.add(db_project)
-            self.session.commit()
-            self.session.refresh(db_project)
-            return db_project
-        except IntegrityError as e:
+            db_project = Project.model_validate(project)
+            return self._save_project(db_project)
+        except IntegrityError:
             self.session.rollback()
-            if "UNIQUE constraint failed" in str(e.orig):
-                raise ProjectDatabaseError(
-                    message=f"Project with name '{project.name}' already exists",
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                )
-            raise ProjectDatabaseError(message=f"Database integrity error: {str(e)}")
+            raise ProjectDatabaseError(
+                message=f"Project name already exists: {project.name}",
+                status_code=status.HTTP_409_CONFLICT,
+            )
         except SQLAlchemyError as e:
             self.session.rollback()
             raise ProjectDatabaseError(message=f"Failed to add project: {str(e)}")
+
+    def update_project(self, id: str, project: Project_Update) -> Project:
+        """Update an existing project.
+
+        Args:
+            id (str): Project ID
+            project (Project_Update): Project update data
+
+        Returns:
+            Project: The updated project
+
+        Raises:
+            ProjectDatabaseError: If project not found, database operation fails, or project name already exists
+        """
+        try:
+            db_project = self.get_project(id)
+            # Update project data excluding None values
+            project_data = project.model_dump(exclude_unset=True)
+            for key, value in project_data.items():
+                setattr(db_project, key, value)
+
+            return self._save_project(db_project)
+        except ProjectDatabaseError as e:
+            raise e
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            raise ProjectDatabaseError(message=f"Failed to update project: {str(e)}")
 
     def delete_project(self, id: str):
         """Delete a project by ID.
@@ -109,3 +131,20 @@ class ProjectRepo:
         except SQLAlchemyError as e:
             self.session.rollback()
             raise ProjectDatabaseError(message=f"Failed to delete project: {str(e)}")
+
+    def _save_project(self, project: Project) -> Project:
+        """Save project to database and refresh.
+
+        Args:
+            project: Project instance to save
+
+        Returns:
+            Project: Refreshed project instance
+
+        Raises:
+            SQLAlchemyError: If database operation fails
+        """
+        self.session.add(project)
+        self.session.commit()
+        self.session.refresh(project)
+        return project

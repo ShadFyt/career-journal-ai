@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Any
 
 from pydantic import BaseModel
 
@@ -24,3 +23,9 @@ class Project_Read(Project_Base):
 
     id: str
     last_entry_date: datetime | None = None
+
+
+class Project_Update(Project_Base):
+    """Input model for updating an existing project."""
+
+    pass

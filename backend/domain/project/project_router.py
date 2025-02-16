@@ -1,7 +1,7 @@
 from database.models import Project
 from domain.project.dependencies import get_project_service
 from domain.project.exceptions import ProjectError
-from domain.project.project_models import Project_Create
+from domain.project.project_models import Project_Create, Project_Update
 from domain.project.project_service import ProjectService
 from fastapi import APIRouter, Depends
 from starlette import status
@@ -63,6 +63,28 @@ async def get_project(
     """
     try:
         return service.get_project(id)
+    except ProjectError as e:
+        raise e
+
+
+@router.patch("/{id}")
+async def update_project(
+    id: str,
+    project: Project_Update,
+    service: ProjectService = Depends(get_project_service),
+) -> Project:
+    """Update an existing project.
+
+    Args:
+        id: Project ID
+        project: Project update data
+        service: Project service instance
+
+    Returns:
+        Project: The updated project
+    """
+    try:
+        return service.update_project(id, project)
     except ProjectError as e:
         raise e
 
