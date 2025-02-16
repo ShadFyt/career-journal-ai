@@ -6,7 +6,7 @@ from domain.technology.technology_service import TechnologyService
 from enums import Language
 from fastapi import APIRouter, Depends, status
 
-router = APIRouter()
+router = APIRouter(prefix="/technologies", tags=["technologies"])
 
 
 @router.get("")
