@@ -1,18 +1,17 @@
 from database.models import Technology
-from domain.technology.dependencies import get_technology_service
+from domain.technology.dependencies import TechnologyServiceDep
 from domain.technology.exceptions import TechnologyError
 from domain.technology.technology_models import Technology_Create, TechnologyWithCount
-from domain.technology.technology_service import TechnologyService
 from enums import Language
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, status
 
 router = APIRouter(prefix="/technologies", tags=["technologies"])
 
 
 @router.get("")
 async def get_technologies(
+    service: TechnologyServiceDep,
     language: Language | None = None,
-    service: TechnologyService = Depends(get_technology_service),
 ) -> list[TechnologyWithCount]:
     """Get all technologies with their usage counts.
 
@@ -33,7 +32,7 @@ async def get_technologies(
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def add_technology(
     technology: Technology_Create,
-    service: TechnologyService = Depends(get_technology_service),
+    service: TechnologyServiceDep,
 ) -> Technology:
     """Add a new technology.
 
@@ -53,7 +52,7 @@ async def add_technology(
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_technology(
     id: str,
-    service: TechnologyService = Depends(get_technology_service),
+    service: TechnologyServiceDep,
 ) -> None:
     """Delete a technology from the database by its ID.
 

@@ -1,9 +1,8 @@
 from database.models import Project
-from domain.project.dependencies import get_project_service
+from domain.project.dependencies import ProjectServiceDep
 from domain.project.exceptions import ProjectError
 from domain.project.project_models import Project_Create, Project_Update
-from domain.project.project_service import ProjectService
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from starlette import status
 
 router = APIRouter(prefix="/projects", tags=["projects"])
@@ -11,7 +10,7 @@ router = APIRouter(prefix="/projects", tags=["projects"])
 
 @router.get("")
 async def get_projects(
-    service: ProjectService = Depends(get_project_service),
+    service: ProjectServiceDep,
 ) -> list[Project]:
     """Get all projects sorted by last entry date and name.
 
@@ -30,7 +29,7 @@ async def get_projects(
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def add_project(
     project: Project_Create,
-    service: ProjectService = Depends(get_project_service),
+    service: ProjectServiceDep,
 ) -> Project:
     """Add a new project.
 
@@ -50,7 +49,7 @@ async def add_project(
 @router.get("/{id}")
 async def get_project(
     id: str,
-    service: ProjectService = Depends(get_project_service),
+    service: ProjectServiceDep,
 ) -> Project:
     """Get a single project by ID.
 
@@ -71,7 +70,7 @@ async def get_project(
 async def update_project(
     id: str,
     project: Project_Update,
-    service: ProjectService = Depends(get_project_service),
+    service: ProjectServiceDep,
 ) -> Project:
     """Update an existing project.
 
@@ -92,7 +91,7 @@ async def update_project(
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_project(
     id: str,
-    service: ProjectService = Depends(get_project_service),
+    service: ProjectServiceDep,
 ) -> None:
     """Delete a project from the database by its ID.
 
