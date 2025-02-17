@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, Optional
 
+from core.exceptions import ErrorDetail
 from fastapi import HTTPException, status
-from pydantic import BaseModel
 
 
 class ErrorCode(str, Enum):
@@ -16,14 +16,6 @@ class ErrorCode(str, Enum):
     VALIDATION_ERROR = "VALIDATION_ERROR"
     DUPLICATE_PROJECT = "DUPLICATE_PROJECT"
     INVALID_OPERATION = "INVALID_OPERATION"
-
-
-class ErrorDetail(BaseModel):
-    """Structured error details for better error reporting."""
-
-    code: ErrorCode
-    message: str
-    params: Optional[Dict[str, Any]] = None
 
 
 @dataclass
