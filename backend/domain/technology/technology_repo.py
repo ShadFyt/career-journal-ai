@@ -1,11 +1,11 @@
 from database.models import JournalEntryTechnologyLink, Technology
 from database.session import SessionDep
-from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
 from domain.technology.technology_exceptions import (
     ErrorCode,
     TechnologyDatabaseError,
     TechnologyNotFoundError,
 )
+from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
 from enums import Language
 from fastapi import status
 from sqlalchemy import func, label, text
@@ -73,6 +73,29 @@ class TechnologyRepo:
             raise TechnologyDatabaseError(
                 code=ErrorCode.DATABASE_ERROR,
                 message="Failed to fetch technology",
+                params={"error": str(e)},
+            )
+
+    def get_technologies_by_ids(self, ids: list[str]) -> list[TechnologyWithCount]:
+        """Get technologies by their IDs.
+
+        Args:
+            ids: List of technology IDs
+
+        Returns:
+            list[TechnologyWithCount]: List of technologies with their usage counts
+
+        Raises:
+            TechnologyDatabaseError: If database operation fails
+        """
+        try:
+            query = select(Technology).where(Technology.id.in_(ids))
+            return self.session.exec(query).all()
+
+        except SQLAlchemyError as e:
+            raise TechnologyDatabaseError(
+                code=ErrorCode.DATABASE_ERROR,
+                message="Failed to fetch technologies",
                 params={"error": str(e)},
             )
 

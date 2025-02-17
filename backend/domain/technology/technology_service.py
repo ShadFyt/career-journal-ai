@@ -4,6 +4,8 @@ from domain.technology.technology_repo import TechnologyRepo
 from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
 from enums import Language
 
+from backend.domain.technology.technology_exceptions import TechnologyNotFoundError
+
 
 class TechnologyService:
     def __init__(self, repo: TechnologyRepo) -> None:
@@ -24,6 +26,25 @@ class TechnologyService:
             TechnologyError: If database operation fails
         """
         return self.repo.get_technologies(language=language)
+
+    def get_technologies_by_ids(self, ids: list[str]) -> list[Technology]:
+        """Get technologies by their IDs.
+
+        Args:
+            ids: List of technology IDs
+
+        Returns:
+            list[Technology]: List of technologies
+
+        Raises:
+            TechnologyNotFoundError: If not all technologies found
+        """
+        technologies = self.repo.get_technologies_by_ids(ids)
+
+        if len(technologies) != len(ids):
+            raise TechnologyNotFoundError(message="Not all technologies found")
+
+        return technologies
 
     def add_technology(self, technology: Technology_Create) -> Technology:
         """Create a new technology.
