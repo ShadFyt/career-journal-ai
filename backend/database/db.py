@@ -1,10 +1,14 @@
 from sqlmodel import SQLModel, create_engine
+from sqlalchemy.ext.asyncio.engine import AsyncEngine
+
 
 sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
+sqlite_url = f"sqlite+aiosqlite:///{sqlite_file_name}"
 
-engine = create_engine(sqlite_url, connect_args={"check_same_thread": False})
+engine = AsyncEngine(create_engine(sqlite_url, echo=True, future=True))
 
 
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
+async def create_db_and_tables():
+    async with engine.begin() as conn:
+        # await conn.run_sync(SQLModel.metadata.drop_all)
+        await conn.run_sync(SQLModel.metadata.create_all)
