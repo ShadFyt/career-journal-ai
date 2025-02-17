@@ -2,10 +2,9 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional
 
-from core.exceptions import ErrorDetail
-from fastapi import HTTPException, status
+from core.exceptions import BaseDomainError
+from fastapi import status
 
 
 class ErrorCode(str, Enum):
@@ -19,34 +18,7 @@ class ErrorCode(str, Enum):
 
 
 @dataclass
-class TechnologyError(HTTPException):
-    """Base exception for technology domain errors with structured error details.
-
-    Examples:
-        >>> raise TechnologyError(
-        ...     code=ErrorCode.DATABASE_ERROR,
-        ...     message="Failed to connect to database",
-        ...     status_code=status.HTTP_503_SERVICE_UNAVAILABLE
-        ... )
-    """
-
-    code: ErrorCode
-    message: str
-    params: Optional[Dict[str, Any]] = None
-    status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR
-
-    def __post_init__(self):
-        """Initialize the HTTPException with structured error detail."""
-        detail = ErrorDetail(
-            code=self.code,
-            message=self.message,
-            params=self.params,
-        )
-        super().__init__(status_code=self.status_code, detail=detail.model_dump())
-
-
-@dataclass
-class TechnologyNotFoundError(TechnologyError):
+class TechnologyNotFoundError(BaseDomainError):
     """Raised when a technology resource is not found.
 
     Examples:
@@ -75,7 +47,7 @@ class TechnologyNotFoundError(TechnologyError):
 
 
 @dataclass
-class TechnologyDatabaseError(TechnologyError):
+class TechnologyDatabaseError(BaseDomainError):
     """Raised when database operations fail.
 
     Examples:

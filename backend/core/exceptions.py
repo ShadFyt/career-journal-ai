@@ -1,9 +1,29 @@
 import logging
+from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+
+
+@dataclass
+class BaseDomainError(HTTPException):
+    """Base exception for domain errors with structured error details."""
+
+    code: str
+    message: str
+    params: Optional[Dict[str, Any]] = None
+    status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    def __post_init__(self):
+        """Initialize the HTTPException with structured error detail."""
+        detail = ErrorDetail(
+            code=self.code,
+            message=self.message,
+            params=self.params,
+        )
+        super().__init__(status_code=self.status_code, detail=detail.dict())
 
 
 class ErrorDetail(BaseModel):

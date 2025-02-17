@@ -2,10 +2,10 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Optional
 
-from core.exceptions import ErrorDetail
-from fastapi import HTTPException, status
+from core.exceptions import BaseDomainError
+from fastapi import status
 
 
 class ErrorCode(str, Enum):
@@ -19,26 +19,7 @@ class ErrorCode(str, Enum):
 
 
 @dataclass
-class ProjectError(HTTPException):
-    """Base exception for project domain errors with structured error details."""
-
-    code: ErrorCode
-    message: str
-    params: Optional[Dict[str, Any]] = None
-    status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR
-
-    def __post_init__(self):
-        """Initialize the HTTPException with structured error detail."""
-        detail = ErrorDetail(
-            code=self.code,
-            message=self.message,
-            params=self.params,
-        )
-        super().__init__(status_code=self.status_code, detail=detail.dict())
-
-
-@dataclass
-class ProjectNotFoundError(ProjectError):
+class ProjectNotFoundError(BaseDomainError):
     """Raised when a project resource is not found.
 
     Examples:
@@ -67,7 +48,7 @@ class ProjectNotFoundError(ProjectError):
 
 
 @dataclass
-class ProjectDatabaseError(ProjectError):
+class ProjectDatabaseError(BaseDomainError):
     """Raised when database operations fail."""
 
     code: ErrorCode = ErrorCode.DATABASE_ERROR

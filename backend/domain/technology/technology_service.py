@@ -1,5 +1,5 @@
+from core.exceptions import BaseDomainError
 from database.models import Technology
-from domain.technology.exceptions import TechnologyError
 from domain.technology.technology_models import Technology_Create, TechnologyWithCount
 from domain.technology.technology_repo import TechnologyRepo
 from enums import Language
@@ -37,7 +37,7 @@ class TechnologyService:
         """
         try:
             return self.repo.add_technology(technology)
-        except TechnologyError as e:
+        except BaseDomainError as e:
             raise e
         except Exception as e:
             raise Exception(f"Unexpected error in technology service: {str(e)}")
@@ -55,7 +55,7 @@ class TechnologyService:
         """
         try:
             self.repo.delete_technology(id)
-        except TechnologyError as e:
+        except BaseDomainError as e:
             raise e
         except Exception as e:
             raise Exception(f"Unexpected error in technology service: {str(e)}")

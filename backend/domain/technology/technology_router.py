@@ -1,6 +1,6 @@
+from core.exceptions import BaseDomainError
 from database.models import Technology
 from domain.technology.dependencies import TechnologyServiceDep
-from domain.technology.exceptions import TechnologyError
 from domain.technology.technology_models import Technology_Create, TechnologyWithCount
 from enums import Language
 from fastapi import APIRouter, status
@@ -24,7 +24,7 @@ async def get_technologies(
     """
     try:
         return service.get_technologies(language)
-    except TechnologyError as e:
+    except BaseDomainError as e:
         # Domain exceptions are already properly formatted with status code and detail
         raise e
 
@@ -45,7 +45,7 @@ async def add_technology(
     """
     try:
         return service.add_technology(technology)
-    except TechnologyError as e:
+    except BaseDomainError as e:
         raise e
 
 
@@ -65,5 +65,5 @@ async def delete_technology(
     """
     try:
         service.delete_technology(id)
-    except TechnologyError as e:
+    except BaseDomainError as e:
         raise e

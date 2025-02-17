@@ -1,6 +1,6 @@
+from core.exceptions import BaseDomainError
 from database.models import Project
 from domain.project.dependencies import ProjectServiceDep
-from domain.project.exceptions import ProjectError
 from domain.project.project_models import Project_Create, Project_Update
 from fastapi import APIRouter, status
 
@@ -21,7 +21,7 @@ async def get_projects(
     """
     try:
         return service.get_projects()
-    except ProjectError as e:
+    except BaseDomainError as e:
         raise e
 
 
@@ -41,7 +41,7 @@ async def add_project(
     """
     try:
         return service.add_project(project)
-    except ProjectError as e:
+    except BaseDomainError as e:
         raise e
 
 
@@ -61,7 +61,7 @@ async def get_project(
     """
     try:
         return service.get_project(id)
-    except ProjectError as e:
+    except BaseDomainError as e:
         raise e
 
 
@@ -83,7 +83,7 @@ async def update_project(
     """
     try:
         return service.update_project(id, project)
-    except ProjectError as e:
+    except BaseDomainError as e:
         raise e
 
 
@@ -103,5 +103,5 @@ async def delete_project(
     """
     try:
         service.delete_project(id)
-    except ProjectError as e:
+    except BaseDomainError as e:
         raise e
