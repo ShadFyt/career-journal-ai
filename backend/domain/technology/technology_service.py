@@ -1,10 +1,9 @@
 from core.exceptions import BaseDomainError
 from database.models import Technology
+from domain.technology.technology_exceptions import TechnologyNotFoundError
 from domain.technology.technology_repo import TechnologyRepo
 from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
 from enums import Language
-
-from backend.domain.technology.technology_exceptions import TechnologyNotFoundError
 
 
 class TechnologyService:
