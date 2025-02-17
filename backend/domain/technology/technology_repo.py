@@ -1,11 +1,11 @@
 from database.models import JournalEntryTechnologyLink, Technology
 from database.session import SessionDep
-from domain.technology.exceptions import (
+from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
+from domain.technology.technology_exceptions import (
     ErrorCode,
     TechnologyDatabaseError,
     TechnologyNotFoundError,
 )
-from domain.technology.schema import Technology_Create, TechnologyWithCount
 from enums import Language
 from fastapi import status
 from sqlalchemy import func, label, text

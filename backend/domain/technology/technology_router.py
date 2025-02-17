@@ -1,11 +1,11 @@
 from core.exceptions import BaseDomainError
 from database.models import Technology
-from domain.technology.dependencies import TechnologyServiceDep
-from domain.technology.schema import Technology_Create, TechnologyWithCount
+from domain.technology.technology_dependencies import TechnologyServiceDep
+from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
 from enums import Language
 from fastapi import APIRouter, status
 
-router = APIRouter(prefix="/technologies", tags=["technologies"])
+router = APIRouter()
 
 
 @router.get("")
@@ -22,6 +22,7 @@ async def get_technologies(
     Returns:
         list[TechnologyWithCount]: List of technologies with their usage counts
     """
+    print("get_technologies")
     try:
         return service.get_technologies(language)
     except BaseDomainError as e:

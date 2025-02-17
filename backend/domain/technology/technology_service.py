@@ -1,7 +1,7 @@
 from core.exceptions import BaseDomainError
 from database.models import Technology
-from domain.technology.schema import Technology_Create, TechnologyWithCount
 from domain.technology.technology_repo import TechnologyRepo
+from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
 from enums import Language
 
 

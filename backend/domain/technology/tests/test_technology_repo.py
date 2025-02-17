@@ -2,13 +2,13 @@
 
 import pytest
 from database.models import JournalEntry, JournalEntryTechnologyLink, Technology
-from domain.technology.exceptions import (
+from domain.technology.technology_exceptions import (
     ErrorCode,
     TechnologyDatabaseError,
     TechnologyNotFoundError,
 )
-from domain.technology.technology_models import Technology_Create, TechnologyWithCount
 from domain.technology.technology_repo import TechnologyRepo
+from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
 from enums import Language
 from fastapi import status
 from sqlalchemy.exc import SQLAlchemyError

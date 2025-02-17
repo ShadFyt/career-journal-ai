@@ -8,8 +8,8 @@ app = FastAPI()
 add_exception_handlers(app)
 
 # Register routers
-app.include_router(technology_router, prefix="/api", tags=["technologies"])
-app.include_router(project_router, prefix="/api", tags=["projects"])
+app.include_router(technology_router, prefix="/api/technologies", tags=["technologies"])
+app.include_router(project_router, prefix="/api/projects", tags=["projects"])
 
 if __name__ == "__main__":
     import uvicorn

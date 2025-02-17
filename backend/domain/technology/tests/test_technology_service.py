@@ -1,16 +1,14 @@
 """Tests for the technology service."""
 
-from re import error
-
 import pytest
 from database.models import Technology
-from domain.technology.exceptions import (
+from domain.technology.technology_exceptions import (
     ErrorCode,
     TechnologyDatabaseError,
     TechnologyNotFoundError,
 )
-from domain.technology.technology_models import Technology_Create, TechnologyWithCount
 from domain.technology.technology_repo import TechnologyRepo
+from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
 from domain.technology.technology_service import TechnologyService
 from enums import Language
 from fastapi import status

@@ -1,16 +1,14 @@
 """Tests for the technology router endpoints."""
 
-from mailbox import Message
-
 import pytest
 from database.models import Technology
-from domain.technology.dependencies import get_technology_service
-from domain.technology.exceptions import (
+from domain.technology.technology_dependencies import get_technology_service
+from domain.technology.technology_exceptions import (
     TechnologyDatabaseError,
     TechnologyNotFoundError,
 )
-from domain.technology.technology_models import Technology_Create, TechnologyWithCount
 from domain.technology.technology_router import router
+from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
 from domain.technology.technology_service import TechnologyService
 from enums import Language
 from fastapi import FastAPI, status
