@@ -1,4 +1,5 @@
-from domain.journal_entry.dependencies import JournalEntryServiceDep
+from domain.journal_entry.journal_entry_dependencies import JournalEntryServiceDep
+from domain.journal_entry.journal_entry_schema import JournalEntryCreate
 from fastapi import APIRouter, status
 
 router = APIRouter(prefix="/journal-entries", tags=["journal-entries"])
@@ -8,14 +9,15 @@ router = APIRouter(prefix="/journal-entries", tags=["journal-entries"])
 async def get_journal_entries(
     service: JournalEntryServiceDep,
 ):
-    pass
+    return service.get_journal_entries()
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def add_journal_entry(
     service: JournalEntryServiceDep,
+    journal_entry_create: JournalEntryCreate,
 ):
-    pass
+    return service.add_journal_entry(journal_entry_create)
 
 
 @router.get("/{id}")
@@ -23,7 +25,7 @@ async def get_journal_entry(
     id: str,
     service: JournalEntryServiceDep,
 ):
-    pass
+    return service.get_journal_entry(id)
 
 
 @router.patch("/{id}")
