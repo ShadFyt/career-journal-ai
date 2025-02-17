@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from domain.technology.technology_models import TechnologyRead
+from domain.technology.schema import TechnologyRead
 from pydantic import BaseModel
 
 
