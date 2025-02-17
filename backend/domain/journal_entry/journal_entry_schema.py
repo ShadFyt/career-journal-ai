@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from domain.technology.schema import TechnologyRead
+from domain.technology.technology_schema import TechnologyRead
 from pydantic import BaseModel
 
 
@@ -8,7 +8,7 @@ class JournalEntryBase(BaseModel):
     content: str
     date: datetime
     is_private: bool
-    project_id: str | None
+    project_id: str | None = None
 
 
 class JournalEntryRead(JournalEntryBase):
@@ -17,4 +17,4 @@ class JournalEntryRead(JournalEntryBase):
 
 
 class JournalEntryCreate(JournalEntryBase):
-    technologies: list[str]
+    technologyIds: list[str]
