@@ -1,7 +1,7 @@
 from database.models import Project
 from database.session import SessionDep
 from domain.project.exceptions import ProjectDatabaseError
-from domain.project.project_models import Project_Create, Project_Update
+from domain.project.schema import Project_Create, Project_Update
 from fastapi import status
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import select

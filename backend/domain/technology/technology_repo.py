@@ -5,7 +5,7 @@ from domain.technology.exceptions import (
     TechnologyDatabaseError,
     TechnologyNotFoundError,
 )
-from domain.technology.technology_models import Technology_Create, TechnologyWithCount
+from domain.technology.schema import Technology_Create, TechnologyWithCount
 from enums import Language
 from fastapi import status
 from sqlalchemy import func, label, text

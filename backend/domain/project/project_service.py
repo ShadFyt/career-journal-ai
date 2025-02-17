@@ -1,6 +1,6 @@
 from database.models import Project
-from domain.project.project_models import Project_Create, Project_Update
 from domain.project.project_repo import ProjectRepo
+from domain.project.schema import Project_Create, Project_Update
 
 
 class ProjectService:

@@ -1,7 +1,7 @@
 from core.exceptions import BaseDomainError
 from database.models import Technology
 from domain.technology.dependencies import TechnologyServiceDep
-from domain.technology.technology_models import Technology_Create, TechnologyWithCount
+from domain.technology.schema import Technology_Create, TechnologyWithCount
 from enums import Language
 from fastapi import APIRouter, status
 
