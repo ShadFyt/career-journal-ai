@@ -1,7 +1,7 @@
 from core.exceptions import BaseDomainError
 from database.models import Project
 from domain.project.project_dependencies import ProjectServiceDep
-from domain.project.project_schema import Project_Create, Project_Update
+from domain.project.project_schema import ProjectCreate, ProjectUpdate
 from fastapi import APIRouter, status
 
 router = APIRouter()
@@ -27,7 +27,7 @@ async def get_projects(
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def add_project(
-    project: Project_Create,
+    project: ProjectCreate,
     service: ProjectServiceDep,
 ) -> Project:
     """Add a new project.
@@ -68,7 +68,7 @@ async def get_project(
 @router.patch("/{id}")
 async def update_project(
     id: str,
-    project: Project_Update,
+    project: ProjectUpdate,
     service: ProjectServiceDep,
 ) -> Project:
     """Update an existing project.

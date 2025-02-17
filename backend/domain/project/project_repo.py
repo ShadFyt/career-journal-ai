@@ -1,7 +1,7 @@
 from database.models import Project
 from database.session import SessionDep
 from domain.project.project_exceptions import ProjectDatabaseError
-from domain.project.project_schema import Project_Create, Project_Update
+from domain.project.project_schema import ProjectCreate, ProjectUpdate
 from fastapi import status
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import select
@@ -57,11 +57,11 @@ class ProjectRepo:
         except SQLAlchemyError as e:
             raise ProjectDatabaseError(message=f"Failed to fetch project: {str(e)}")
 
-    def add_project(self, project: Project_Create) -> Project:
+    def add_project(self, project: ProjectCreate) -> Project:
         """Add a new project to the database.
 
         Args:
-            project (Project_Create): Project creation data
+            project (ProjectCreate): Project creation data
 
         Returns:
             Project: The newly created project
@@ -82,12 +82,12 @@ class ProjectRepo:
             self.session.rollback()
             raise ProjectDatabaseError(message=f"Failed to add project: {str(e)}")
 
-    def update_project(self, id: str, project: Project_Update) -> Project:
+    def update_project(self, id: str, project: ProjectUpdate) -> Project:
         """Update an existing project.
 
         Args:
             id (str): Project ID
-            project (Project_Update): Project update data
+            project (ProjectUpdate): Project update data
 
         Returns:
             Project: The updated project

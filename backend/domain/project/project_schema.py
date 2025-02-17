@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class Project_Base(BaseModel):
+class ProjectBase(BaseModel):
     """Base model for project data transfer."""
 
     name: str
@@ -12,20 +12,20 @@ class Project_Base(BaseModel):
     is_private: bool = False
 
 
-class Project_Create(Project_Base):
+class ProjectCreate(ProjectBase):
     """Input model for creating a new project."""
 
     pass
 
 
-class Project_Read(Project_Base):
+class ProjectRead(ProjectBase):
     """Output model for project responses."""
 
     id: str
     last_entry_date: datetime | None = None
 
 
-class Project_Update(Project_Base):
+class ProjectUpdate(ProjectBase):
     """Input model for updating an existing project."""
 
     pass

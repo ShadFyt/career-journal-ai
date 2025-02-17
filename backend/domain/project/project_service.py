@@ -1,6 +1,6 @@
 from database.models import Project
 from domain.project.project_repo import ProjectRepo
-from domain.project.project_schema import Project_Create, Project_Update
+from domain.project.project_schema import ProjectCreate, ProjectUpdate
 
 
 class ProjectService:
@@ -16,7 +16,7 @@ class ProjectService:
         """Get a single project and convert to DTO."""
         return self.repo.get_project(id)
 
-    def add_project(self, project: Project_Create) -> Project:
+    def add_project(self, project: ProjectCreate) -> Project:
         """Add a project and convert result to DTO."""
         return self.repo.add_project(project)
 
@@ -24,6 +24,6 @@ class ProjectService:
         """Delete a project."""
         return self.repo.delete_project(id)
 
-    def update_project(self, id: str, project: Project_Update) -> Project:
+    def update_project(self, id: str, project: ProjectUpdate) -> Project:
         """Update an existing project and convert result to DTO."""
         return self.repo.update_project(id, project)
