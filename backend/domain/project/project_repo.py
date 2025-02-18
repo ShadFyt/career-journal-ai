@@ -16,7 +16,7 @@ class ProjectRepo:
         """
         self.session = session
 
-    def get_projects(self) -> list[Project]:
+    async def get_projects(self) -> list[Project]:
         """Get all projects sorted by last entry date and name.
 
         Returns:
@@ -29,12 +29,13 @@ class ProjectRepo:
             statement = select(Project).order_by(
                 Project.last_entry_date.desc().nulls_last(), Project.name
             )
-            return self.session.exec(statement).all()
+            results = await self.session.exec(statement)
+            return results.all()
 
         except SQLAlchemyError as e:
             raise ProjectDatabaseError(message=f"Failed to fetch projects: {str(e)}")
 
-    def get_project(self, id: str) -> Project:
+    async def get_project(self, id: str) -> Project:
         """Get a single project by ID.
 
         Args:
@@ -47,7 +48,7 @@ class ProjectRepo:
             ProjectDatabaseError: If project not found or database operation fails
         """
         try:
-            found_project = self.session.get(Project, id)
+            found_project = await self.session.get(Project, id)
             if not found_project:
                 raise ProjectDatabaseError(
                     message=f"Project with ID '{id}' not found",
@@ -57,7 +58,7 @@ class ProjectRepo:
         except SQLAlchemyError as e:
             raise ProjectDatabaseError(message=f"Failed to fetch project: {str(e)}")
 
-    def add_project(self, project: ProjectCreate) -> Project:
+    async def add_project(self, project: ProjectCreate) -> Project:
         """Add a new project to the database.
 
         Args:
@@ -71,7 +72,7 @@ class ProjectRepo:
         """
         try:
             db_project = Project.model_validate(project)
-            return self._save_project(db_project)
+            return await self._save_project(db_project)
         except IntegrityError:
             self.session.rollback()
             raise ProjectDatabaseError(
@@ -82,7 +83,7 @@ class ProjectRepo:
             self.session.rollback()
             raise ProjectDatabaseError(message=f"Failed to add project: {str(e)}")
 
-    def update_project(self, id: str, project: ProjectUpdate) -> Project:
+    async def update_project(self, id: str, project: ProjectUpdate) -> Project:
         """Update an existing project.
 
         Args:
@@ -96,20 +97,20 @@ class ProjectRepo:
             ProjectDatabaseError: If project not found, database operation fails, or project name already exists
         """
         try:
-            db_project = self.get_project(id)
+            db_project = await self.get_project(id)
             # Update project data excluding None values
             project_data = project.model_dump(exclude_unset=True)
             for key, value in project_data.items():
                 setattr(db_project, key, value)
 
-            return self._save_project(db_project)
+            return await self._save_project(db_project)
         except ProjectDatabaseError as e:
             raise e
         except SQLAlchemyError as e:
             self.session.rollback()
             raise ProjectDatabaseError(message=f"Failed to update project: {str(e)}")
 
-    def delete_project(self, id: str):
+    async def delete_project(self, id: str):
         """Delete a project by ID.
 
         Args:
@@ -119,7 +120,7 @@ class ProjectRepo:
             ProjectDatabaseError: If project has associated journal entries or database operation fails
         """
         try:
-            project = self.get_project(id)
+            project = await self.get_project(id)
             has_journal_entries = len(project.journal_entries) > 0
             if has_journal_entries:
                 raise ProjectDatabaseError(
@@ -127,12 +128,12 @@ class ProjectRepo:
                     status_code=status.HTTP_400_BAD_REQUEST,
                 )
             self.session.delete(project)
-            self.session.commit()
+            await self.session.commit()
         except SQLAlchemyError as e:
             self.session.rollback()
             raise ProjectDatabaseError(message=f"Failed to delete project: {str(e)}")
 
-    def _save_project(self, project: Project) -> Project:
+    async def _save_project(self, project: Project) -> Project:
         """Save project to database and refresh.
 
         Args:
@@ -145,6 +146,6 @@ class ProjectRepo:
             SQLAlchemyError: If database operation fails
         """
         self.session.add(project)
-        self.session.commit()
-        self.session.refresh(project)
+        await self.session.commit()
+        await self.session.refresh(project)
         return project

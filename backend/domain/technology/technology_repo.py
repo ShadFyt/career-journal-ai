@@ -17,7 +17,7 @@ class TechnologyRepo:
     def __init__(self, session: SessionDep):
         self.session = session
 
-    def get_technologies(
+    async def get_technologies(
         self, language: Language | None = None
     ) -> list[TechnologyWithCount]:
         """Get all technologies from the database with their usage counts.
@@ -36,8 +36,8 @@ class TechnologyRepo:
             query = self._build_base_query(usage_count)
             query = self._apply_filters(query, language)
 
-            results = self.session.exec(query).all()
-            return self._map_to_domain(results)
+            results = await self.session.exec(query)
+            return self._map_to_domain(results.all())
 
         except SQLAlchemyError as e:
             raise TechnologyDatabaseError(
@@ -46,7 +46,7 @@ class TechnologyRepo:
                 params={"error": str(e)},
             )
 
-    def get_technology(self, id: str) -> Technology:
+    async def get_technology(self, id: str) -> Technology:
         """Get a technology from the database by its ID.
 
         Args:
@@ -60,7 +60,7 @@ class TechnologyRepo:
             TechnologyDatabaseError: If database operation fails
         """
         try:
-            technology = self.session.get(Technology, id)
+            technology = await self.session.get(Technology, id)
             if not technology:
                 raise TechnologyNotFoundError(
                     code=ErrorCode.TECHNOLOGY_NOT_FOUND,
@@ -76,7 +76,7 @@ class TechnologyRepo:
                 params={"error": str(e)},
             )
 
-    def get_technologies_by_ids(self, ids: list[str]) -> list[TechnologyWithCount]:
+    async def get_technologies_by_ids(self, ids: list[str]) -> list[TechnologyWithCount]:
         """Get technologies by their IDs.
 
         Args:
@@ -90,7 +90,7 @@ class TechnologyRepo:
         """
         try:
             query = select(Technology).where(Technology.id.in_(ids))
-            return self.session.exec(query).all()
+            return await self.session.exec(query).all()
 
         except SQLAlchemyError as e:
             raise TechnologyDatabaseError(
@@ -99,7 +99,7 @@ class TechnologyRepo:
                 params={"error": str(e)},
             )
 
-    def add_technology(self, technology: Technology_Create) -> Technology:
+    async def add_technology(self, technology: Technology_Create) -> Technology:
         """Add a new technology to the database.
 
         Args:
@@ -118,12 +118,12 @@ class TechnologyRepo:
                 language=technology.language,
             )
             self.session.add(new_technology)
-            self.session.commit()
-            self.session.refresh(new_technology)
+            await self.session.commit()
+            await self.session.refresh(new_technology)
             return new_technology
 
         except IntegrityError as e:
-            self.session.rollback()
+            await self.session.rollback()
             if "unique constraint" in str(e).lower():
                 raise TechnologyDatabaseError(
                     code=ErrorCode.DUPLICATE_TECHNOLOGY,
@@ -138,14 +138,14 @@ class TechnologyRepo:
             )
 
         except SQLAlchemyError as e:
-            self.session.rollback()
+            await self.session.rollback()
             raise TechnologyDatabaseError(
                 code=ErrorCode.DATABASE_ERROR,
                 message="Failed to add technology",
                 params={"error": str(e)},
             )
 
-    def delete_technology(self, id: str) -> None:
+    async def delete_technology(self, id: str) -> None:
         """Delete a technology from the database.
 
         Args:
@@ -156,7 +156,7 @@ class TechnologyRepo:
             TechnologyDatabaseError: If database operation fails or technology has journal entries
         """
         try:
-            technology = self.get_technology(id)
+            technology = await self.get_technology(id)
             has_journal_entries = len(technology.journal_entries) > 0
             if has_journal_entries:
                 raise TechnologyDatabaseError(
@@ -166,11 +166,11 @@ class TechnologyRepo:
                     status_code=status.HTTP_409_CONFLICT,
                 )
 
-            self.session.delete(technology)
-            self.session.commit()
+            await self.session.delete(technology)
+            await self.session.commit()
 
         except SQLAlchemyError as e:
-            self.session.rollback()
+            await self.session.rollback()
             raise TechnologyDatabaseError(
                 code=ErrorCode.DATABASE_ERROR,
                 message="Failed to delete technology",

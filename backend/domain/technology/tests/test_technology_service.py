@@ -26,7 +26,8 @@ def technology_service(mock_technology_repo):
     return TechnologyService(mock_technology_repo)
 
 
-def test_get_technologies_success(technology_service, mock_technology_repo):
+@pytest.mark.asyncio
+async def test_get_technologies_success(technology_service, mock_technology_repo):
     """Test successful retrieval of technologies through service."""
     # Prepare mock data
     mock_technologies = [
@@ -50,14 +51,15 @@ def test_get_technologies_success(technology_service, mock_technology_repo):
     mock_technology_repo.get_technologies.return_value = mock_technologies
 
     # Execute service method
-    result = technology_service.get_technologies()
+    result = await technology_service.get_technologies()
 
     # Verify results
     assert result == mock_technologies
     assert isinstance(result, list)
 
 
-def test_get_technologies_handles_error(technology_service, mock_technology_repo):
+@pytest.mark.asyncio
+async def test_get_technologies_handles_error(technology_service, mock_technology_repo):
     """Test error handling when getting technologies."""
     # Setup mock to raise error
     mock_technology_repo.get_technologies.side_effect = TechnologyDatabaseError(
@@ -68,12 +70,13 @@ def test_get_technologies_handles_error(technology_service, mock_technology_repo
 
     # Verify error is propagated
     with pytest.raises(TechnologyDatabaseError) as exc_info:
-        technology_service.get_technologies()
+        await technology_service.get_technologies()
 
     assert "Failed to fetch technologies" in str(exc_info.value)
 
 
-def test_add_technology_success(technology_service, mock_technology_repo):
+@pytest.mark.asyncio
+async def test_add_technology_success(technology_service, mock_technology_repo):
     """Test successful technology creation."""
     # Prepare test data
     new_tech = Technology_Create(
@@ -92,14 +95,15 @@ def test_add_technology_success(technology_service, mock_technology_repo):
     mock_technology_repo.add_technology.return_value = mock_result
 
     # Execute service method
-    result = technology_service.add_technology(new_tech)
+    result = await technology_service.add_technology(new_tech)
 
     # Verify results
     assert result == mock_result
     mock_technology_repo.add_technology.assert_called_once_with(new_tech)
 
 
-def test_add_technology_handles_error(technology_service, mock_technology_repo):
+@pytest.mark.asyncio
+async def test_add_technology_handles_error(technology_service, mock_technology_repo):
     """Test error handling during technology creation."""
     # Setup mock to raise error
     mock_technology_repo.add_technology.side_effect = TechnologyDatabaseError(
@@ -114,22 +118,24 @@ def test_add_technology_handles_error(technology_service, mock_technology_repo):
 
     # Verify error is propagated
     with pytest.raises(TechnologyDatabaseError) as exc_info:
-        technology_service.add_technology(new_tech)
+        await technology_service.add_technology(new_tech)
 
     assert "Technology with this name already exists" in str(exc_info.value)
     assert exc_info.value.status_code == status.HTTP_409_CONFLICT
 
 
-def test_delete_technology_success(technology_service, mock_technology_repo):
+@pytest.mark.asyncio
+async def test_delete_technology_success(technology_service, mock_technology_repo):
     """Test successful technology deletion."""
     # Execute service method
-    technology_service.delete_technology("1")
+    await technology_service.delete_technology("1")
 
     # Verify repository was called
     mock_technology_repo.delete_technology.assert_called_once_with("1")
 
 
-def test_delete_technology_not_found(technology_service, mock_technology_repo):
+@pytest.mark.asyncio
+async def test_delete_technology_not_found(technology_service, mock_technology_repo):
     """Test deletion of non-existent technology."""
     # Setup mock to raise not found error
     mock_technology_repo.delete_technology.side_effect = TechnologyNotFoundError(
@@ -140,7 +146,7 @@ def test_delete_technology_not_found(technology_service, mock_technology_repo):
 
     # Verify error is propagated
     with pytest.raises(TechnologyNotFoundError) as exc_info:
-        technology_service.delete_technology("non-existent-id")
+        await technology_service.delete_technology("non-existent-id")
 
     error_detail = exc_info.value
     assert error_detail.message == "Technology not found"
@@ -148,7 +154,8 @@ def test_delete_technology_not_found(technology_service, mock_technology_repo):
     assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_delete_technology_with_entries(technology_service, mock_technology_repo):
+@pytest.mark.asyncio
+async def test_delete_technology_with_entries(technology_service, mock_technology_repo):
     """Test deletion of technology with journal entries."""
     # Setup mock to raise error
     mock_technology_repo.delete_technology.side_effect = TechnologyDatabaseError(
@@ -160,7 +167,7 @@ def test_delete_technology_with_entries(technology_service, mock_technology_repo
 
     # Verify error is propagated with correct status
     with pytest.raises(TechnologyDatabaseError) as exc_info:
-        technology_service.delete_technology("1")
+        await technology_service.delete_technology("1")
 
     assert exc_info.value.status_code == status.HTTP_409_CONFLICT
     assert "Cannot delete technology that is referenced by journal entries" in str(

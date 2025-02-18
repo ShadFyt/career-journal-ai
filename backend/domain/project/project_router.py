@@ -7,10 +7,10 @@ from fastapi import APIRouter, status
 router = APIRouter()
 
 
-@router.get("")
+@router.get("", response_model=list[Project])
 async def get_projects(
     service: ProjectServiceDep,
-) -> list[Project]:
+):
     """Get all projects sorted by last entry date and name.
 
     Returns:
@@ -20,7 +20,7 @@ async def get_projects(
         ProjectDatabaseError: If database operation fails
     """
     try:
-        return service.get_projects()
+        return await service.get_projects()
     except BaseDomainError as e:
         raise e
 
@@ -40,7 +40,7 @@ async def add_project(
         Project: The newly created project
     """
     try:
-        return service.add_project(project)
+        return await service.add_project(project)
     except BaseDomainError as e:
         raise e
 
@@ -60,7 +60,7 @@ async def get_project(
         Project: The requested project
     """
     try:
-        return service.get_project(id)
+        return await service.get_project(id)
     except BaseDomainError as e:
         raise e
 
@@ -82,7 +82,7 @@ async def update_project(
         Project: The updated project
     """
     try:
-        return service.update_project(id, project)
+        return await service.update_project(id, project)
     except BaseDomainError as e:
         raise e
 
@@ -102,6 +102,6 @@ async def delete_project(
         HTTPException: If the request fails
     """
     try:
-        service.delete_project(id)
+        await service.delete_project(id)
     except BaseDomainError as e:
         raise e

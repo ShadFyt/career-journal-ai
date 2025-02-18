@@ -10,7 +10,7 @@ class TechnologyService:
     def __init__(self, repo: TechnologyRepo) -> None:
         self.repo = repo
 
-    def get_technologies(
+    async def get_technologies(
         self, language: Language | None = None
     ) -> list[TechnologyWithCount]:
         """Get all technologies with their usage counts.
@@ -24,9 +24,9 @@ class TechnologyService:
         Raises:
             TechnologyError: If database operation fails
         """
-        return self.repo.get_technologies(language=language)
+        return await self.repo.get_technologies(language=language)
 
-    def get_technologies_by_ids(self, ids: list[str]) -> list[Technology]:
+    async def get_technologies_by_ids(self, ids: list[str]) -> list[Technology]:
         """Get technologies by their IDs.
 
         Args:
@@ -38,14 +38,14 @@ class TechnologyService:
         Raises:
             TechnologyNotFoundError: If not all technologies found
         """
-        technologies = self.repo.get_technologies_by_ids(ids)
+        technologies = await self.repo.get_technologies_by_ids(ids)
 
         if len(technologies) != len(ids):
             raise TechnologyNotFoundError(message="Not all technologies found")
 
         return technologies
 
-    def add_technology(self, technology: Technology_Create) -> Technology:
+    async def add_technology(self, technology: Technology_Create) -> Technology:
         """Create a new technology.
 
         Returns:
@@ -56,13 +56,13 @@ class TechnologyService:
             Exception: If an unexpected error occurs
         """
         try:
-            return self.repo.add_technology(technology)
+            return await self.repo.add_technology(technology)
         except BaseDomainError as e:
             raise e
         except Exception as e:
             raise Exception(f"Unexpected error in technology service: {str(e)}")
 
-    def delete_technology(self, id: str):
+    async def delete_technology(self, id: str):
         """Delete a technology from the database by its ID.
 
         Args:
@@ -74,7 +74,7 @@ class TechnologyService:
                 or if database operation fails
         """
         try:
-            self.repo.delete_technology(id)
+            await self.repo.delete_technology(id)
         except BaseDomainError as e:
             raise e
         except Exception as e:

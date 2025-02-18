@@ -8,11 +8,11 @@ from fastapi import APIRouter, status
 router = APIRouter()
 
 
-@router.get("")
+@router.get("", response_model=list[TechnologyWithCount])
 async def get_technologies(
     service: TechnologyServiceDep,
     language: Language | None = None,
-) -> list[TechnologyWithCount]:
+):
     """Get all technologies with their usage counts.
 
     Args:
@@ -22,19 +22,18 @@ async def get_technologies(
     Returns:
         list[TechnologyWithCount]: List of technologies with their usage counts
     """
-    print("get_technologies")
     try:
-        return service.get_technologies(language)
+        return await service.get_technologies(language)
     except BaseDomainError as e:
         # Domain exceptions are already properly formatted with status code and detail
         raise e
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=Technology)
 async def add_technology(
     technology: Technology_Create,
     service: TechnologyServiceDep,
-) -> Technology:
+):
     """Add a new technology.
 
     Args:
@@ -45,7 +44,7 @@ async def add_technology(
         Technology: The newly created technology
     """
     try:
-        return service.add_technology(technology)
+        return await service.add_technology(technology)
     except BaseDomainError as e:
         raise e
 
@@ -65,6 +64,6 @@ async def delete_technology(
         HTTPException: If the request fails
     """
     try:
-        service.delete_technology(id)
+        await service.delete_technology(id)
     except BaseDomainError as e:
         raise e

@@ -7,23 +7,23 @@ class ProjectService:
     def __init__(self, repo: ProjectRepo) -> None:
         self.repo = repo
 
-    def get_projects(self) -> list[Project]:
+    async def get_projects(self) -> list[Project]:
         """Get all projects and convert to DTOs."""
-        projects = self.repo.get_projects()
+        projects = await self.repo.get_projects()
         return projects
 
-    def get_project(self, id: str) -> Project:
+    async def get_project(self, id: str) -> Project:
         """Get a single project and convert to DTO."""
-        return self.repo.get_project(id)
+        return await self.repo.get_project(id)
 
-    def add_project(self, project: ProjectCreate) -> Project:
+    async def add_project(self, project: ProjectCreate) -> Project:
         """Add a project and convert result to DTO."""
-        return self.repo.add_project(project)
+        return await self.repo.add_project(project)
 
-    def delete_project(self, id: str) -> None:
+    async def delete_project(self, id: str) -> None:
         """Delete a project."""
-        return self.repo.delete_project(id)
+        await self.repo.delete_project(id)
 
-    def update_project(self, id: str, project: ProjectUpdate) -> Project:
+    async def update_project(self, id: str, project: ProjectUpdate) -> Project:
         """Update an existing project and convert result to DTO."""
-        return self.repo.update_project(id, project)
+        return await self.repo.update_project(id, project)
