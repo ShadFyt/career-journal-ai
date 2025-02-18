@@ -7,13 +7,14 @@ from domain.journal_entry.journal_entry_exceptions import (
 from domain.journal_entry.journal_entry_schema import JournalEntryCreate
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
+from sqlalchemy.orm import selectinload
 
 
 class JournalEntryRepo:
     def __init__(self, session: SessionDep):
         self.session = session
 
-    def get_journal_entries(self) -> list[JournalEntry]:
+    async def get_journal_entries(self) -> list[JournalEntry]:
         """Get all journal entries sorted by date and name.
 
         Returns:
@@ -24,8 +25,9 @@ class JournalEntryRepo:
         """
 
         try:
-            statement = select(JournalEntry).order_by(JournalEntry.date.desc())
-            return self.session.exec(statement).all()
+            statement = select(JournalEntry).options(selectinload(JournalEntry.technologies)).order_by(JournalEntry.date.desc())
+            results = await self.session.exec(statement)
+            return results.all()
 
         except SQLAlchemyError as e:
             raise JournalEntryDatabaseError(

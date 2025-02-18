@@ -13,8 +13,12 @@ app.include_router(technology_router, prefix="/api/technologies", tags=["technol
 app.include_router(project_router, prefix="/api/projects", tags=["projects"])
 app.include_router(journal_entry_router, prefix="/api/journal-entries", tags=["journal-entries"])
 
+# @app.on_event("startup")
+# async def on_startup():
+#     await create_db_and_tables()
+
+
 if __name__ == "__main__":
     import uvicorn
 
-    create_db_and_tables()
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
