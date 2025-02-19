@@ -1,6 +1,5 @@
-from sqlmodel import SQLModel, create_engine
 from sqlalchemy.ext.asyncio.engine import AsyncEngine
-
+from sqlmodel import SQLModel, create_engine
 
 sqlite_file_name = "database.db"
 sqlite_url = f"sqlite+aiosqlite:///{sqlite_file_name}"
