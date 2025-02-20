@@ -10,16 +10,51 @@ class JournalEntryService:
     def __init__(
         self, repo: JournalEntryRepo, technology_service: TechnologyService
     ) -> None:
+        """Initialize JournalEntryService with dependencies.
+
+        Args:
+            repo: Journal entry repository instance
+            technology_service: Technology service instance
+        """
         self.repo = repo
         self.technology_service = technology_service
 
     async def get_journal_entries(self):
+        """Get all journal entries.
+
+        Returns:
+            list[JournalEntry]: List of all journal entries sorted by date (descending)
+        """
         return await self.repo.get_journal_entries()
 
     async def get_journal_entry(self, id: str):
+        """Get a specific journal entry by ID.
+
+        Args:
+            id: Journal entry ID
+
+        Returns:
+            JournalEntry: The requested journal entry
+
+        Raises:
+            JournalEntryNotFoundError: If journal entry not found
+        """
         return await self.repo.get_journal_entry(id)
 
     async def add_journal_entry(self, journal_entry_create: JournalEntryCreate):
+        """Create a new journal entry.
+
+        Args:
+            journal_entry_create: Journal entry creation data
+            technologies: List of technologies associated with the journal entry
+
+        Returns:
+            JournalEntryRead: The created journal entry with associated technologies
+
+        Raises:
+            TechnologyNotFoundError: If any technology ID is invalid
+            JournalEntryDatabaseError: If database operation fails
+        """
         technologies = await self.technology_service.get_technologies_by_ids(
             journal_entry_create.technologyIds
         )
