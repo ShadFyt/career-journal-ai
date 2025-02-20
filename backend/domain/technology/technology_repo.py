@@ -88,23 +88,22 @@ class TechnologyRepo:
                 params={"error": str(e)},
             )
 
-    async def get_technologies_by_ids(
-        self, ids: list[str]
-    ) -> list[TechnologyWithCount]:
+    async def get_technologies_by_ids(self, ids: list[str]) -> list[Technology]:
         """Get technologies by their IDs.
 
         Args:
             ids: List of technology IDs
 
         Returns:
-            list[TechnologyWithCount]: List of technologies with their usage counts
+            list[Technology]: List of technologies
 
         Raises:
             TechnologyDatabaseError: If database operation fails
         """
         try:
             query = select(Technology).where(Technology.id.in_(ids))
-            return await self.session.exec(query).all()
+            results = await self.session.exec(query)
+            return results.all()
 
         except SQLAlchemyError as e:
             raise TechnologyDatabaseError(

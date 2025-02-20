@@ -6,8 +6,8 @@ from domain.journal_entry.journal_entry_exceptions import (
 )
 from domain.journal_entry.journal_entry_schema import JournalEntryCreate
 from sqlalchemy.exc import SQLAlchemyError
-from sqlmodel import select
 from sqlalchemy.orm import selectinload
+from sqlmodel import select
 
 
 class JournalEntryRepo:
@@ -25,7 +25,11 @@ class JournalEntryRepo:
         """
 
         try:
-            statement = select(JournalEntry).options(selectinload(JournalEntry.technologies)).order_by(JournalEntry.date.desc())
+            statement = (
+                select(JournalEntry)
+                .options(selectinload(JournalEntry.technologies))
+                .order_by(JournalEntry.date.desc())
+            )
             results = await self.session.exec(statement)
             return results.all()
 
@@ -59,18 +63,18 @@ class JournalEntryRepo:
                 message=f"Failed to fetch journal entry: {str(e)}"
             )
 
-    def add_journal_entry(
+    async def add_journal_entry(
         self, journal_entry_create: JournalEntryCreate, technologies: list[Technology]
     ):
         new_journal_entry = JournalEntry(
             **journal_entry_create.model_dump(), technologies=technologies
         )
-        return self._save_journal_entry(new_journal_entry)
+        return await self._save_journal_entry(new_journal_entry)
 
-    def update_journal_entry(self, id: str):
+    async def update_journal_entry(self, id: str):
         pass
 
-    def _save_journal_entry(self, journal_entry: JournalEntry) -> JournalEntry:
+    async def _save_journal_entry(self, journal_entry: JournalEntry) -> JournalEntry:
         """Save journal entry to database and refresh.
 
         Args:
@@ -83,6 +87,6 @@ class JournalEntryRepo:
             SQLAlchemyError: If database operation fails
         """
         self.session.add(journal_entry)
-        self.session.commit()
-        self.session.refresh(journal_entry)
+        await self.session.commit()
+        await self.session.refresh(journal_entry)
         return journal_entry

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from domain.technology.technology_schema import TechnologyRead
+from database.models import Technology
 from pydantic import BaseModel
 
 
@@ -13,7 +13,7 @@ class JournalEntryBase(BaseModel):
 
 class JournalEntryRead(JournalEntryBase):
     id: str
-    technologies: list[TechnologyRead]
+    technologies: list[Technology]
 
 
 class JournalEntryCreate(JournalEntryBase):
