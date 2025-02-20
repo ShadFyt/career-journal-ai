@@ -1,7 +1,6 @@
 """Test fixtures for technology domain tests."""
 
 import pytest
-from database.session import SessionDep
 from domain.technology.technology_repo import TechnologyRepo
 from domain.technology.technology_service import TechnologyService
 
@@ -10,7 +9,7 @@ from tests.conftest import *
 
 
 @pytest.fixture
-def technology_repo(db_session: SessionDep) -> TechnologyRepo:
+def technology_repo(db_session) -> TechnologyRepo:
     """Create a TechnologyRepo instance for testing."""
     return TechnologyRepo(db_session)
 
