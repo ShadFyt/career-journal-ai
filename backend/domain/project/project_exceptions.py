@@ -35,16 +35,18 @@ class ProjectNotFoundError(BaseDomainError):
     message: str = "Project not found"  # Default message
     status_code: int = status.HTTP_404_NOT_FOUND
 
-    def __init__(self, message: Optional[str] = None, **kwargs):
+    def __init__(self, **kwargs):
         """Initialize with optional custom message.
 
         Args:
-            message: Optional custom error message. If not provided, uses default.
             **kwargs: Additional arguments passed to parent (e.g., params, status_code)
         """
-        if message is not None:
-            kwargs["message"] = message
-        super().__init__(**kwargs)
+        super().__init__(
+            code=self.code,
+            message=kwargs.get("message", self.message),
+            params=kwargs.get("params"),
+            status_code=kwargs.get("status_code", self.status_code),
+        )
 
 
 @dataclass

@@ -1,6 +1,6 @@
 from database.models import Project
 from database.session import SessionDep
-from domain.project.project_exceptions import ProjectDatabaseError
+from domain.project.project_exceptions import ProjectDatabaseError, ProjectNotFoundError
 from domain.project.project_schema import ProjectCreate, ProjectUpdate
 from fastapi import status
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
@@ -50,7 +50,7 @@ class ProjectRepo:
         try:
             found_project = await self.session.get(Project, id)
             if not found_project:
-                raise ProjectDatabaseError(
+                raise ProjectNotFoundError(
                     message=f"Project with ID '{id}' not found",
                     status_code=status.HTTP_404_NOT_FOUND,
                 )
@@ -74,13 +74,13 @@ class ProjectRepo:
             db_project = Project.model_validate(project)
             return await self._save_project(db_project)
         except IntegrityError:
-            self.session.rollback()
+            await self.session.rollback()
             raise ProjectDatabaseError(
                 message=f"Project name already exists: {project.name}",
                 status_code=status.HTTP_409_CONFLICT,
             )
         except SQLAlchemyError as e:
-            self.session.rollback()
+            await self.session.rollback()
             raise ProjectDatabaseError(message=f"Failed to add project: {str(e)}")
 
     async def update_project(self, id: str, project: ProjectUpdate) -> Project:
@@ -107,7 +107,7 @@ class ProjectRepo:
         except ProjectDatabaseError as e:
             raise e
         except SQLAlchemyError as e:
-            self.session.rollback()
+            await self.session.rollback()
             raise ProjectDatabaseError(message=f"Failed to update project: {str(e)}")
 
     async def delete_project(self, id: str):
@@ -120,18 +120,20 @@ class ProjectRepo:
             ProjectDatabaseError: If project has associated journal entries or database operation fails
         """
         try:
-            project = await self.get_project(id)
-            has_journal_entries = len(project.journal_entries) > 0
-            if has_journal_entries:
-                raise ProjectDatabaseError(
-                    message=f"Project '{project.name}' cannot be deleted because it is used in journal entries",
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                )
-            self.session.delete(project)
-            await self.session.commit()
+            async with self.session.begin():
+                project = await self.get_project(id)
+                has_journal_entries = len(project.journal_entries) > 0
+                if has_journal_entries:
+                    raise ProjectDatabaseError(
+                        message=f"Project '{project.name}' cannot be deleted because it is used in journal entries",
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                    )
+                await self.session.delete(project)
         except SQLAlchemyError as e:
-            self.session.rollback()
-            raise ProjectDatabaseError(message=f"Failed to delete project: {str(e)}")
+            raise ProjectDatabaseError(
+                message=f"Failed to delete project: {str(e)}",
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
     async def _save_project(self, project: Project) -> Project:
         """Save project to database and refresh.
