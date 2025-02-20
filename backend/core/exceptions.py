@@ -23,7 +23,7 @@ class BaseDomainError(HTTPException):
             message=self.message,
             params=self.params,
         )
-        super().__init__(status_code=self.status_code, detail=detail.dict())
+        super().__init__(status_code=self.status_code, detail=detail.model_dump())
 
 
 class ErrorDetail(BaseModel):

@@ -2,7 +2,6 @@
 
 import pytest
 import pytest_asyncio
-
 from database.models import JournalEntry, JournalEntryTechnologyLink, Technology
 from domain.technology.technology_exceptions import (
     ErrorCode,
@@ -151,7 +150,9 @@ async def test_get_technologies_handles_database_error(
 
 
 @pytest.mark.asyncio
-async def test_get_technology_success(technology_repo: TechnologyRepo, sample_technologies):
+async def test_get_technology_success(
+    technology_repo: TechnologyRepo, sample_technologies
+):
     """Test successfully getting a technology by ID."""
     # Get the first sample technology
     tech = await technology_repo.get_technology(sample_technologies[0].id)
@@ -177,7 +178,7 @@ async def test_get_technology_database_error(technology_repo: TechnologyRepo, mo
     """Test database error handling when getting a technology."""
     # Mock the session to raise a database error
     mocker.patch.object(
-        technology_repo.session, "get", side_effect=SQLAlchemyError("Database error")
+        technology_repo.session, "exec", side_effect=SQLAlchemyError("Database error")
     )
 
     with pytest.raises(TechnologyDatabaseError) as exc_info:
@@ -326,6 +327,8 @@ async def test_delete_technology_database_error(
     )
 
     with pytest.raises(TechnologyDatabaseError) as exc_info:
-        await technology_repo.delete_technology(sample_technologies[2].id)  # React technology
+        await technology_repo.delete_technology(
+            sample_technologies[2].id
+        )  # React technology
 
     assert "Failed to delete technology" in str(exc_info.value)

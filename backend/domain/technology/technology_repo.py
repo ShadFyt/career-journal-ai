@@ -1,3 +1,6 @@
+import asyncio
+from logging import getLogger
+
 from database.models import JournalEntryTechnologyLink, Technology
 from database.session import SessionDep
 from domain.technology.technology_exceptions import (
@@ -10,7 +13,10 @@ from enums import Language
 from fastapi import status
 from sqlalchemy import func, label, text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.orm import selectinload
 from sqlmodel import select
+
+logger = getLogger(__name__)
 
 
 class TechnologyRepo:
@@ -60,7 +66,13 @@ class TechnologyRepo:
             TechnologyDatabaseError: If database operation fails
         """
         try:
-            technology = await self.session.get(Technology, id)
+            statement = (
+                select(Technology)
+                .options(selectinload(Technology.journal_entries))
+                .where(Technology.id == id)
+            )
+            result = await self.session.exec(statement)
+            technology = result.first()
             if not technology:
                 raise TechnologyNotFoundError(
                     code=ErrorCode.TECHNOLOGY_NOT_FOUND,
@@ -76,7 +88,9 @@ class TechnologyRepo:
                 params={"error": str(e)},
             )
 
-    async def get_technologies_by_ids(self, ids: list[str]) -> list[TechnologyWithCount]:
+    async def get_technologies_by_ids(
+        self, ids: list[str]
+    ) -> list[TechnologyWithCount]:
         """Get technologies by their IDs.
 
         Args:
@@ -166,11 +180,13 @@ class TechnologyRepo:
                     status_code=status.HTTP_409_CONFLICT,
                 )
 
-            await self.session.delete(technology)
-            await self.session.commit()
+            await asyncio.shield(self.session.delete(technology))
+            await asyncio.shield(self.session.commit())
+            logger.info(f"Deleted technology with id {id}")
 
         except SQLAlchemyError as e:
             await self.session.rollback()
+            logger.error(f"Failed to delete technology with id {id}: {str(e)}")
             raise TechnologyDatabaseError(
                 code=ErrorCode.DATABASE_ERROR,
                 message="Failed to delete technology",
