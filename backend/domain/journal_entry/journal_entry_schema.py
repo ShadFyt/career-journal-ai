@@ -20,5 +20,5 @@ class JournalEntryCreate(JournalEntryBase):
     technologyIds: list[str]
 
 
-class JournalEntryUpdate(JournalEntryBase):
+class JournalEntryUpdate(JournalEntryCreate):
     pass
