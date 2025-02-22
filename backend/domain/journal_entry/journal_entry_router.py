@@ -4,7 +4,7 @@ from domain.journal_entry.journal_entry_schema import (
     JournalEntryRead,
     JournalEntryUpdate,
 )
-from fastapi import APIRouter, status
+from fastapi import APIRouter, HTTPException, status
 
 router = APIRouter(prefix="/journal-entries", tags=["journal-entries"])
 
@@ -89,4 +89,7 @@ async def delete_journal_entry(
     Raises:
         HTTPException: 404 if journal entry not found
     """
-    pass
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail={"message": "Journal entry deletion is not yet implemented"},
+    )
