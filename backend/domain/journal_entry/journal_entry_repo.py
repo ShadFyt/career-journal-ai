@@ -41,7 +41,7 @@ class JournalEntryRepo:
                 message=f"Failed to fetch journal entries: {str(e)}"
             )
 
-    def get_journal_entry(self, id: str) -> JournalEntry:
+    async def get_journal_entry(self, id: str) -> JournalEntry:
         """Get a single journal entry by ID.
 
         Args:
@@ -54,7 +54,7 @@ class JournalEntryRepo:
             JournalEntryNotFoundError: If journal entry not found or database operation fails
         """
         try:
-            found_entry = self.session.get(JournalEntry, id)
+            found_entry = await self.session.get(JournalEntry, id)
             if not found_entry:
                 raise JournalEntryNotFoundError(
                     message=f"Journal entry with ID '{id}' not found",
@@ -75,7 +75,7 @@ class JournalEntryRepo:
         return await self._save_journal_entry(new_journal_entry)
 
     async def update_journal_entry(
-        self, id: str, entry: JournalEntryUpdate, technologies: list[Technology]
+        self, id: str, entry: JournalEntryUpdate, technologies: list[Technology] | None
     ):
         """Update an existing journal entry.
 
@@ -93,8 +93,10 @@ class JournalEntryRepo:
         db_journal_entry = await self.get_journal_entry(id)
         journal_entry_data = entry.model_dump(exclude_unset=True)
         for key, value in journal_entry_data.items():
-            setattr(db_journal_entry, key, value)
-        db_journal_entry.technologies = technologies
+            if key != "technologyIds":
+                setattr(db_journal_entry, key, value)
+        if technologies is not None:
+            db_journal_entry.technologies = technologies
         return await self._save_journal_entry(db_journal_entry)
 
     async def _save_journal_entry(self, journal_entry: JournalEntry) -> JournalEntry:
@@ -107,6 +109,7 @@ class JournalEntryRepo:
             JournalEntry: Refreshed journal entry instance
 
         Raises:
+            SQLAlchemyError: If database operation fails
             SQLAlchemyError: If database operation fails
         """
         self.session.add(journal_entry)

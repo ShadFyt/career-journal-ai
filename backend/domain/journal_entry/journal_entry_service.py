@@ -79,12 +79,15 @@ class JournalEntryService:
             TechnologyNotFoundError: If any technology ID is invalid
             JournalEntryDatabaseError: If database operation fails
         """
-        technologies = await self.technology_service.get_technologies_by_ids(
-            entry.technologyIds
-        )
+        technologies = None
+        if entry.technologyIds is not None:
+            technologies = await self.technology_service.get_technologies_by_ids(
+                entry.technologyIds
+            )
         updated_journal_entry = await self.repo.update_journal_entry(
             id, entry, technologies
         )
         return JournalEntryRead(
-            **updated_journal_entry.model_dump(), technologies=technologies
+            **updated_journal_entry.model_dump(),
+            technologies=technologies if technologies is not None else [],
         )
