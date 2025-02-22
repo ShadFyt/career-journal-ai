@@ -2,6 +2,7 @@ from domain.journal_entry.journal_entry_dependencies import JournalEntryServiceD
 from domain.journal_entry.journal_entry_schema import (
     JournalEntryCreate,
     JournalEntryRead,
+    JournalEntryUpdate,
 )
 from fastapi import APIRouter, status
 
@@ -59,6 +60,7 @@ async def get_journal_entry(
 async def update_journal_entry(
     id: str,
     service: JournalEntryServiceDep,
+    journal_entry_update: JournalEntryUpdate,
 ):
     """Update a journal entry.
 
@@ -71,7 +73,7 @@ async def update_journal_entry(
     Raises:
         HTTPException: 404 if journal entry not found
     """
-    pass
+    return await service.update_journal_entry(id, journal_entry_update)
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
