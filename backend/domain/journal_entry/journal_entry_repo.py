@@ -4,7 +4,10 @@ from domain.journal_entry.journal_entry_exceptions import (
     JournalEntryDatabaseError,
     JournalEntryNotFoundError,
 )
-from domain.journal_entry.journal_entry_schema import JournalEntryCreate
+from domain.journal_entry.journal_entry_schema import (
+    JournalEntryCreate,
+    JournalEntryUpdate,
+)
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import selectinload
 from sqlmodel import select
@@ -71,8 +74,24 @@ class JournalEntryRepo:
         )
         return await self._save_journal_entry(new_journal_entry)
 
-    async def update_journal_entry(self, id: str):
-        pass
+    async def update_journal_entry(self, id: str, entry: JournalEntryUpdate):
+        """Update an existing journal entry.
+
+        Args:
+            id: The ID of the journal entry to update.
+            entry: The update data.
+
+        Returns:
+            The updated journal entry.
+
+        Raises:
+            JournalEntryNotFoundError: If the journal entry does not exist.
+        """
+        db_journal_entry = await self.get_journal_entry(id)
+        journal_entry_data = entry.model_dump(exclude_unset=True)
+        for key, value in journal_entry_data.items():
+            setattr(db_journal_entry, key, value)
+        return await self._save_journal_entry(db_journal_entry)
 
     async def _save_journal_entry(self, journal_entry: JournalEntry) -> JournalEntry:
         """Save journal entry to database and refresh.
