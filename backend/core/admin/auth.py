@@ -1,7 +1,12 @@
+import os
+
+from dotenv import load_dotenv
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette_admin.auth import AuthProvider
 from starlette_admin.exceptions import LoginFailed
+
+load_dotenv()
 
 
 class AdminAuth(AuthProvider):
@@ -16,10 +21,14 @@ class AdminAuth(AuthProvider):
         response: Response,
     ) -> Response:
         """Validate login credentials."""
-        # Replace with values from environment variables
-        if username == "admin" and password == "password":
-            request.session.update({"username": username})
+        admin_username = os.getenv("ADMIN_USERNAME")
+        admin_password = os.getenv("ADMIN_PASSWORD")
 
+        if not admin_username or not admin_password:
+            raise LoginFailed("Admin credentials not configured")
+
+        if username == admin_username and password == admin_password:
+            request.session.update({"username": username})
             return response
         raise LoginFailed("Invalid username or password")
 
