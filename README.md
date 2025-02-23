@@ -18,6 +18,27 @@ The application is divided into two primary features:
 - **Privacy Controls**: Manage visibility of your entries with privacy settings.
 - **Project & Technology Association**: Link your journal entries to specific projects and technologies.
 - **AI Summarization**: Automatically generate summaries and insights from your journal over various time frames.
+- [**Admin Portal**](https://github.com/jowilf/starlette-admin): Secure administrative interface for managing entities:
+  - Journal Entries: View, edit, and manage all journal entries
+  - Projects: Track and organize professional projects
+  - Technologies: Maintain a catalog of technical skills and tools
+  - Access Control: Protected by environment-based authentication
+
+## Admin Portal Setup
+
+To access the admin portal:
+
+1. Set up environment variables in `.env`:
+   ```
+   ADMIN_USERNAME=your_admin_username
+   ADMIN_PASSWORD=your_admin_password
+   ```
+
+2. Access the portal at `/admin` endpoint
+3. Log in with your configured credentials
+4. Manage your data through the user-friendly interface
+
+The admin portal provides a comprehensive dashboard for managing all aspects of your career journal data, built with Starlette Admin for a clean and intuitive interface.
 
 ## Architecture
 
