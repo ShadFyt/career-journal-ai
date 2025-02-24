@@ -6,6 +6,19 @@ from enums import Language
 from sqlmodel import Field, Relationship, SQLModel
 
 
+class User(SQLModel, table=True):
+    __tablename__ = "user"
+    id: str = Field(
+        default_factory=lambda: str(uuid4()), primary_key=True, nullable=False
+    )
+    email: str = Field(index=True, unique=True)
+    first_name: str
+    last_name: str
+    password: str
+    projects: List["Project"] = Relationship(back_populates="user")
+    journal_entries: List["JournalEntry"] = Relationship(back_populates="user")
+
+
 class JournalEntryTechnologyLink(SQLModel, table=True):
     __tablename__ = "journal_entry_technology_link"
     journal_entry_id: str = Field(foreign_key="journal_entry.id", primary_key=True)
@@ -37,6 +50,8 @@ class JournalEntry(SQLModel, table=True):
         back_populates="journal_entries", link_model=JournalEntryTechnologyLink
     )
     project_id: str | None = Field(default=None, foreign_key="project.id", index=True)
+    user_id: str = Field(foreign_key="user.id", index=True)
+    user: User = Relationship(back_populates="journal_entries")
 
 
 class Project(SQLModel, table=True):
@@ -50,3 +65,5 @@ class Project(SQLModel, table=True):
     is_private: bool = Field(default=True)
     last_entry_date: datetime | None = Field(default=None)
     journal_entries: List[JournalEntry] = Relationship()
+    user_id: str = Field(foreign_key="user.id", index=True)
+    user: User = Relationship(back_populates="projects")
