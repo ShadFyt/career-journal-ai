@@ -1,9 +1,18 @@
 from core.admin.auth import AdminAuth
 from database.db import engine
-from database.models import JournalEntry, Project, Technology
+from database.models import JournalEntry, Project, Technology, User
 from starlette_admin.contrib.sqla import Admin, ModelView
 
 admin = Admin(engine, title="Journal Entry Assistant", auth_provider=AdminAuth())
+
+admin.add_view(
+    ModelView(
+        User,
+        identity="user",
+        name="Users",
+        label="Users",
+    ),
+)
 
 admin.add_view(
     ModelView(
