@@ -20,6 +20,7 @@ greenlet = "^3.1.1"
 pytest-cov = "^6.0.0"
 starlette-admin = "^0.14.1"
 python-dotenv = "^1.0.1"
+authx = "^1.4.1"
 
 [tool.poetry.dev-dependencies]
 uvicorn = "^0.34.0"
