@@ -15,6 +15,8 @@ from fastapi import status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.session import Session as SessionDep
 
+mock_user_id = "123"
+
 
 @pytest_asyncio.fixture
 async def sample_technologies(db_session: SessionDep) -> list[Technology]:
@@ -50,11 +52,13 @@ async def sample_journal_entries(db_session):
             id="entry1",
             content="Test entry 1",
             project_id="project1",
+            user_id=mock_user_id,
         ),
         JournalEntry(
             id="entry2",
             content="Test entry 2",
             project_id="project1",
+            user_id=mock_user_id,
         ),
     ]
     for entry in entries:

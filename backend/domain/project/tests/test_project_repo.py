@@ -10,6 +10,8 @@ from fastapi import status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.session import Session as SessionDep
 
+mock_user_id = "123"
+
 
 @pytest_asyncio.fixture
 async def sample_projects(db_session: SessionDep) -> list[Project]:
@@ -19,11 +21,13 @@ async def sample_projects(db_session: SessionDep) -> list[Project]:
             id="1",
             name="AI Assistant",
             description="Building an AI assistant",
+            user_id=mock_user_id,
         ),
         Project(
             id="2",
             name="E-commerce Platform",
             description="Developing an online store",
+            user_id=mock_user_id,
         ),
     ]
     for project in projects:
@@ -60,6 +64,7 @@ async def test_add_project_success(project_repo: ProjectRepo):
     new_project = ProjectCreate(
         name="New Project",
         description="Project description",
+        user_id=mock_user_id,
     )
     result = await project_repo.add_project(new_project)
     assert result is not None
@@ -75,7 +80,9 @@ async def test_add_project_database_error(project_repo: ProjectRepo, mocker):
         project_repo.session, "add", side_effect=SQLAlchemyError("Database error")
     )
     with pytest.raises(ProjectDatabaseError) as exc_info:
-        await project_repo.add_project(ProjectCreate(name="Test", description="Test"))
+        await project_repo.add_project(
+            ProjectCreate(name="Test", description="Test", user_id=mock_user_id)
+        )
     assert "Failed to add project" in str(exc_info.value)
 
 

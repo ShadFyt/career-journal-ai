@@ -19,6 +19,7 @@ class JournalEntryRead(JournalEntryBase):
 
 class JournalEntryCreate(JournalEntryBase):
     technologyIds: list[str]
+    user_id: str
 
 
 class JournalEntryUpdate(BaseModel):

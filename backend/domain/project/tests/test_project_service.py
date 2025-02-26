@@ -7,6 +7,8 @@ from domain.project.project_schema import ProjectCreate, ProjectUpdate
 from domain.project.project_service import ProjectService
 from fastapi import status
 
+mock_user_id = "123"
+
 
 @pytest.fixture
 def mock_project_repo(mocker) -> ProjectRepo:
@@ -25,7 +27,9 @@ async def test_create_project_success(project_service, mock_project_repo):
     """Test successful project creation through service."""
     # Prepare test data
     project_data = ProjectCreate(
-        name="AI Assistant", description="Building an AI assistant"
+        name="AI Assistant",
+        description="Building an AI assistant",
+        user_id=mock_user_id,
     )
 
     # Setup mock behavior
@@ -44,7 +48,9 @@ async def test_create_project_database_error(project_service, mock_project_repo)
     """Test handling database errors during project creation."""
     # Prepare test data
     project_data = ProjectCreate(
-        name="AI Assistant", description="Building an AI assistant"
+        name="AI Assistant",
+        description="Building an AI assistant",
+        user_id=mock_user_id,
     )
 
     # Setup mock behavior

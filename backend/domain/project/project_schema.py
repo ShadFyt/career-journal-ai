@@ -15,7 +15,7 @@ class ProjectBase(BaseModel):
 class ProjectCreate(ProjectBase):
     """Input model for creating a new project."""
 
-    pass
+    user_id: str
 
 
 class ProjectRead(ProjectBase):

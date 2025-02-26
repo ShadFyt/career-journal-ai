@@ -1,21 +1,17 @@
-from datetime import datetime
-from mailbox import Message
-from pydantic import NonNegativeFloat
 import pytest
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
-from unittest.mock import AsyncMock, Mock
-from domain.journal_entry.journal_entry_router import router
-from domain.journal_entry.journal_entry_exceptions import JournalEntryNotFoundError
-from domain.technology.technology_exceptions import TechnologyNotFoundError
+from database.models import JournalEntry
 from domain.journal_entry.journal_entry_dependencies import get_journal_entry_service
-from domain.journal_entry.journal_entry_service import JournalEntryService
+from domain.journal_entry.journal_entry_exceptions import JournalEntryNotFoundError
+from domain.journal_entry.journal_entry_router import router
 from domain.journal_entry.journal_entry_schema import (
     JournalEntryCreate,
     JournalEntryUpdate,
 )
-from database.models import JournalEntry
+from domain.journal_entry.journal_entry_service import JournalEntryService
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
 
+mock_user_id = "123"
 mock_journal_entry = [
     JournalEntry(
         id="new-id",
@@ -127,6 +123,7 @@ class TestAddJournalEntry:
             content="Test content",
             is_private=False,
             technologyIds=[],
+            user_id=mock_user_id,
         )
         mock_response = JournalEntry(**create_data.model_dump(), id="test-id")
         mock_service.add_journal_entry.return_value = mock_response

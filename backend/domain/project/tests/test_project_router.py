@@ -9,6 +9,7 @@ from domain.project.project_service import ProjectService
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 
+mock_user_id = "123"
 # Prepare mock data
 mock_projects = [
     {
@@ -83,7 +84,11 @@ def test_get_projects_handles_error(client, mock_project_service):
 def test_add_project_success(client, mock_project_service):
     """Test successful project creation."""
     # Prepare test data
-    project_data = {"name": "New Project", "description": "Test project description"}
+    project_data = {
+        "name": "New Project",
+        "description": "Test project description",
+        "user_id": mock_user_id,
+    }
     mock_response = {
         **project_data,
         "id": "3",
@@ -116,7 +121,11 @@ def test_add_project_validation_error(client):
 def test_add_project_handles_error(client, mock_project_service):
     """Test error handling when project creation fails."""
     # Prepare test data
-    project_data = {"name": "New Project", "description": "Test project description"}
+    project_data = {
+        "name": "New Project",
+        "description": "Test project description",
+        "user_id": mock_user_id,
+    }
 
     # Setup mock behavior
     mock_project_service.add_project.side_effect = ProjectDatabaseError()

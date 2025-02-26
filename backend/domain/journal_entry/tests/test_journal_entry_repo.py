@@ -18,6 +18,8 @@ from fastapi import status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.session import Session as SessionDep
 
+mock_user_id = "123"
+
 
 @pytest_asyncio.fixture
 async def sample_journal_entries(db_session: SessionDep) -> list[JournalEntry]:
@@ -28,12 +30,14 @@ async def sample_journal_entries(db_session: SessionDep) -> list[JournalEntry]:
             content="Test entry 1",
             date=datetime(2025, 1, 1),
             project_id="project1",
+            user_id=mock_user_id,
         ),
         JournalEntry(
             id="entry2",
             content="Test entry 2",
             date=datetime(2025, 1, 2),
             project_id="project1",
+            user_id=mock_user_id,
         ),
     ]
     for entry in entries:
@@ -132,6 +136,7 @@ async def test_add_journal_entry_success(
         date=datetime(2025, 1, 3),
         technologyIds=[],
         is_private=True,
+        user_id=mock_user_id,
     )
     result = await journal_entry_repo.add_journal_entry(new_entry, [])
     assert result.content == new_entry.content

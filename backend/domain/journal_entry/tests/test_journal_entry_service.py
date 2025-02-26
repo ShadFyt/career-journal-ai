@@ -1,18 +1,19 @@
 """Tests for the journal entry service layer."""
 
-import pytest
 from unittest.mock import AsyncMock, Mock
-from domain.journal_entry.journal_entry_service import JournalEntryService
+
+import pytest
+from database.models import JournalEntry, Technology
+from domain.journal_entry.journal_entry_exceptions import JournalEntryNotFoundError
 from domain.journal_entry.journal_entry_schema import (
     JournalEntryCreate,
-    JournalEntryUpdate,
     JournalEntryRead,
+    JournalEntryUpdate,
 )
-from domain.journal_entry.journal_entry_exceptions import (
-    JournalEntryNotFoundError,
-)
+from domain.journal_entry.journal_entry_service import JournalEntryService
 from domain.technology.technology_exceptions import TechnologyNotFoundError
-from database.models import JournalEntry, Technology
+
+mock_user_id = "123"
 
 
 @pytest.fixture
@@ -111,7 +112,10 @@ async def test_add_journal_entry_success(
     """Test successful journal entry creation."""
     # Arrange
     create_data = JournalEntryCreate(
-        content="Test content", is_private=False, technologyIds=["tech-1", "tech-2"]
+        content="Test content",
+        is_private=False,
+        technologyIds=["tech-1", "tech-2"],
+        user_id=mock_user_id,
     )
 
     mock_tech_service.get_technologies_by_ids.return_value = sample_technologies
@@ -137,7 +141,10 @@ async def test_add_journal_entry_tech_not_found(
     """Test journal entry creation with invalid technology IDs."""
     # Arrange
     create_data = JournalEntryCreate(
-        content="Test content", is_private=False, technologyIds=["invalid-id"]
+        content="Test content",
+        is_private=False,
+        technologyIds=["invalid-id"],
+        user_id=mock_user_id,
     )
 
     mock_tech_service.get_technologies_by_ids.side_effect = TechnologyNotFoundError(
