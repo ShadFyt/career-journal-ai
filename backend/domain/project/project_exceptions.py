@@ -1,57 +1,42 @@
 """Domain-specific exceptions for the project module."""
 
-from dataclasses import dataclass
 from enum import Enum
 
-from core.exceptions import BaseDomainError
+from core.domain_exceptions import create_domain_exception, create_domain_exceptions
 from fastapi import status
 
 
-class ErrorCode(str, Enum):
+class ProjectErrorCode(str, Enum):
     """Enumeration of possible error codes for better error handling."""
 
-    PROJECT_NOT_FOUND = "PROJECT_NOT_FOUND"
-    DATABASE_ERROR = "DATABASE_ERROR"
-    VALIDATION_ERROR = "VALIDATION_ERROR"
-    DUPLICATE_PROJECT = "DUPLICATE_PROJECT"
-    INVALID_OPERATION = "INVALID_OPERATION"
+    PROJECT_NOT_FOUND = "project.not_found"
+    DATABASE_ERROR = "project.database_error"
+    VALIDATION_ERROR = "project.validation_error"
+    DUPLICATE_PROJECT = "project.duplicate"
+    INVALID_OPERATION = "project.invalid_operation"
 
 
-@dataclass
-class ProjectNotFoundError(BaseDomainError):
-    """Raised when a project resource is not found.
+# Create standard domain exceptions
+exceptions = create_domain_exceptions(
+    domain_name="Project",
+    error_codes={
+        "not_found": ProjectErrorCode.PROJECT_NOT_FOUND,
+        "database_error": ProjectErrorCode.DATABASE_ERROR,
+        "validation_error": ProjectErrorCode.VALIDATION_ERROR,
+        "duplicate": ProjectErrorCode.DUPLICATE_PROJECT,
+    },
+)
 
-    Examples:
-        >>> raise ProjectNotFoundError()  # Uses default message
-        >>> raise ProjectNotFoundError("Custom project not found message")
-        >>> raise ProjectNotFoundError(
-        ...     message="Project {id} was not found in {location}",
-        ...     params={"id": "123", "location": "database"}
-        ... )
-    """
-
-    code: ErrorCode = ErrorCode.PROJECT_NOT_FOUND
-    message: str = "Project not found"  # Default message
-    status_code: int = status.HTTP_404_NOT_FOUND
-
-    def __init__(self, **kwargs):
-        """Initialize with optional custom message.
-
-        Args:
-            **kwargs: Additional arguments passed to parent (e.g., params, status_code)
-        """
-        super().__init__(
-            code=self.code,
-            message=kwargs.get("message", self.message),
-            params=kwargs.get("params"),
-            status_code=kwargs.get("status_code", self.status_code),
-        )
+# Extract exceptions for easier imports
+ProjectNotFoundError = exceptions["not_found"]
+ProjectDatabaseError = exceptions["database_error"]
+ProjectValidationError = exceptions["validation_error"]
+DuplicateProjectError = exceptions["duplicate"]
 
 
-@dataclass
-class ProjectDatabaseError(BaseDomainError):
-    """Raised when database operations fail."""
-
-    code: ErrorCode = ErrorCode.DATABASE_ERROR
-    message: str = "Database operation failed"
-    status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR
+InvalidOperationError = create_domain_exception(
+    name="InvalidOperationError",
+    code=ProjectErrorCode.INVALID_OPERATION,
+    message="Invalid operation",
+    status_code=status.HTTP_400_BAD_REQUEST,
+)
