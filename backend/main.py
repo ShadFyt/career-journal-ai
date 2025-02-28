@@ -6,6 +6,7 @@ from database.db import create_db_and_tables
 from domain.journal_entry.journal_entry_router import router as journal_entry_router
 from domain.project.project_router import router as project_router
 from domain.technology.technology_router import router as technology_router
+from domain.user.user_router import router as user_router
 from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -29,6 +30,7 @@ app.include_router(project_router, prefix="/api/projects", tags=["projects"])
 app.include_router(
     journal_entry_router, prefix="/api/journal-entries", tags=["journal-entries"]
 )
+app.include_router(user_router, prefix="/api/users", tags=["users"])
 
 
 if __name__ == "__main__":
