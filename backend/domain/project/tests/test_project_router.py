@@ -4,7 +4,6 @@ import pytest
 from domain.project.project_dependencies import get_project_service
 from domain.project.project_exceptions import ProjectDatabaseError, ProjectNotFoundError
 from domain.project.project_router import router
-from domain.project.project_schema import ProjectCreate, ProjectUpdate
 from domain.project.project_service import ProjectService
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
