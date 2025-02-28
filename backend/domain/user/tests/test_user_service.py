@@ -12,34 +12,16 @@ from fastapi import status
 
 
 @pytest.mark.asyncio
-async def test_get_users_success(user_service, mocker):
+async def test_get_users_success(user_service, mocker, sample_users):
     """Test successfully retrieving all users through service."""
-    # Prepare mock data
-    mock_users = [
-        User(
-            id="1",
-            email="john.doe@example.com",
-            first_name="John",
-            last_name="Doe",
-            password="hashed_password1",
-        ),
-        User(
-            id="2",
-            email="jane.smith@example.com",
-            first_name="Jane",
-            last_name="Smith",
-            password="hashed_password2",
-        ),
-    ]
-
     # Setup mock behavior
-    mocker.patch.object(user_service.user_repo, "get_users", return_value=mock_users)
+    mocker.patch.object(user_service.user_repo, "get_users", return_value=sample_users)
 
     # Execute service method
     result = await user_service.get_users()
 
     # Verify results
-    assert result == mock_users
+    assert result == sample_users
     assert len(result) == 2
     user_service.user_repo.get_users.assert_called_once()
 
@@ -64,28 +46,21 @@ async def test_get_users_database_error(user_service, mocker):
 
 
 @pytest.mark.asyncio
-async def test_get_user_success(user_service, mocker):
+async def test_get_user_success(user_service, mocker, sample_users):
     """Test successfully retrieving a user by ID through service."""
-    # Prepare mock data
-    mock_user = User(
-        id="1",
-        email="john.doe@example.com",
-        first_name="John",
-        last_name="Doe",
-        password="hashed_password",
+    # Setup mock behavior
+    mocker.patch.object(
+        user_service.user_repo, "get_user", return_value=sample_users[0]
     )
 
-    # Setup mock behavior
-    mocker.patch.object(user_service.user_repo, "get_user", return_value=mock_user)
-
     # Execute service method
-    result = await user_service.get_user("1")
+    result = await user_service.get_user(sample_users[0].id)
 
     # Verify results
-    assert result == mock_user
-    assert result.id == "1"
-    assert result.email == "john.doe@example.com"
-    user_service.user_repo.get_user.assert_called_once_with("1")
+    assert result == sample_users[0]
+    assert result.id == sample_users[0].id
+    assert result.email == sample_users[0].email
+    user_service.user_repo.get_user.assert_called_once_with(sample_users[0].id)
 
 
 @pytest.mark.asyncio
@@ -110,7 +85,7 @@ async def test_get_user_not_found(user_service, mocker):
 
 
 @pytest.mark.asyncio
-async def test_add_user_success(user_service, mocker):
+async def test_add_user_success(user_service, mocker, sample_users):
     """Test successfully adding a new user through service."""
     # Prepare test data
     user_data = UserCreate(
@@ -120,36 +95,40 @@ async def test_add_user_success(user_service, mocker):
         password="password123",
     )
 
-    # Prepare mock result
-    mock_user = User(
+    # Create a new user based on the input data
+    new_user = User(
         id="new-id",
-        email="new.user@example.com",
-        first_name="New",
-        last_name="User",
-        password="hashed_password",
+        email=user_data.email,
+        first_name=user_data.first_name,
+        last_name=user_data.last_name,
+        password="hashed_" + user_data.password,  # Simulate hashing
     )
 
     # Setup mock behavior
-    mocker.patch.object(user_service.user_repo, "add_user", return_value=mock_user)
+    mocker.patch.object(user_service.user_repo, "add_user", return_value=new_user)
 
     # Execute service method
     result = await user_service.add_user(user_data)
 
     # Verify results
-    assert result == mock_user
+    assert result == new_user
+    assert result.id == "new-id"
     assert result.email == user_data.email
     assert result.first_name == user_data.first_name
     assert result.last_name == user_data.last_name
+    # Password should be hashed
+    assert result.password != user_data.password
+    assert result.password == "hashed_" + user_data.password
     user_service.user_repo.add_user.assert_called_once_with(user_data)
 
 
 @pytest.mark.asyncio
-async def test_add_user_duplicate_email(user_service, mocker):
+async def test_add_user_duplicate_email(user_service, mocker, sample_users):
     """Test handling duplicate email error when adding a user."""
     # Prepare test data
     user_data = UserCreate(
-        email="existing@example.com",
-        first_name="Existing",
+        email=sample_users[0].email,  # Use existing email from sample_users
+        first_name="Duplicate",
         last_name="User",
         password="password123",
     )
@@ -159,7 +138,7 @@ async def test_add_user_duplicate_email(user_service, mocker):
         user_service.user_repo,
         "add_user",
         side_effect=DuplicateUserError(
-            message="User with email 'existing@example.com' already exists"
+            message=f"User with email '{user_data.email}' already exists"
         ),
     )
 
@@ -169,11 +148,11 @@ async def test_add_user_duplicate_email(user_service, mocker):
 
     error = exc_info.value
     assert error.status_code == status.HTTP_409_CONFLICT
-    assert "already exists" in error.message
+    assert f"User with email '{user_data.email}' already exists" in error.message
 
 
 @pytest.mark.asyncio
-async def test_update_user_success(user_service, mocker):
+async def test_update_user_success(user_service, mocker, sample_users):
     """Test successfully updating a user through service."""
     # Prepare test data
     user_update = UserUpdate(
@@ -182,35 +161,41 @@ async def test_update_user_success(user_service, mocker):
         last_name="Name",
     )
 
-    # Prepare mock result
-    mock_updated_user = User(
-        id="1",
-        email="updated.email@example.com",
-        first_name="Updated",
-        last_name="Name",
-        password="hashed_password",
+    # Create an updated user based on the sample user and update data
+    updated_user = User(
+        id=sample_users[0].id,
+        email=user_update.email,
+        first_name=user_update.first_name,
+        last_name=user_update.last_name,
+        password=sample_users[0].password,  # Password should remain unchanged
     )
 
     # Setup mock behavior
     mocker.patch.object(
-        user_service.user_repo, "update_user", return_value=mock_updated_user
+        user_service.user_repo, "update_user", return_value=updated_user
     )
 
     # Execute service method
-    result = await user_service.update_user("1", user_update)
+    result = await user_service.update_user(sample_users[0].id, user_update)
 
     # Verify results
-    assert result == mock_updated_user
+    assert result == updated_user
+    assert result.id == sample_users[0].id
     assert result.email == user_update.email
     assert result.first_name == user_update.first_name
     assert result.last_name == user_update.last_name
-    user_service.user_repo.update_user.assert_called_once_with("1", user_update)
+    # Password should remain unchanged
+    assert result.password == sample_users[0].password
+    user_service.user_repo.update_user.assert_called_once_with(
+        sample_users[0].id, user_update
+    )
 
 
 @pytest.mark.asyncio
-async def test_update_user_not_found(user_service, mocker):
+async def test_update_user_not_found(user_service, mocker, sample_users):
     """Test handling user not found error when updating a user."""
     # Prepare test data
+    user_id = "non-existent-id"
     user_update = UserUpdate(
         email="updated.email@example.com",
         first_name="Updated",
@@ -221,49 +206,48 @@ async def test_update_user_not_found(user_service, mocker):
     mocker.patch.object(
         user_service.user_repo,
         "update_user",
-        side_effect=UserNotFoundError(
-            message="User with ID 'non-existent-id' not found"
-        ),
+        side_effect=UserNotFoundError(message=f"User with ID '{user_id}' not found"),
     )
 
     # Execute and verify
     with pytest.raises(UserNotFoundError) as exc_info:
-        await user_service.update_user("non-existent-id", user_update)
+        await user_service.update_user(user_id, user_update)
 
     error = exc_info.value
     assert error.status_code == status.HTTP_404_NOT_FOUND
-    assert "not found" in error.message.lower()
+    assert f"User with ID '{user_id}' not found" in error.message
 
 
 @pytest.mark.asyncio
-async def test_delete_user_success(user_service, mocker):
+async def test_delete_user_success(user_service, mocker, sample_users):
     """Test successfully deleting a user through service."""
     # Setup mock behavior
     mocker.patch.object(user_service.user_repo, "delete_user", return_value=None)
 
     # Execute service method
-    await user_service.delete_user("1")
+    await user_service.delete_user(sample_users[0].id)
 
-    # Verify results
-    user_service.user_repo.delete_user.assert_called_once_with("1")
+    # Verify the repository method was called with the correct ID
+    user_service.user_repo.delete_user.assert_called_once_with(sample_users[0].id)
 
 
 @pytest.mark.asyncio
-async def test_delete_user_not_found(user_service, mocker):
+async def test_delete_user_not_found(user_service, mocker, sample_users):
     """Test handling user not found error when deleting a user."""
+    # Prepare test data
+    user_id = "non-existent-id"
+
     # Setup mock behavior
     mocker.patch.object(
         user_service.user_repo,
         "delete_user",
-        side_effect=UserNotFoundError(
-            message="User with ID 'non-existent-id' not found"
-        ),
+        side_effect=UserNotFoundError(message=f"User with ID '{user_id}' not found"),
     )
 
     # Execute and verify
     with pytest.raises(UserNotFoundError) as exc_info:
-        await user_service.delete_user("non-existent-id")
+        await user_service.delete_user(user_id)
 
     error = exc_info.value
     assert error.status_code == status.HTTP_404_NOT_FOUND
-    assert "not found" in error.message.lower()
+    assert f"User with ID '{user_id}' not found" in error.message

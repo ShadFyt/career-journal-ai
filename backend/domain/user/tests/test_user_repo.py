@@ -13,43 +13,28 @@ from domain.user.user_schema import UserCreate, UserUpdate
 from fastapi import status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.session import Session as SessionDep
+from conftest import sample_users
 
 
 @pytest_asyncio.fixture
-async def sample_users(db_session: SessionDep) -> list[User]:
-    """Create sample users for testing."""
-    users = [
-        User(
-            id="1",
-            email="john.doe@example.com",
-            first_name="John",
-            last_name="Doe",
-            password="hashed_password1",
-        ),
-        User(
-            id="2",
-            email="jane.smith@example.com",
-            first_name="Jane",
-            last_name="Smith",
-            password="hashed_password2",
-        ),
-    ]
-    for user in users:
+async def db_sample_users(db_session: SessionDep, sample_users) -> list[User]:
+    """Add sample users to the database for testing."""
+    for user in sample_users:
         db_session.add(user)
         await db_session.commit()
-    return users
+    return sample_users
 
 
 @pytest.mark.asyncio
-async def test_get_users_success(user_repo: UserRepo, sample_users):
+async def test_get_users_success(user_repo: UserRepo, db_sample_users):
     """Test successfully getting all users."""
     users = await user_repo.get_users()
     assert users is not None
     assert len(users) >= 2
     # Check if our sample users are in the result
     user_emails = [user.email for user in users]
-    assert sample_users[0].email in user_emails
-    assert sample_users[1].email in user_emails
+    assert db_sample_users[0].email in user_emails
+    assert db_sample_users[1].email in user_emails
 
 
 @pytest.mark.asyncio
@@ -64,14 +49,14 @@ async def test_get_users_database_error(user_repo: UserRepo, mocker):
 
 
 @pytest.mark.asyncio
-async def test_get_user_success(user_repo: UserRepo, sample_users):
+async def test_get_user_success(user_repo: UserRepo, db_sample_users):
     """Test successfully getting a user by ID."""
-    user = await user_repo.get_user(sample_users[0].id)
+    user = await user_repo.get_user(db_sample_users[0].id)
     assert user is not None
-    assert user.id == sample_users[0].id
-    assert user.email == sample_users[0].email
-    assert user.first_name == sample_users[0].first_name
-    assert user.last_name == sample_users[0].last_name
+    assert user.id == db_sample_users[0].id
+    assert user.email == db_sample_users[0].email
+    assert user.first_name == db_sample_users[0].first_name
+    assert user.last_name == db_sample_users[0].last_name
 
 
 @pytest.mark.asyncio
@@ -103,10 +88,10 @@ async def test_add_user_success(user_repo: UserRepo):
 
 
 @pytest.mark.asyncio
-async def test_add_user_duplicate_email(user_repo: UserRepo, sample_users):
+async def test_add_user_duplicate_email(user_repo: UserRepo, db_sample_users):
     """Test adding a user with an existing email raises correct error."""
     duplicate_user = UserCreate(
-        email=sample_users[0].email,  # Using existing email
+        email=db_sample_users[0].email,  # Using existing email
         first_name="Duplicate",
         last_name="User",
         password="password123",
@@ -135,20 +120,20 @@ async def test_add_user_database_error(user_repo: UserRepo, mocker):
 
 
 @pytest.mark.asyncio
-async def test_update_user_success(user_repo: UserRepo, sample_users):
+async def test_update_user_success(user_repo: UserRepo, db_sample_users):
     """Test successfully updating a user."""
     updated_data = UserUpdate(
         email="updated.email@example.com",
         first_name="Updated",
         last_name="Name",
     )
-    result = await user_repo.update_user(sample_users[0].id, updated_data)
+    result = await user_repo.update_user(db_sample_users[0].id, updated_data)
     assert result is not None
     assert result.email == updated_data.email
     assert result.first_name == updated_data.first_name
     assert result.last_name == updated_data.last_name
     # Password should remain unchanged
-    assert result.password == sample_users[0].password
+    assert result.password == db_sample_users[0].password
 
 
 @pytest.mark.asyncio
@@ -167,7 +152,7 @@ async def test_update_user_not_found(user_repo: UserRepo):
 
 
 @pytest.mark.asyncio
-async def test_update_user_database_error(user_repo: UserRepo, sample_users, mocker):
+async def test_update_user_database_error(user_repo: UserRepo, db_sample_users, mocker):
     """Test handling of database errors when updating user."""
     # Mock the _save_user method to raise an exception
     mocker.patch.object(
@@ -175,7 +160,7 @@ async def test_update_user_database_error(user_repo: UserRepo, sample_users, moc
     )
     with pytest.raises(UserDatabaseError) as exc_info:
         await user_repo.update_user(
-            sample_users[0].id,
+            db_sample_users[0].id,
             UserUpdate(
                 email="updated@example.com",
                 first_name="Updated",
@@ -186,18 +171,18 @@ async def test_update_user_database_error(user_repo: UserRepo, sample_users, moc
 
 
 @pytest.mark.asyncio
-async def test_delete_user_success(user_repo: UserRepo, sample_users):
+async def test_delete_user_success(user_repo: UserRepo, db_sample_users):
     """Test successfully deleting a user."""
     # First verify the user exists
-    user = await user_repo.get_user(sample_users[0].id)
+    user = await user_repo.get_user(db_sample_users[0].id)
     assert user is not None
 
     # Delete the user
-    await user_repo.delete_user(sample_users[0].id)
+    await user_repo.delete_user(db_sample_users[0].id)
 
     # Verify the user no longer exists
     with pytest.raises(UserNotFoundError):
-        await user_repo.get_user(sample_users[0].id)
+        await user_repo.get_user(db_sample_users[0].id)
 
 
 @pytest.mark.asyncio
@@ -209,14 +194,14 @@ async def test_delete_user_not_found(user_repo: UserRepo):
 
 
 @pytest.mark.asyncio
-async def test_delete_user_database_error(user_repo: UserRepo, sample_users, mocker):
+async def test_delete_user_database_error(user_repo: UserRepo, db_sample_users, mocker):
     """Test handling of database errors when deleting user."""
     # Mock the session.delete method to raise an exception
     mocker.patch.object(
         user_repo.session, "delete", side_effect=SQLAlchemyError("Database error")
     )
     with pytest.raises(UserDatabaseError) as exc_info:
-        await user_repo.delete_user(sample_users[0].id)
+        await user_repo.delete_user(db_sample_users[0].id)
     assert "Failed to delete user" in str(exc_info.value)
 
 
