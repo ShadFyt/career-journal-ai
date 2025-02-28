@@ -1,4 +1,5 @@
 import pytest
+import pytest_asyncio
 from database.models import User
 from domain.user.user_repo import UserRepo
 from domain.user.user_service import UserService
@@ -8,13 +9,13 @@ from tests.conftest import *
 
 
 @pytest.fixture
-def user_repo(db_session) -> UserRepo:
+def user_repo(db_session):
     """Create a UserRepo instance for testing."""
     return UserRepo(db_session)
 
 
 @pytest.fixture
-def user_service(user_repo: UserRepo) -> UserService:
+def user_service(user_repo: UserRepo):
     """Create a UserService instance for testing."""
     return UserService(user_repo=user_repo)
 

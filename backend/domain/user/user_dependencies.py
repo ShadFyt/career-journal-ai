@@ -10,7 +10,7 @@ def get_user_repo(session: SessionDep) -> UserRepo:
     return UserRepo(session=session)
 
 
-def get_user_service(user_repo: UserRepo) -> UserService:
+def get_user_service(user_repo: UserRepo = Depends(get_user_repo)) -> UserService:
     return UserService(user_repo=user_repo)
 
 
