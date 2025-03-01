@@ -15,7 +15,13 @@ export default defineConfig({
   },
   plugins: [
     VueRouter(),
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (ele) => ele.startsWith('iconify-icon'), 
+        },
+      },
+    }),
     vueDevTools(),
   ],
   resolve: {
