@@ -8,7 +8,12 @@ const router = createRouter({
       path: '/',
       name: 'Home',
       component: HomeView,
-    }
+    },
+    {
+      path: '/:catchAll(.*)*',
+      name: 'NotFound',
+      component: () => import('@/views/NotFoundView.vue'),
+    },
   ],
 })
 
