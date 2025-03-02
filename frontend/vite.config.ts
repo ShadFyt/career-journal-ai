@@ -8,7 +8,6 @@ import {VueRouterAutoImports} from 'unplugin-vue-router'
 import VueRouter from 'unplugin-vue-router/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
-import { acceptHMRUpdate } from 'pinia'
 
 // https://vite.dev/config/
 export default defineConfig({
