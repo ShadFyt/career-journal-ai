@@ -7,6 +7,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import {VueRouterAutoImports} from 'unplugin-vue-router'
 import VueRouter from 'unplugin-vue-router/vite'
 import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -16,6 +17,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    Components({  }),
     AutoImport({
       include: [
         /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
