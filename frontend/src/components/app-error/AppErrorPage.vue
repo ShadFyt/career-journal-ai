@@ -2,7 +2,7 @@
 const router = useRouter()
 
 router.afterEach(() => {
-  useErrorStore().isErrorActive = false
+  useErrorStore().setActiveError()
 })
 </script>
 

@@ -1,12 +1,18 @@
 export const useErrorStore = defineStore('error-store', () => {
-    const isErrorActive = ref(false)
+    const activeError = ref<ErrorDetail | null>(null)
 
-    const setActiveError = () => {
-        isErrorActive.value = true
+    const setActiveError = (error: ErrorDetail | null = null) => {
+        activeError.value = error
     }
 
     return {
         setActiveError,
-        isErrorActive
+        activeError,
     }
 })
+
+interface ErrorDetail {
+    msg: string
+    code: string
+    params?: Record<string, any>
+}
