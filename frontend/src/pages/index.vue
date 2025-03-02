@@ -59,13 +59,3 @@ import { Icon } from '@iconify/vue'
     </div>
   </div>
 </template>
-
-<style scoped>
-/* Override parent grid layout from main.css */
-:deep(#app) {
-  display: block;
-  max-width: 100%;
-  padding: 0;
-  margin: 0;
-}
-</style>
