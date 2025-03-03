@@ -1,3 +1,5 @@
+import type { ErrorDetail } from "@/types/errors"
+
 export const useErrorStore = defineStore('error-store', () => {
     const activeError = ref<ErrorDetail | null>(null)
 
@@ -10,9 +12,3 @@ export const useErrorStore = defineStore('error-store', () => {
         activeError,
     }
 })
-
-interface ErrorDetail {
-    msg: string
-    code: string
-    params?: Record<string, any>
-}
