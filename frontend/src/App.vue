@@ -1,5 +1,11 @@
 <script setup lang="ts">
 const { activeError } = storeToRefs(useErrorStore())
+const { setActiveError } = useErrorStore()
+
+onErrorCaptured((error) => {
+  console.error(`[App] Uncaught error: ${error}`)
+  setActiveError(error)
+})
 </script>
 
 <template>
