@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { 
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger 
-} from '@/components/ui/collapsible'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { RouterLink } from 'vue-router'
 const router = useRouter()
 const { activeError } = storeToRefs(useErrorStore())
 const isOpen = ref(false)
@@ -26,7 +23,9 @@ router.afterEach(() => {
       </p>
 
       <Collapsible v-if="activeError?.stack" v-model:open="isOpen" class="w-full">
-        <CollapsibleTrigger class="flex items-center justify-center w-full px-4 py-2 rounded-md bg-muted hover:bg-muted/80 transition-colors text-sm">
+        <CollapsibleTrigger
+          class="flex items-center justify-center w-full px-4 py-2 rounded-md bg-muted hover:bg-muted/80 transition-colors text-sm"
+        >
           <span>{{ isOpen ? 'Hide' : 'Show' }} Error Details</span>
           <span class="ml-2">
             <svg
@@ -47,14 +46,16 @@ router.afterEach(() => {
           </span>
         </CollapsibleTrigger>
         <CollapsibleContent class="mt-2">
-          <div class="p-4 bg-muted/50 rounded-md text-left overflow-auto max-h-60 text-xs font-mono whitespace-pre-wrap">
+          <div
+            class="p-4 bg-muted/50 rounded-md text-left overflow-auto max-h-60 text-xs font-mono whitespace-pre-wrap"
+          >
             {{ activeError.stack }}
           </div>
         </CollapsibleContent>
       </Collapsible>
 
       <Button asChild>
-        <router-link to="/" class="w-full"> Return Home </router-link>
+        <RouterLink to="/" class="w-full"> Return Home </RouterLink>
       </Button>
     </div>
   </section>
