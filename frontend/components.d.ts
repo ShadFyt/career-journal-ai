@@ -20,6 +20,7 @@ declare module 'vue' {
     CollapsibleContent: typeof import('./src/components/ui/collapsible/CollapsibleContent.vue')['default']
     CollapsibleTrigger: typeof import('./src/components/ui/collapsible/CollapsibleTrigger.vue')['default']
     EmptyState: typeof import('./src/components/projects/EmptyState.vue')['default']
+    FilterSection: typeof import('./src/components/projects/filter-section/FilterSection.vue')['default']
     IconCommunity: typeof import('./src/components/icons/IconCommunity.vue')['default']
     IconDocumentation: typeof import('./src/components/icons/IconDocumentation.vue')['default']
     IconEcosystem: typeof import('./src/components/icons/IconEcosystem.vue')['default']

@@ -52,7 +52,7 @@ const projects = ref([
 
 const searchQuery = ref('')
 const techFilter = ref('all')
-const viewType = ref('grid')
+const viewType = ref<'grid' | 'list'>('grid')
 
 const allTechnologies = computed(() => {
   const techSet = new Set<string>()
@@ -87,71 +87,12 @@ const formatDate = (dateString: string) => {
     <h1 class="text-3xl font-bold mb-6">My Projects</h1>
 
     <!-- Filter and Search Section -->
-    <div class="flex flex-col md:flex-row justify-between mb-6 gap-4">
-      <div class="relative flex-grow max-w-md">
-        <Input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search projects..."
-          class="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <Icon icon="lucide:search" class="w-5 h-5 text-gray-400" />
-        </div>
-      </div>
-
-      <div class="flex gap-2">
-        <Select v-model="techFilter">
-          <SelectTrigger class="w-[180px]">
-            <SelectValue placeholder="All Technologies" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Technologies</SelectItem>
-            <SelectItem v-for="tech in allTechnologies" :key="tech" :value="tech">
-              {{ tech }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Button
-          @click="viewType = 'grid'"
-          variant="outline"
-          size="icon"
-          :class="{ 'bg-blue-100 border-blue-500': viewType === 'grid' }"
-        >
-          <svg
-            class="w-5 h-5"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-            ></path>
-          </svg>
-        </Button>
-
-        <Button
-          @click="viewType = 'list'"
-          variant="outline"
-          size="icon"
-          :class="{ 'bg-blue-100 border-blue-500': viewType === 'list' }"
-        >
-          <svg
-            class="w-5 h-5"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-              clip-rule="evenodd"
-            ></path>
-          </svg>
-        </Button>
-      </div>
-    </div>
+    <FilterSection
+      v-model:searchQuery="searchQuery"
+      v-model:techFilter="techFilter"
+      v-model:viewType="viewType"
+      :allTechnologies="allTechnologies"
+    />
 
     <!-- Grid View -->
     <div v-if="viewType === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -164,18 +105,7 @@ const formatDate = (dateString: string) => {
           <div class="flex justify-between items-start">
             <CardTitle class="text-xl font-semibold text-blue-700">{{ project.name }}</CardTitle>
             <a :href="project.repoUrl" target="_blank" class="text-gray-500 hover:text-gray-700">
-              <svg
-                class="w-6 h-6"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.605-3.369-1.343-3.369-1.343-.454-1.157-1.11-1.465-1.11-1.465-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.699 1.028 1.592 1.028 2.683 0 3.841-2.337 4.687-4.565 4.935.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12c0-5.523-4.477-10-10-10z"
-                  clip-rule="evenodd"
-                ></path>
-              </svg>
+              <Icon icon="mdi:github" width="24" height="24" />
             </a>
           </div>
         </CardHeader>
@@ -224,18 +154,7 @@ const formatDate = (dateString: string) => {
                 target="_blank"
                 class="text-gray-500 hover:text-gray-700 ml-2"
               >
-                <svg
-                  class="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.605-3.369-1.343-3.369-1.343-.454-1.157-1.11-1.465-1.11-1.465-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.699 1.028 1.592 1.028 2.683 0 3.841-2.337 4.687-4.565 4.935.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12c0-5.523-4.477-10-10-10z"
-                    clip-rule="evenodd"
-                  ></path>
-                </svg>
+                <Icon icon="mdi:github" width="24" height="24" />
               </a>
             </div>
             <p class="text-gray-600 mt-1 mb-2">{{ project.description }}</p>
