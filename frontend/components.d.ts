@@ -28,6 +28,7 @@ declare module 'vue' {
     IconTooling: typeof import('./src/components/icons/IconTooling.vue')['default']
     Input: typeof import('./src/components/ui/input/Input.vue')['default']
     ProjectGridView: typeof import('./src/components/projects/ProjectGridView.vue')['default']
+    ProjectListView: typeof import('./src/components/projects/ProjectListView.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Select: typeof import('./src/components/ui/select/Select.vue')['default']
