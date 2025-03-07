@@ -1,18 +1,10 @@
 <script setup lang="ts">
 import type { Project } from '@/types/projects'
+import { formatDate } from '@/utils'
 
 defineProps<{
   filteredProjects: Project[]
 }>()
-
-const formatDate = (dateString: string) => {
-  const options: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }
-  return new Date(dateString).toLocaleDateString(undefined, options)
-}
 </script>
 
 <template>
