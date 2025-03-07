@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Icon } from '@iconify/vue'
 
 const projects = ref([
   {
@@ -75,11 +74,6 @@ const filteredProjects = computed(() => {
     return matchesSearch && matchesTech
   })
 })
-
-const formatDate = (dateString: string) => {
-  const options = { year: 'numeric', month: 'short', day: 'numeric' }
-  return new Date(dateString).toLocaleDateString(undefined, options)
-}
 </script>
 
 <template>
