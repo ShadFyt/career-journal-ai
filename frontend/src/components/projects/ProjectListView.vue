@@ -19,7 +19,8 @@ defineProps<{
           <div class="flex items-start justify-between">
             <h3 class="text-lg font-medium text-blue-700">{{ project.name }}</h3>
             <a
-              :href="project.repoUrl"
+              v-if="project.link"
+              :href="project.link"
               target="_blank"
               class="text-gray-500 hover:text-gray-700 ml-2"
             >
