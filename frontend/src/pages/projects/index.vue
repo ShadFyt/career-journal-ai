@@ -7,7 +7,7 @@ const projects = ref([
     name: 'Vue Dashboard',
     description:
       'A responsive admin dashboard built with Vue.js and Tailwind CSS with dark mode support and customizable widgets.',
-    repoUrl: 'https://github.com/username/vue-dashboard',
+    link: 'https://github.com/username/vue-dashboard',
     technologies: ['Vue.js', 'Tailwind CSS', 'Chart.js', 'Vite'],
     updatedAt: '2025-02-15T14:22:00Z',
   },
@@ -16,7 +16,7 @@ const projects = ref([
     name: 'E-Commerce API',
     description:
       'RESTful API for e-commerce applications with user authentication, product management, and order processing.',
-    repoUrl: 'https://github.com/username/ecommerce-api',
+    link: 'https://github.com/username/ecommerce-api',
     technologies: ['Node.js', 'Express', 'MongoDB', 'JWT', 'Docker'],
     updatedAt: '2025-01-20T09:45:00Z',
   },
@@ -25,7 +25,7 @@ const projects = ref([
     name: 'Portfolio Website',
     description:
       'Personal portfolio website showcasing projects and skills with a modern, minimalist design.',
-    repoUrl: 'https://github.com/username/portfolio',
+    link: 'https://github.com/username/portfolio',
     technologies: ['Vue.js', 'GSAP', 'Tailwind CSS', 'Firebase'],
     updatedAt: '2025-02-28T16:30:00Z',
   },
@@ -34,7 +34,7 @@ const projects = ref([
     name: 'Weather App',
     description:
       'A weather forecast application providing real-time weather data with location detection and 5-day forecasts.',
-    repoUrl: 'https://github.com/username/weather-app',
+    link: 'https://github.com/username/weather-app',
     technologies: ['Vue.js', 'OpenWeather API', 'Geolocation API'],
     updatedAt: '2025-01-05T11:15:00Z',
   },
@@ -43,7 +43,7 @@ const projects = ref([
     name: 'Task Manager',
     description:
       'Collaborative task management application with real-time updates, task assignments, and progress tracking.',
-    repoUrl: 'https://github.com/username/task-manager',
+    link: 'https://github.com/username/task-manager',
     technologies: ['Vue.js', 'Pinia', 'Firebase', 'Tailwind CSS'],
     updatedAt: '2025-02-10T13:40:00Z',
   },
