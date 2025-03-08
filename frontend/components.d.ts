@@ -30,12 +30,14 @@ declare module 'vue' {
     DialogTrigger: typeof import('./src/components/ui/dialog/DialogTrigger.vue')['default']
     EmptyState: typeof import('./src/components/projects/EmptyState.vue')['default']
     FilterSection: typeof import('./src/components/projects/filter-section/FilterSection.vue')['default']
+    Header: typeof import('./src/components/journal/Header.vue')['default']
     IconCommunity: typeof import('./src/components/icons/IconCommunity.vue')['default']
     IconDocumentation: typeof import('./src/components/icons/IconDocumentation.vue')['default']
     IconEcosystem: typeof import('./src/components/icons/IconEcosystem.vue')['default']
     IconSupport: typeof import('./src/components/icons/IconSupport.vue')['default']
     IconTooling: typeof import('./src/components/icons/IconTooling.vue')['default']
     Input: typeof import('./src/components/ui/input/Input.vue')['default']
+    JournalHeader: typeof import('./src/components/journal/JournalHeader.vue')['default']
     ProjectGridView: typeof import('./src/components/projects/ProjectGridView.vue')['default']
     ProjectListView: typeof import('./src/components/projects/ProjectListView.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -53,5 +55,6 @@ declare module 'vue' {
     SelectSeparator: typeof import('./src/components/ui/select/SelectSeparator.vue')['default']
     SelectTrigger: typeof import('./src/components/ui/select/SelectTrigger.vue')['default']
     SelectValue: typeof import('./src/components/ui/select/SelectValue.vue')['default']
+    TimelineHeader: typeof import('./src/components/journal/TimelineHeader.vue')['default']
   }
 }

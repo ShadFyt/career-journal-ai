@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { JournalEntry } from '@/types'
 import { Icon } from '@iconify/vue'
+import { Header as MainHeader } from '@/components/journal'
 
 const mockUser = '1'
 const expandedEntries = ref<Record<string, boolean>>({})
@@ -44,25 +45,6 @@ const journalEntries = ref<JournalEntry[]>([
   },
 ])
 
-// Format date for display
-const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(date)
-}
-
-// Format time for display
-const formatTime = (date: Date) => {
-  return new Intl.DateTimeFormat('en-US', {
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true,
-  }).format(date)
-}
-
 // Group entries by date
 const groupedEntries = computed(() => {
   return journalEntries.value.reduce((groups: Record<string, JournalEntry[]>, entry) => {
@@ -100,26 +82,12 @@ const canViewEntry = (entry: JournalEntry) => !entry.isPrivate || entry.userId =
 <template>
   <div class="bg-background h-full flex flex-col">
     <Card class="border h-full flex flex-col">
-      <CardHeader>
-        <CardTitle>Journal Timeline</CardTitle>
-        <CardDescription>
-          Viewing {{ journalEntries.length }} entries
-          <template v-if="mockUser"> (logged in as {{ mockUser }}) </template>
-        </CardDescription>
-      </CardHeader>
+      <MainHeader :journal-entries="journalEntries" :mock-user="mockUser" />
 
       <ScrollArea class="flex-1">
         <div class="space-y-8 p-4">
           <div v-for="dateStr in sortedDates" :key="dateStr">
-            <div class="sticky top-0 z-10 bg-background py-2">
-              <div class="flex items-center">
-                <Icon icon="lucide:calendar" class="mr-2 h-4 w-4 text-muted-foreground" />
-                <h3 class="text-sm font-medium">
-                  {{ formatDate(new Date(dateStr)) }}
-                </h3>
-              </div>
-              <div class="my-2 h-px bg-border"></div>
-            </div>
+            <TimelineHeader :date-str="dateStr" />
 
             <div class="relative ml-2 space-y-4">
               <!-- Timeline line -->
@@ -143,34 +111,7 @@ const canViewEntry = (entry: JournalEntry) => !entry.isPrivate || entry.userId =
                 >
                   <CardContent class="p-0">
                     <div class="p-4">
-                      <div class="flex justify-between items-start mb-3">
-                        <div class="flex items-center">
-                          <div
-                            class="h-8 w-8 mr-2 rounded-full bg-muted flex items-center justify-center overflow-hidden"
-                          >
-                            <Icon
-                              :icon="entry.project ? 'lucide:folder' : 'lucide:file-text'"
-                              class="h-4 w-4 text-muted-foreground"
-                            />
-                          </div>
-                          <div>
-                            <p class="text-sm font-medium">
-                              {{ entry.project?.name || 'Personal Note' }}
-                            </p>
-                            <p class="text-xs text-muted-foreground">
-                              {{ entry.date && formatTime(new Date(entry.date)) }}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div
-                          v-if="entry.isPrivate"
-                          class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors"
-                        >
-                          <Icon icon="lucide:lock" class="h-3 w-3 mr-1" />
-                          Private
-                        </div>
-                      </div>
+                      <JournalHeader :entry="entry" />
 
                       <template v-if="canViewEntry(entry)">
                         <div class="prose prose-sm max-w-none">
@@ -211,9 +152,9 @@ const canViewEntry = (entry: JournalEntry) => !entry.isPrivate || entry.userId =
                       >
                         <Icon icon="lucide:code" class="h-4 w-4 text-muted-foreground mr-1" />
                         <span
-                          v-for="tech in entry.technologies"
-                          :key="tech.id || Math.random()"
-                          class="inline-flex items-center rounded-md bg-muted px-2 py-1 text-xs font-medium"
+                          v-for="tech in entry.technologies.slice(0, 3)"
+                          :key="tech.id"
+                          class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
                         >
                           {{ tech.name }}
                         </span>
