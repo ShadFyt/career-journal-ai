@@ -11,4 +11,4 @@ config = AuthXConfig(
     JWT_TOKEN_LOCATION=["headers"],
 )
 
-auth = AuthX(config)
+security = AuthX(config)

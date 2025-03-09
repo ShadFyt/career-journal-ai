@@ -3,7 +3,8 @@ import contextlib
 from core.admin.admin_portal import admin
 from core.exceptions import add_exception_handlers
 from database.db import create_db_and_tables
-from domain.auth.auth_config import auth
+from domain.auth.auth_config import security
+from domain.auth.auth_router import router as auth_router
 from domain.journal_entry.journal_entry_router import router as journal_entry_router
 from domain.project.project_router import router as project_router
 from domain.technology.technology_router import router as technology_router
@@ -21,7 +22,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
 admin.mount_to(app)
-auth.handle_errors(app)
+security.handle_errors(app)
 
 
 add_exception_handlers(app)
@@ -33,6 +34,7 @@ app.include_router(
     journal_entry_router, prefix="/api/journal-entries", tags=["journal-entries"]
 )
 app.include_router(user_router, prefix="/api/users", tags=["users"])
+app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 
 
 if __name__ == "__main__":
