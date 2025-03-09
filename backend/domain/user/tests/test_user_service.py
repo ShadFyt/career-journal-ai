@@ -88,24 +88,34 @@ async def test_get_user_not_found(user_service, mocker):
 async def test_add_user_success(user_service, mocker, sample_users):
     """Test successfully adding a new user through service."""
     # Prepare test data
+    plain_password = "password123"
     user_data = UserCreate(
         email="new.user@example.com",
         first_name="New",
         last_name="User",
-        password="password123",
+        password=plain_password,
     )
 
-    # Create a new user based on the input data
+    # Mock the hash_password method to return a predictable hash
+    mock_hashed_password = "$2b$12$mockhashformockhashfor"
+    mocker.patch.object(
+        user_service, "hash_password", return_value=mock_hashed_password
+    )
+
+    # Create a new user with the mocked hashed password
     new_user = User(
         id="new-id",
         email=user_data.email,
         first_name=user_data.first_name,
         last_name=user_data.last_name,
-        password="hashed_" + user_data.password,  # Simulate hashing
+        password=mock_hashed_password,
     )
 
-    # Setup mock behavior
+    # Setup mock behavior for add_user
     mocker.patch.object(user_service.user_repo, "add_user", return_value=new_user)
+
+    # Mock check_password to return True for our test case
+    mocker.patch.object(user_service, "check_password", return_value=True)
 
     # Execute service method
     result = await user_service.add_user(user_data)
@@ -116,10 +126,14 @@ async def test_add_user_success(user_service, mocker, sample_users):
     assert result.email == user_data.email
     assert result.first_name == user_data.first_name
     assert result.last_name == user_data.last_name
-    # Password should be hashed
-    assert result.password != user_data.password
-    assert result.password == "hashed_" + user_data.password
-    user_service.user_repo.add_user.assert_called_once_with(user_data)
+
+    # Verify password was hashed correctly
+    assert result.password != plain_password
+    assert result.password == mock_hashed_password
+
+    # Verify the service methods were called correctly
+    user_service.hash_password.assert_called_once_with(plain_password)
+    user_service.user_repo.add_user.assert_called_once()
 
 
 @pytest.mark.asyncio
