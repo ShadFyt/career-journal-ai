@@ -99,6 +99,18 @@ python-jose = ">=3.3.0,<4.0.0"
 pytz = ">=2023.3,<2025.0"
 
 [[package]]
+name = "bcrypt"
+version = "4.3.0"
+description = "Modern password hashing for your software and your servers"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+tests = ["pytest (>=3.2.1,!=3.3.0)"]
+typecheck = ["mypy"]
+
+[[package]]
 name = "black"
 version = "25.1.0"
 description = "The uncompromising code formatter."
@@ -1070,7 +1082,7 @@ python-versions = ">=3.9"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "0c3b664e4b552d49bc1f03fa7600e1979bc9ca72efd2bf423882fe20a42dec5d"
+content-hash = "f0bc1c55127d437e611a843d5a08c64f6f9513770137977bafc4f545a447bb72"
 
 [metadata.files]
 aiosqlite = []
@@ -1080,6 +1092,7 @@ anyio = []
 async-timeout = []
 asyncpg = []
 authx = []
+bcrypt = []
 black = []
 certifi = []
 cffi = []
