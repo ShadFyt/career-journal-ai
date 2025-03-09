@@ -19,7 +19,12 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    title="Career Journal API",
+    description="API for managing career journal",
+    lifespan=lifespan,
+    openapi_url="/api/openapi.json",
+)
 app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
 admin.mount_to(app)
 security.handle_errors(app)
