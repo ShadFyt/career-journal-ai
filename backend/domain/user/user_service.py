@@ -42,6 +42,17 @@ class UserService:
         """
         return await self.user_repo.get_user(id)
 
+    async def get_user_by_email(self, email: str) -> User | None:
+        """Get a single user by email.
+
+        Args:
+            email (str): User email
+
+        Returns:
+            User | None: The requested user or None if not found
+        """
+        return await self.user_repo.get_user_by_email(email)
+
     async def add_user(self, user: UserCreate) -> User:
         """Add a new user to the database.
 

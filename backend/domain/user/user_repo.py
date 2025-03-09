@@ -53,6 +53,32 @@ class UserRepo:
         except SQLAlchemyError as e:
             raise UserDatabaseError(message=f"Failed to fetch user: {str(e)}")
 
+    async def get_user_by_email(self, email: str) -> User:
+        """Get a single user by email.
+
+        Args:
+            email (str): User email
+
+        Returns:
+            User: The requested user
+
+        Raises:
+            UserDatabaseError: If user not found or database operation fails
+            UserNotFoundError: If user not found
+        """
+        try:
+            statement = select(User).where(User.email == email)
+            result = await self.session.exec(statement)
+            found_user = result.first()
+
+            if not found_user:
+                raise UserNotFoundError(
+                    message=f"User with email '{email}' not found",
+                )
+            return found_user
+        except SQLAlchemyError as e:
+            raise UserDatabaseError(message=f"Failed to fetch user: {str(e)}")
+
     async def add_user(self, user: UserCreate) -> User:
         """Add a new user to the database.
 
