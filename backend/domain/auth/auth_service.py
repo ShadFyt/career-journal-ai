@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from domain.auth.auth_config import security
 from domain.user.user_service import UserService
 from fastapi import HTTPException
@@ -15,10 +17,15 @@ class AuthService:
         if not self.user_service.check_password(password, user.password):
             raise HTTPException(status_code=401, detail="Invalid credentials")
 
-        token = security.create_access_token(user.id, data={"email": email})
+        token = security.create_access_token(
+            user.id, data={"email": email}, expiry=timedelta(days=1)
+        )
+        refresh_token = security.create_refresh_token(
+            user.id, data={"email": email}, expiry=timedelta(days=14)
+        )
         return {
             "access_token": token,
             "email": email,
             "user_id": user.id,
-            "refresh_token": None,
+            "refresh_token": refresh_token,
         }
