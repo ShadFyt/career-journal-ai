@@ -1,4 +1,11 @@
 <script setup lang="ts">
+const router = useRouter()
+import { Icon } from '@iconify/vue'
+
+const navigateToHome = () => {
+  router.push('/')
+}
+
 const mockTechnologies = ref([
   {
     id: '1',
@@ -64,7 +71,19 @@ const filterTechnologies = computed(() =>
 
 <template>
   <Card class="w-full h-full">
-    <CardHeader>
+    <CardHeader class="pb-2">
+      <div class="flex items-center mb-4">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          @click="navigateToHome" 
+          class="mr-2 -ml-2 h-8"
+          aria-label="Back to Home"
+        >
+          <Icon icon="lucide:arrow-left" width="18" height="18" />
+          <span class="ml-1 text-sm text-muted-foreground">Back</span>
+        </Button>
+      </div>
       <CardTitle>Technologies</CardTitle>
       <CardDescription> Browse and search through your technology stack </CardDescription>
       <Input placeholder="Filter technologies..." v-model="searchQuery" class="mt-2" />
