@@ -1,3 +1,4 @@
+import bcrypt
 from database.models import User
 from domain.user.user_repo import UserRepo
 from domain.user.user_schema import UserCreate, UserUpdate
@@ -6,6 +7,14 @@ from domain.user.user_schema import UserCreate, UserUpdate
 class UserService:
     def __init__(self, user_repo: UserRepo) -> None:
         self.user_repo = user_repo
+
+    @staticmethod
+    def hash_password(password: str) -> str:
+        return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+    @staticmethod
+    def check_password(password: str, hashed_password: str) -> bool:
+        return bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
 
     async def get_users(self) -> list[User]:
         """Get all users sorted by email.
@@ -33,6 +42,17 @@ class UserService:
         """
         return await self.user_repo.get_user(id)
 
+    async def get_user_by_email(self, email: str) -> User | None:
+        """Get a single user by email.
+
+        Args:
+            email (str): User email
+
+        Returns:
+            User | None: The requested user or None if not found
+        """
+        return await self.user_repo.get_user_by_email(email)
+
     async def add_user(self, user: UserCreate) -> User:
         """Add a new user to the database.
 
@@ -46,6 +66,7 @@ class UserService:
             UserDatabaseError: If database operation fails or user with
             DuplicateUserError: If user with email already exists
         """
+        user.password = self.hash_password(user.password)
         return await self.user_repo.add_user(user)
 
     async def update_user(self, id: str, user: UserUpdate) -> User:
