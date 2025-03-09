@@ -1,44 +1,42 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { Icon } from '@iconify/vue'
 import { RouterLink } from 'vue-router'
 import { navItems } from './nav-options'
+import {
+  Sidebar as ShadcnSidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarTrigger,
+  useSidebar,
+} from '@/components/ui/sidebar'
 
-const isOpen = ref(true)
-const toggleSidebar = () => {
-  isOpen.value = !isOpen.value
-}
+const { state, toggleSidebar } = useSidebar()
 </script>
 
 <template>
-  <div
-    class="h-screen border-r bg-background flex flex-col transition-all duration-300"
-    :class="isOpen ? 'w-64' : 'w-16'"
-  >
-    <div class="p-4 flex items-center justify-between">
-      <h2 class="text-xl font-bold" v-if="isOpen">Career Journal</h2>
-      <button
-        @click="toggleSidebar"
-        class="p-2 rounded-md hover:bg-accent hover:text-accent-foreground"
-      >
-        <Icon :icon="isOpen ? 'lucide:chevron-left' : 'lucide:chevron-right'" class="h-5 w-5" />
-      </button>
-    </div>
-    <nav class="flex-1 px-2 py-2 overflow-y-auto">
-      <ul class="space-y-2">
+  <ShadcnSidebar collapsible="icon" class="border-r">
+    <SidebarHeader class="p-4 flex items-center justify-between">
+      <h2 class="text-xl font-bold" v-if="state !== 'collapsed'">Career Journal</h2>
+      <SidebarTrigger @click="toggleSidebar" />
+    </SidebarHeader>
+
+    <SidebarContent class="px-2 py-2">
+      <SidebarMenu>
         <li v-for="item in navItems" :key="item.title">
-          <RouterLink
-            :to="item.href"
-            class="flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
-            :class="{ 'bg-accent text-accent-foreground': $route.path === item.href }"
-          >
-            <Icon :icon="item.icon" class="h-5 w-5" />
-            <span v-if="isOpen" class="ml-2">{{ item.title }}</span>
-          </RouterLink>
+          <SidebarMenuButton as-child :tooltip="item.title" :active="$route.path === item.href">
+            <RouterLink :to="item.href" class="flex w-full items-center">
+              <Icon :icon="item.icon" class="h-5 w-5" />
+              <span v-if="state !== 'collapsed'" class="ml-2">{{ item.title }}</span>
+            </RouterLink>
+          </SidebarMenuButton>
         </li>
-      </ul>
-    </nav>
-    <div class="p-4 border-t" v-if="isOpen">
+      </SidebarMenu>
+    </SidebarContent>
+
+    <SidebarFooter v-if="state !== 'collapsed'" class="p-4 border-t">
       <div class="flex items-center">
         <div
           class="h-8 w-8 rounded-full bg-muted flex items-center justify-center overflow-hidden mr-2"
@@ -50,6 +48,6 @@ const toggleSidebar = () => {
           <p class="text-xs text-muted-foreground">View profile</p>
         </div>
       </div>
-    </div>
-  </div>
+    </SidebarFooter>
+  </ShadcnSidebar>
 </template>
