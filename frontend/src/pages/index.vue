@@ -21,7 +21,7 @@ import { Icon } from '@iconify/vue'
             Track and manage your professional projects and achievements.
           </p>
           <Button variant="default" class="w-full" as-child>
-            <a href="/projects">View Projects</a>
+            <RouterLink :to="'/projects'"> View Projects </RouterLink>
           </Button>
         </div>
 
@@ -36,7 +36,7 @@ import { Icon } from '@iconify/vue'
             Record your daily progress, challenges, and learning experiences.
           </p>
           <Button variant="default" class="w-full" as-child>
-            <a href="/journal-entries">View Journal</a>
+            <RouterLink :to="'/journal-entries'"> View Journal </RouterLink>
           </Button>
         </div>
 
@@ -51,7 +51,7 @@ import { Icon } from '@iconify/vue'
             Manage your technology stack and skills development.
           </p>
           <Button variant="default" class="w-full" as-child>
-            <a href="/technologies">View Technologies</a>
+            <RouterLink :to="'/technologies'"> View Technologies </RouterLink>
           </Button>
         </div>
       </div>
