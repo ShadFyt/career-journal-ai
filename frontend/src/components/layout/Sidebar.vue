@@ -14,29 +14,31 @@ import {
 } from '@/components/ui/sidebar'
 
 const { state, toggleSidebar } = useSidebar()
+
+const expanded = computed(() => state.value !== 'collapsed')
 </script>
 
 <template>
   <ShadcnSidebar collapsible="icon" class="border-r">
-    <SidebarHeader class="p-4 flex items-center justify-between">
-      <h2 class="text-xl font-bold" v-if="state !== 'collapsed'">Career Journal</h2>
+    <SidebarHeader class="p-4 flex flex-row items-center justify-between">
+      <h2 class="text-xl font-bold" v-if="expanded">Career Journal</h2>
       <SidebarTrigger @click="toggleSidebar" />
     </SidebarHeader>
 
     <SidebarContent class="px-2 py-2">
       <SidebarMenu>
         <li v-for="item in navItems" :key="item.title">
-          <SidebarMenuButton as-child :tooltip="item.title" :active="$route.path === item.href">
-            <RouterLink :to="item.href" class="flex w-full items-center">
+          <SidebarMenuButton as-child :tooltip="item.title">
+            <RouterLink :to="item.href" class="flex w-full items-center" active-class="bg-muted">
               <Icon :icon="item.icon" class="h-5 w-5" />
-              <span v-if="state !== 'collapsed'" class="ml-2">{{ item.title }}</span>
+              <span v-if="expanded" class="ml-2">{{ item.title }}</span>
             </RouterLink>
           </SidebarMenuButton>
         </li>
       </SidebarMenu>
     </SidebarContent>
 
-    <SidebarFooter v-if="state !== 'collapsed'" class="p-4 border-t">
+    <SidebarFooter v-if="expanded" class="p-4 border-t">
       <div class="flex items-center">
         <div
           class="h-8 w-8 rounded-full bg-muted flex items-center justify-center overflow-hidden mr-2"
