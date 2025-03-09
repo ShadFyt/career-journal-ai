@@ -38,6 +38,7 @@ declare module 'vue' {
     IconTooling: typeof import('./src/components/icons/IconTooling.vue')['default']
     Input: typeof import('./src/components/ui/input/Input.vue')['default']
     JournalHeader: typeof import('./src/components/journal/JournalHeader.vue')['default']
+    MainLayout: typeof import('./src/components/layout/MainLayout.vue')['default']
     ProjectGridView: typeof import('./src/components/projects/ProjectGridView.vue')['default']
     ProjectListView: typeof import('./src/components/projects/ProjectListView.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -55,6 +56,7 @@ declare module 'vue' {
     SelectSeparator: typeof import('./src/components/ui/select/SelectSeparator.vue')['default']
     SelectTrigger: typeof import('./src/components/ui/select/SelectTrigger.vue')['default']
     SelectValue: typeof import('./src/components/ui/select/SelectValue.vue')['default']
+    Sidebar: typeof import('./src/components/layout/Sidebar.vue')['default']
     TimelineHeader: typeof import('./src/components/journal/TimelineHeader.vue')['default']
   }
 }
