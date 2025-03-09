@@ -1,16 +1,10 @@
 <script setup lang="ts">
 import type { JournalEntry } from '@/types'
+import { formatTime } from '@/utils'
 
 defineProps<{
   entry: JournalEntry
 }>()
-
-const formatTime = (date: Date) =>
-  new Intl.DateTimeFormat('en-US', {
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true,
-  }).format(date)
 </script>
 
 <template>

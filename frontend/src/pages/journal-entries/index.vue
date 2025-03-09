@@ -43,6 +43,31 @@ const journalEntries = ref<JournalEntry[]>([
     technologies: [],
     project: null,
   },
+  {
+    id: '3',
+    content:
+      'Started learning Vue.js today. The composition API is really powerful!Started learning Vue.js today. ',
+    date: '2025-02-15T14:22:00Z',
+    isPrivate: false,
+    userId: '1',
+    technologies: [
+      {
+        id: '2',
+        name: 'React',
+        description: 'A JavaScript library for building user interfaces',
+        language: 'Javascript',
+      },
+    ],
+    project: {
+      id: 1,
+      name: 'Vue Dashboard',
+      description:
+        'A responsive admin dashboard built with Vue.js and Tailwind CSS with dark mode support and customizable widgets.',
+      link: 'https://github.com/username/vue-dashboard',
+      technologies: ['Vue.js', 'Tailwind CSS', 'Chart.js', 'Vite'],
+      updatedAt: '2025-02-15T14:22:00Z',
+    },
+  },
 ])
 
 // Group entries by date
@@ -66,12 +91,12 @@ const sortedDates = computed(() => {
   )
 })
 
-function toggleExpanded(id: string) {
+const toggleExpanded = (id: string) => {
   if (!id) return
   expandedEntries.value[id] = !expandedEntries.value[id]
 }
 
-function isExpanded(id: string) {
+const isExpanded = (id: string) => {
   if (!id) return false
   return !!expandedEntries.value[id]
 }
