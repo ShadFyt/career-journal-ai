@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { JournalEntry } from '@/types'
 import { formatTime } from '@/utils'
+import { Icon } from '@iconify/vue'
 
 defineProps<{
   entry: JournalEntry
@@ -19,10 +20,10 @@ defineProps<{
         />
       </div>
       <div>
-        <p class="text-sm font-medium">
+        <p class="text-lg font-bold">
           {{ entry.project?.name || 'Personal Note' }}
         </p>
-        <p class="text-xs text-muted-foreground">
+        <p class="text-sm text-muted-foreground font-semibold">
           {{ entry.date && formatTime(new Date(entry.date)) }}
         </p>
       </div>
@@ -32,7 +33,7 @@ defineProps<{
       v-if="entry.isPrivate"
       class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors"
     >
-      <Icon icon="lucide:lock" class="h-3 w-3 mr-1" />
+      <Icon icon="lucide:lock" class="h-5 w-5 mr-1" />
       Private
     </div>
   </div>
