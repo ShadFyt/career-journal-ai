@@ -15,14 +15,14 @@ onErrorCaptured((error) => {
 </script>
 
 <template>
-  <AppErrorPage v-if="activeError !== null" />
-  <template v-else>
-    <MainLayout>
+  <MainLayout>
+    <AppErrorPage v-if="activeError !== null" />
+    <template v-else>
       <RouterView v-slot="{ Component, route }">
         <Suspense v-if="Component">
           <Component :is="Component" :key="route.name" />
         </Suspense>
       </RouterView>
-    </MainLayout>
-  </template>
+    </template>
+  </MainLayout>
 </template>
