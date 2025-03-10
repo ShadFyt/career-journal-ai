@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from core.schema.base import BaseSchema
 
 
-class ProjectBase(BaseModel):
+class ProjectBase(BaseSchema):
     """Base model for project data transfer."""
 
     name: str
