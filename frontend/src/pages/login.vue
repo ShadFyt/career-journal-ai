@@ -21,13 +21,13 @@ import { Icon } from '@iconify/vue'
 
 const router = useRouter()
 const { toast } = useToast()
-const authStore = useAuthStore()
+const { handleLogin } = useAuthStore()
 
 // Define form validation schema
 const formSchema = toTypedSchema(
   z.object({
     email: z.string().email('Please enter a valid email address'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
+    password: z.string().min(3, 'Password must be at least 3 characters'),
   }),
 )
 
@@ -50,13 +50,17 @@ const onSubmit = handleSubmit(async (values) => {
     loginError.value = ''
     console.log('values', values)
 
-    // await authStore.login(values.email, values.password)
+    await handleLogin({
+      email: values.email,
+      password: values.password,
+    })
     toast({
       title: 'Login successful',
       description: 'Welcome back!',
     })
     router.push('/')
   } catch (error: any) {
+    console.error('Login failed:', error)
     loginError.value = error?.message || 'Failed to login. Please try again.'
     toast({
       title: 'Login failed',
