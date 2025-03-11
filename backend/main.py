@@ -4,13 +4,14 @@ from core.admin.admin_portal import admin
 from core.exceptions import add_exception_handlers
 from database.db import create_db_and_tables
 from domain.auth.auth_config import security
-from domain.auth.auth_router import router as auth_router
 from domain.auth.auth_dependencies import AuthDeps
+from domain.auth.auth_router import router as auth_router
 from domain.journal_entry.journal_entry_router import router as journal_entry_router
 from domain.project.project_router import router as project_router
 from domain.technology.technology_router import router as technology_router
 from domain.user.user_router import router as user_router
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 
@@ -27,6 +28,9 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
 )
 app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
+app.add_middleware(
+    CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
+)
 admin.mount_to(app)
 security.handle_errors(app)
 

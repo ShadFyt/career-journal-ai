@@ -14,7 +14,10 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@tanstack/vue-query": "^5.67.2",
+    "@vee-validate/zod": "^4.15.0",
     "@vueuse/core": "^12.8.2",
+    "axios": "^1.8.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-vue-next": "^0.477.0",
@@ -22,8 +25,10 @@
     "reka-ui": "^2.0.2",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
+    "vee-validate": "^4.15.0",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@iconify/vue": "^4.3.0",
@@ -37,7 +42,7 @@
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.7.0",
     "autoprefixer": "^10.4.20",
-    "eslint": "^9.20.1",
+    "eslint": "^9.22.0",
     "eslint-plugin-vue": "^9.32.0",
     "jiti": "^2.4.2",
     "jsdom": "^26.0.0",

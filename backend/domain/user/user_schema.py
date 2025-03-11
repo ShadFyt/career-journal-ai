@@ -1,7 +1,7 @@
-from pydantic import BaseModel
+from core.schema.base import BaseSchema
 
 
-class UserBase(BaseModel):
+class UserBase(BaseSchema):
     email: str
     first_name: str
     last_name: str

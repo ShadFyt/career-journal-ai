@@ -1,8 +1,8 @@
+from core.schema.base import BaseSchema
 from enums import Language
-from pydantic import BaseModel
 
 
-class TechnologyBase(BaseModel):
+class TechnologyBase(BaseSchema):
     name: str
     description: str | None = None
     language: Language | None = None

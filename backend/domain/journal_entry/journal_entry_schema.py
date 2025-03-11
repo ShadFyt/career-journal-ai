@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Optional
 
+from core.schema.base import BaseSchema
 from database.models import Technology
-from pydantic import BaseModel
 
 
-class JournalEntryBase(BaseModel):
+class JournalEntryBase(BaseSchema):
     content: str
     is_private: bool
     project_id: str | None = None
@@ -22,7 +22,7 @@ class JournalEntryCreate(JournalEntryBase):
     user_id: str
 
 
-class JournalEntryUpdate(BaseModel):
+class JournalEntryUpdate(BaseSchema):
     content: Optional[str] = None
     is_private: Optional[bool] = None
     project_id: Optional[str] = None
