@@ -11,3 +11,4 @@ class AuthSuccess(BaseSchema):
 class LoginRequest(BaseSchema):
     email: str
     password: str
+    remember_me: bool = False

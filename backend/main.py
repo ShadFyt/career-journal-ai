@@ -12,7 +12,6 @@ from domain.technology.technology_router import router as technology_router
 from domain.user.user_router import router as user_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.sessions import SessionMiddleware
 
 
 @contextlib.asynccontextmanager
@@ -27,9 +26,11 @@ app = FastAPI(
     lifespan=lifespan,
     openapi_url="/api/openapi.json",
 )
-app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
 app.add_middleware(
-    CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
 )
 admin.mount_to(app)
 security.handle_errors(app)

@@ -3,6 +3,7 @@ from typing import TypedDict
 
 from database.models import User
 from domain.auth.auth_config import security
+from domain.auth.auth_schema import AuthSuccess
 from domain.user.user_service import UserService
 from fastapi import HTTPException
 
@@ -16,7 +17,7 @@ class AuthService:
     def __init__(self, user_service: UserService) -> None:
         self.user_service = user_service
 
-    async def login(self, email: str, password: str) -> str:
+    async def login(self, email: str, password: str) -> AuthSuccess:
         user = await self.user_service.get_user_by_email(email)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
