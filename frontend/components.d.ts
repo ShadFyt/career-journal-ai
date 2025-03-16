@@ -44,6 +44,7 @@ declare module 'vue' {
     Input: typeof import('./src/components/ui/input/Input.vue')['default']
     JournalHeader: typeof import('./src/components/journal/JournalHeader.vue')['default']
     Label: typeof import('./src/components/ui/label/Label.vue')['default']
+    Loader: typeof import('./src/components/ui/loader/Loader.vue')['default']
     MainLayout: typeof import('./src/components/layout/MainLayout.vue')['default']
     ProjectGridView: typeof import('./src/components/projects/ProjectGridView.vue')['default']
     ProjectListView: typeof import('./src/components/projects/ProjectListView.vue')['default']

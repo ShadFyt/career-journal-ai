@@ -5,7 +5,6 @@ import { useErrorStore } from '@/stores/error'
 import { useAuthStore } from '@/stores/auth'
 import { MainLayout } from '@/components/layout'
 import AppErrorPage from '@/components/app-error/AppErrorPage.vue'
-import { Icon } from '@iconify/vue'
 import { useTimeoutFn } from '@vueuse/core'
 
 const { activeError } = storeToRefs(useErrorStore())
@@ -34,12 +33,7 @@ onMounted(async () => {
 <template>
   <MainLayout>
     <!-- Show loading spinner while checking auth -->
-    <div v-if="isLoading && showLoader" class="flex h-screen w-full items-center justify-center">
-      <div class="flex flex-col items-center gap-4">
-        <Icon icon="lucide:loader-2" class="h-12 w-12 animate-spin text-primary" />
-        <p class="text-lg font-medium">Loading...</p>
-      </div>
-    </div>
+    <Loader v-if="isLoading && showLoader" />
     <AppErrorPage v-else-if="activeError !== null" />
     <template v-else>
       <RouterView v-slot="{ Component, route }">
