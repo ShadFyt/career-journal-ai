@@ -34,10 +34,14 @@ class AuthService:
 
     async def create_tokens(self, user: User) -> Tokens:
         token = security.create_access_token(
-            user.id, data={"email": user.email}, expiry=timedelta(days=1)
+            user.id,
+            data={"email": user.email, "user_id": user.id},
+            expiry=timedelta(days=1),
         )
         refresh_token = security.create_refresh_token(
-            user.id, data={"email": user.email}, expiry=timedelta(days=14)
+            user.id,
+            data={"email": user.email, "user_id": user.id},
+            expiry=timedelta(days=14),
         )
 
         return {

@@ -1,12 +1,26 @@
+from authx import TokenPayload
 from domain.auth.auth_config import security
-from domain.auth.auth_dependencies import AuthServiceDep
+from domain.auth.auth_dependencies import AuthDeps, AuthServiceDep
 from domain.auth.auth_schema import AuthSuccess, LoginRequest
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 router = APIRouter()
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 1 day
 REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
+
+
+@router.get(
+    "/session",
+    status_code=status.HTTP_200_OK,
+    response_model=AuthSuccess,
+    dependencies=[*AuthDeps],
+)
+async def get_session(payload: TokenPayload = Depends(security.access_token_required)):
+    try:
+        return {"email": payload.email, "user_id": payload.user_id}
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=str(e))
 
 
 @router.post("/login", status_code=status.HTTP_200_OK, response_model=AuthSuccess)
@@ -26,7 +40,7 @@ async def login(
             response,
             max_age=REFRESH_TOKEN_EXPIRE_MINUTES,
         )
-    return {"message": "Successfully logged in"}
+    return auth_payload
 
 
 @router.post("/logout")

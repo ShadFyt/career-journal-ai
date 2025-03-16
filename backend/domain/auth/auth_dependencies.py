@@ -17,4 +17,4 @@ def get_auth_service(
 
 
 AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
-AuthDeps = [Depends(security.access_token_required), Depends(http_bearer)]
+AuthDeps = [Depends(security.access_token_required)]
