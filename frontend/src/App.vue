@@ -11,8 +11,7 @@ const { activeError } = storeToRefs(useErrorStore())
 const { setActiveError } = useErrorStore()
 const { checkSession } = useAuthStore()
 
-// Add loading state
-const isLoading = ref(true)
+const { isLoading } = storeToRefs(useAuthStore())
 
 onErrorCaptured((error) => {
   console.error(`[App] Uncaught error: ${error}`)
@@ -20,11 +19,7 @@ onErrorCaptured((error) => {
 })
 
 onMounted(async () => {
-  try {
-    await checkSession()
-  } finally {
-    isLoading.value = false
-  }
+  await checkSession()
 })
 </script>
 

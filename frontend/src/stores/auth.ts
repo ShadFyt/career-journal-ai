@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router'
 export const useAuthStore = defineStore('auth-store', () => {
   const router = useRouter()
 
+  const isLoading = ref(true)
   const isAuthenticated = ref(false)
 
   const setIsAuthenticated = (value: boolean) => {
@@ -24,16 +25,20 @@ export const useAuthStore = defineStore('auth-store', () => {
   const checkSession = async () => {
     try {
       await getUserSession()
-      setIsAuthenticated(true)
       if (router.currentRoute.value.path === '/login') {
-        router.push({ path: '/' })
+        await router.push({ path: '/' })
       }
+      setIsAuthenticated(true)
+
       return true
     } catch (error) {
       console.error('Session check failed:', error)
+      await router.push({ path: '/login' })
       setIsAuthenticated(false)
-      router.push({ path: '/login' })
+
       return false
+    } finally {
+      isLoading.value = false
     }
   }
 
@@ -42,5 +47,6 @@ export const useAuthStore = defineStore('auth-store', () => {
     setIsAuthenticated,
     handleLogin,
     checkSession,
+    isLoading,
   }
 })
