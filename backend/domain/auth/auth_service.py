@@ -3,6 +3,7 @@ from typing import TypedDict
 
 from database.models import User
 from domain.auth.auth_config import security
+from domain.auth.auth_schema import AuthSuccess
 from domain.user.user_service import UserService
 from fastapi import HTTPException
 
@@ -16,7 +17,7 @@ class AuthService:
     def __init__(self, user_service: UserService) -> None:
         self.user_service = user_service
 
-    async def login(self, email: str, password: str) -> str:
+    async def login(self, email: str, password: str) -> AuthSuccess:
         user = await self.user_service.get_user_by_email(email)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
@@ -33,10 +34,14 @@ class AuthService:
 
     async def create_tokens(self, user: User) -> Tokens:
         token = security.create_access_token(
-            user.id, data={"email": user.email}, expiry=timedelta(days=1)
+            user.id,
+            data={"email": user.email, "user_id": user.id},
+            expiry=timedelta(days=1),
         )
         refresh_token = security.create_refresh_token(
-            user.id, data={"email": user.email}, expiry=timedelta(days=14)
+            user.id,
+            data={"email": user.email, "user_id": user.id},
+            expiry=timedelta(days=14),
         )
 
         return {

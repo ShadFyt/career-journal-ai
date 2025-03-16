@@ -8,7 +8,7 @@ load_dotenv()
 config = AuthXConfig(
     JWT_ALGORITHM=os.getenv("JWT_ALGORITHM"),
     JWT_SECRET_KEY=os.getenv("JWT_SECRET_KEY"),
-    JWT_TOKEN_LOCATION=["headers"],
+    JWT_TOKEN_LOCATION=["cookies"],
 )
 
 security = AuthX(config)
