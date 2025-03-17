@@ -8,7 +8,10 @@ export const useAuthStore = defineStore('auth-store', () => {
 
   const isLoading = ref(true)
   const isAuthenticated = ref(false)
-
+  const profile = ref<{ email: string; userId: string }>({
+    email: '',
+    userId: '',
+  })
   const setIsAuthenticated = (value: boolean) => {
     isAuthenticated.value = value
   }
@@ -25,6 +28,7 @@ export const useAuthStore = defineStore('auth-store', () => {
     try {
       const { email: userEmail, userId } = await login(email, password, rememberMe)
       setIsAuthenticated(true)
+      profile.value = { email: userEmail, userId }
     } catch (error) {
       throw error
     }
@@ -37,12 +41,14 @@ export const useAuthStore = defineStore('auth-store', () => {
         await router.push({ path: '/' })
       }
       setIsAuthenticated(true)
-
+      const { email, userId } = await getUserSession()
+      profile.value = { email, userId }
       return true
     } catch (error) {
       console.error('Session check failed:', error)
       await router.push({ path: '/login' })
       setIsAuthenticated(false)
+      profile.value = { email: '', userId: '' }
 
       return false
     } finally {
@@ -56,5 +62,6 @@ export const useAuthStore = defineStore('auth-store', () => {
     handleLogin,
     checkSession,
     isLoading,
+    profile,
   }
 })

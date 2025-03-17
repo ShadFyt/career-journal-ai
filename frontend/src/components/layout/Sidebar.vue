@@ -11,18 +11,22 @@ import {
   SidebarMenuButton,
   SidebarTrigger,
   useSidebar,
+  type SidebarProps,
 } from '@/components/ui/sidebar'
 
-const { state, toggleSidebar } = useSidebar()
+const { state } = useSidebar()
 
 const expanded = computed(() => state.value !== 'collapsed')
+const props = withDefaults(defineProps<SidebarProps>(), {
+  collapsible: 'icon',
+})
 </script>
 
 <template>
-  <ShadcnSidebar collapsible="icon" class="border-r">
+  <ShadcnSidebar class="border-r" v-bind="props">
     <SidebarHeader class="p-4 flex flex-row items-center justify-between">
       <h2 class="text-xl font-bold" v-if="expanded">Career Journal</h2>
-      <SidebarTrigger @click="toggleSidebar" />
+      <SidebarTrigger />
     </SidebarHeader>
 
     <SidebarContent class="px-2 py-2">
@@ -38,18 +42,9 @@ const expanded = computed(() => state.value !== 'collapsed')
       </SidebarMenu>
     </SidebarContent>
 
-    <SidebarFooter v-if="expanded" class="p-4 border-t">
-      <div class="flex items-center">
-        <div
-          class="h-8 w-8 rounded-full bg-muted flex items-center justify-center overflow-hidden mr-2"
-        >
-          <Icon icon="lucide:user" class="h-4 w-4 text-muted-foreground" />
-        </div>
-        <div>
-          <p class="text-sm font-medium">User Profile</p>
-          <p class="text-xs text-muted-foreground">View profile</p>
-        </div>
-      </div>
+    <SidebarFooter class="p-4 border-t">
+      <UserMenu />
     </SidebarFooter>
+    <SidebarRail />
   </ShadcnSidebar>
 </template>
