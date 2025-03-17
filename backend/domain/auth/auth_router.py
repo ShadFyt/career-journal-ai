@@ -18,7 +18,12 @@ REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 )
 async def get_session(payload: TokenPayload = Depends(security.access_token_required)):
     try:
-        return {"email": payload.email, "user_id": payload.user_id}
+        return {
+            "email": payload.email,
+            "user_id": payload.user_id,
+            "first_name": payload.first_name,
+            "last_name": payload.last_name,
+        }
     except Exception as e:
         raise HTTPException(status_code=401, detail=str(e))
 
