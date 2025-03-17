@@ -28,6 +28,7 @@ const formSchema = toTypedSchema(
   z.object({
     email: z.string().email('Please enter a valid email address'),
     password: z.string().min(3, 'Password must be at least 3 characters'),
+    rememberMe: z.boolean(),
   }),
 )
 
@@ -37,6 +38,7 @@ const { handleSubmit } = useForm({
   initialValues: {
     email: '',
     password: '',
+    rememberMe: false,
   },
 })
 
@@ -53,6 +55,7 @@ const onSubmit = handleSubmit(async (values) => {
     await handleLogin({
       email: values.email,
       password: values.password,
+      rememberMe: values.rememberMe,
     })
     toast({
       title: 'Login successful',
@@ -129,19 +132,15 @@ const onSubmit = handleSubmit(async (values) => {
               </FormItem>
             </FormField>
 
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="remember"
-                  class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                />
-                <label for="remember" class="text-sm text-gray-600">Remember me</label>
-              </div>
-              <a href="#" class="text-sm font-medium text-primary hover:text-primary/80"
-                >Forgot password?</a
-              >
-            </div>
+            <FormField v-slot="{ componentField }" name="rememberMe" type="checkbox">
+              <FormItem class="flex items-center space-x-2">
+                <FormControl>
+                  <Checkbox v-bind="componentField" />
+                </FormControl>
+                <FormLabel class="text-sm text-gray-600">Remember me</FormLabel>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
             <Button type="submit" class="w-full" :disabled="isLoading">
               <Icon v-if="isLoading" icon="lucide:loader-2" class="mr-2 h-4 w-4 animate-spin" />

@@ -1,7 +1,5 @@
 import axios from 'axios'
 import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
-import { useAuthStore } from '@/stores/auth'
-import { storeToRefs } from 'pinia'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
@@ -13,27 +11,6 @@ const axiosInstance: AxiosInstance = axios.create({
     Accept: 'application/json',
   },
 })
-
-// Helper function to get token from Pinia store
-const getAccessToken = (): string | null => {
-  const authStore = useAuthStore()
-  const { accessToken } = storeToRefs(authStore)
-  return accessToken.value
-}
-
-// Request interceptor for adding auth token
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = getAccessToken()
-
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-
-    return config
-  },
-  (error) => Promise.reject(error),
-)
 
 // Response interceptor for handling common errors
 axiosInstance.interceptors.response.use(
