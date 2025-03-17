@@ -13,9 +13,17 @@ export const useAuthStore = defineStore('auth-store', () => {
     isAuthenticated.value = value
   }
 
-  const handleLogin = async ({ email, password }: { email: string; password: string }) => {
+  const handleLogin = async ({
+    email,
+    password,
+    rememberMe = false,
+  }: {
+    email: string
+    password: string
+    rememberMe: boolean
+  }) => {
     try {
-      const { email: userEmail, userId } = await login(email, password)
+      const { email: userEmail, userId } = await login(email, password, rememberMe)
       setIsAuthenticated(true)
     } catch (error) {
       throw error

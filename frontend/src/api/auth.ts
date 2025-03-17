@@ -1,11 +1,11 @@
 import { apiClient } from './client'
 import type { AuthResponse } from '@/types/auth'
 
-export const login = async (email: string, password: string) => {
+export const login = async (email: string, password: string, rememberMe: boolean) => {
   try {
     return await apiClient.post<AuthResponse>(
       '/auth/login',
-      { email, password },
+      { email, password, rememberMe },
       {
         withCredentials: true,
       },
