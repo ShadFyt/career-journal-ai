@@ -1,4 +1,4 @@
-import { getUserSession, login } from '@/api/auth'
+import { getUserSession, login, logoutCurrentUser } from '@/api/auth'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -34,6 +34,18 @@ export const useAuthStore = defineStore('auth-store', () => {
     }
   }
 
+  const handleLogout = async () => {
+    try {
+      await logoutCurrentUser()
+      setIsAuthenticated(false)
+      profile.value = { email: '', userId: '' }
+      await router.push({ path: '/login' })
+    } catch (error) {
+      console.error('Logout failed:', error)
+      throw error
+    }
+  }
+
   const checkSession = async () => {
     try {
       await getUserSession()
@@ -60,6 +72,7 @@ export const useAuthStore = defineStore('auth-store', () => {
     isAuthenticated,
     setIsAuthenticated,
     handleLogin,
+    handleLogout,
     checkSession,
     isLoading,
     profile,

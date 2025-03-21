@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { profile } = storeToRefs(useAuthStore())
+const { handleLogout } = useAuthStore()
 </script>
 
 <template>
@@ -41,10 +42,7 @@ const { profile } = storeToRefs(useAuthStore())
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <LogOut />
-            Log out
-          </DropdownMenuItem>
+          <DropdownMenuItem @click="handleLogout"> Log out </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </SidebarMenuItem>
