@@ -26,3 +26,14 @@ export const getUserSession = async () => {
     throw error
   }
 }
+
+export const logoutCurrentUser = async () => {
+  try {
+    await apiClient.post('/auth/logout', {}, {
+      withCredentials: true,
+    })
+  } catch (error) {
+    console.error('Logout failed:', error)
+    throw error
+  }
+}
