@@ -1,5 +1,3 @@
-import datetime
-
 from authx import TokenPayload
 from domain.auth.auth_config import security
 from domain.auth.auth_dependencies import AuthDeps, AuthServiceDep
@@ -47,3 +45,14 @@ async def logout(response: Response):
     security.unset_refresh_cookies(response)
 
     return {"message": "Successfully logged out"}
+
+
+@router.get("/refresh-token", status_code=status.HTTP_200_OK)
+async def refresh_token(
+    service: AuthServiceDep,
+    response: Response,
+    payload: TokenPayload = Depends(security.refresh_token_required),
+):
+    access_token = await service.refresh_access_token(payload)
+    security.set_access_cookies(access_token, response)
+    return {"message": "Successfully refreshed token"}
