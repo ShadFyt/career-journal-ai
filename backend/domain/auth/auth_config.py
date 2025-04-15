@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 1 day
-REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 20  # 20 days
+REFRESH_TOKEN_EXPIRE_MINUTES = timedelta(days=20)  # 20 days
 
 config = AuthXConfig(
     JWT_ALGORITHM=os.getenv("JWT_ALGORITHM"),
