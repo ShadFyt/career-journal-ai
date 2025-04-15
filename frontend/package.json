@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@tanstack/vue-query": "^5.67.2",
+    "@tanstack/vue-query-devtools": "^5.74.3",
     "@vee-validate/zod": "^4.15.0",
     "@vueuse/core": "^12.8.2",
     "axios": "^1.8.2",
