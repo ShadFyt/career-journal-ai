@@ -23,6 +23,7 @@ class ProjectRead(ProjectBase):
 
     id: str
     last_entry_date: datetime | None = None
+    technologies: list[str] = []
 
 
 class ProjectUpdate(ProjectBase):

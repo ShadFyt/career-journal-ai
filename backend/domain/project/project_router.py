@@ -1,13 +1,13 @@
 from core.exceptions import BaseDomainError
 from database.models import Project
 from domain.project.project_dependencies import ProjectServiceDep
-from domain.project.project_schema import ProjectCreate, ProjectUpdate
+from domain.project.project_schema import ProjectCreate, ProjectUpdate, ProjectRead
 from fastapi import APIRouter, status
 
 router = APIRouter()
 
 
-@router.get("", response_model=list[Project])
+@router.get("", response_model=list[ProjectRead])
 async def get_projects(
     service: ProjectServiceDep,
 ):
