@@ -36,7 +36,7 @@ export const useProjectService = () => {
 
   return {
     getProjects,
-    projects: projects.value ?? [],
+    projects: projects,
     isLoading,
     isFetched,
   }
