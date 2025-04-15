@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Toaster from '@/components/ui/toast/Toaster.vue'
 import { onErrorCaptured, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useErrorStore } from '@/stores/error'
@@ -21,7 +22,7 @@ onErrorCaptured((error) => {
 })
 
 onMounted(async () => {
-  if (isLoading.value === true) {
+  if (isLoading.value) {
     start()
   } else {
     showLoader.value = false
@@ -31,6 +32,7 @@ onMounted(async () => {
 </script>
 
 <template>
+  <Toaster />
   <MainLayout>
     <!-- Show loading spinner while checking auth -->
     <Loader v-if="isLoading && showLoader" />
