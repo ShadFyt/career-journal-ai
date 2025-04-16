@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useProjectService } from '@/services'
+import ProjectsLoading from '@/components/ProjectsLoading.vue'
 
-const { projects, isFetched } = useProjectService()
+const { projects, isLoading } = useProjectService()
 
 const searchQuery = ref('')
 const techFilter = ref('all')
@@ -47,11 +48,23 @@ const filteredProjects = computed(() => {
       :allTechnologies="allTechnologies"
     />
 
-    <!-- Grid View -->
-    <ProjectGridView v-if="viewType === 'grid'" :filteredProjects="filteredProjects" />
-    <!-- List View -->
-    <ProjectListView v-else :filteredProjects="filteredProjects" />
-    <!-- Empty State -->
-    <EmptyState :filteredProjects="filteredProjects" />
+    <!-- Loading State -->
+    <div v-if="isLoading" class="py-4">
+      <ProjectsLoading :viewType="viewType" />
+    </div>
+
+    <!-- Content when loaded -->
+    <div v-else>
+      <!-- Grid View -->
+      <ProjectGridView v-if="viewType === 'grid'" :filteredProjects="filteredProjects" />
+      <!-- List View -->
+      <ProjectListView v-else :filteredProjects="filteredProjects" />
+      <!-- Empty State -->
+      <EmptyState
+        v-if="filteredProjects.length === 0 || isLoading"
+        :filteredProjects="filteredProjects"
+        :isLoading="isLoading"
+      />
+    </div>
   </div>
 </template>
