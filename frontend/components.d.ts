@@ -63,7 +63,7 @@ declare module 'vue' {
     MainLayout: typeof import('./src/components/layout/MainLayout.vue')['default']
     ProjectGridView: typeof import('./src/components/projects/ProjectGridView.vue')['default']
     ProjectListView: typeof import('./src/components/projects/ProjectListView.vue')['default']
-    ProjectsLoading: typeof import('./src/components/ProjectsLoading.vue')['default']
+    ProjectsLoading: typeof import('./src/components/projects/ProjectsLoading.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ScrollArea: typeof import('./src/components/ui/scroll-area/ScrollArea.vue')['default']
