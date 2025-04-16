@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from typing import TypedDict
+from typing import TypedDict, Any, Coroutine
 
 from authx import TokenPayload
 from database.models import User
@@ -18,7 +18,7 @@ class AuthService:
     def __init__(self, user_service: UserService) -> None:
         self.user_service = user_service
 
-    async def login(self, email: str, password: str) -> AuthSuccess:
+    async def login(self, email: str, password: str) -> dict[str, str]:
         user = await self.user_service.get_user_by_email(email)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
