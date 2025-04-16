@@ -11,7 +11,7 @@ const viewType = ref<'grid' | 'list'>('grid')
 
 const allTechnologies = computed(() => {
   const techSet = new Set<string>()
-  if (!isFetched.value) return []
+  if (!projects.value) return []
   projects.value?.forEach((project) => {
     project?.technologies?.forEach((tech) => techSet.add(tech))
   })
@@ -19,20 +19,18 @@ const allTechnologies = computed(() => {
 })
 
 const filteredProjects = computed(() => {
-  if (!isFetched.value) return []
-  return (
-    projects.value?.filter((project) => {
-      const matchesSearch =
-        searchQuery.value === '' ||
-        project.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        project.description.toLowerCase().includes(searchQuery.value.toLowerCase())
+  if (!projects.value) return []
+  return projects.value?.filter((project) => {
+    const matchesSearch =
+      searchQuery.value === '' ||
+      project.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      project.description.toLowerCase().includes(searchQuery.value.toLowerCase())
 
-      const matchesTech =
-        techFilter.value === 'all' || project.technologies.includes(techFilter.value)
+    const matchesTech =
+      techFilter.value === 'all' || project.technologies.includes(techFilter.value)
 
-      return matchesSearch && matchesTech
-    }) ?? []
-  )
+    return matchesSearch && matchesTech
+  })
 })
 </script>
 
