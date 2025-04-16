@@ -15,7 +15,6 @@ defineProps<{
         :key="`skeleton-${i}`"
         class="bg-card rounded-lg shadow overflow-hidden flex flex-col"
       >
-        <Skeleton class="w-full h-40" />
         <div class="p-4 space-y-3">
           <Skeleton class="h-6 w-3/4" />
           <Skeleton class="h-4 w-full" />
@@ -35,7 +34,6 @@ defineProps<{
         class="bg-card rounded-lg shadow overflow-hidden p-4"
       >
         <div class="flex flex-col md:flex-row gap-4">
-          <Skeleton class="h-24 w-24 flex-shrink-0 rounded-md" />
           <div class="flex-1 space-y-3">
             <Skeleton class="h-6 w-1/3" />
             <Skeleton class="h-4 w-full" />
