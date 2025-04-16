@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useProjectService } from '@/services'
-import ProjectsLoading from '@/components/ProjectsLoading.vue'
 
 const { projects, isLoading } = useProjectService()
 
