@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const props = defineProps<{
   searchQuery: string
@@ -8,6 +11,7 @@ const props = defineProps<{
   allTechnologies: string[]
   viewType: 'grid' | 'list'
 }>()
+
 const emit = defineEmits(['update:searchQuery', 'update:techFilter', 'update:viewType'])
 
 const searchQuery = computed({
@@ -36,6 +40,10 @@ const viewType = computed({
     emit('update:viewType', value)
   },
 })
+
+const goToNewProject = () => {
+  router.push('/projects/new')
+}
 </script>
 
 <template>
@@ -82,6 +90,22 @@ const viewType = computed({
       >
         <Icon icon="lucide:list" width="20" height="20" />
       </Button>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            aria-label="add new project"
+            @click="goToNewProject"
+            variant="outline"
+            size="icon"
+          >
+            <Icon icon="lucide:folder-plus" width="20" height="20" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Add new project</p>
+        </TooltipContent>
+      </Tooltip>
     </div>
   </div>
 </template>
