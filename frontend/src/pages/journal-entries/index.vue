@@ -98,7 +98,7 @@ const toggleExpanded = (id: string) => {
 
 const isExpanded = (id: string) => {
   if (!id) return false
-  return !!expandedEntries.value[id]
+  return expandedEntries.value[id]
 }
 
 const canViewEntry = (entry: JournalEntry) => !entry.isPrivate || entry.userId === mockUser

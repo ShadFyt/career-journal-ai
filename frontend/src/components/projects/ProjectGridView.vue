@@ -49,7 +49,9 @@ defineProps<{
             </span>
           </div>
 
-          <span class="text-sm text-gray-500"> Updated: {{ formatDate(project.updatedAt) }} </span>
+          <span v-if="project.lastEntryDate" class="text-sm text-gray-500">
+            Updated: {{ formatDate(project.lastEntryDate) }}
+          </span>
         </div>
       </CardContent>
     </Card>

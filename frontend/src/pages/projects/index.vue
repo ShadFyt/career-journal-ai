@@ -1,53 +1,8 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
+import { useProjectService } from '@/services'
 
-const projects = ref([
-  {
-    id: 1,
-    name: 'Vue Dashboard',
-    description:
-      'A responsive admin dashboard built with Vue.js and Tailwind CSS with dark mode support and customizable widgets.',
-    link: 'https://github.com/username/vue-dashboard',
-    technologies: ['Vue.js', 'Tailwind CSS', 'Chart.js', 'Vite'],
-    updatedAt: '2025-02-15T14:22:00Z',
-  },
-  {
-    id: 2,
-    name: 'E-Commerce API',
-    description:
-      'RESTful API for e-commerce applications with user authentication, product management, and order processing.',
-    link: 'https://github.com/username/ecommerce-api',
-    technologies: ['Node.js', 'Express', 'MongoDB', 'JWT', 'Docker'],
-    updatedAt: '2025-01-20T09:45:00Z',
-  },
-  {
-    id: 3,
-    name: 'Portfolio Website',
-    description:
-      'Personal portfolio website showcasing projects and skills with a modern, minimalist design.',
-    link: 'https://github.com/username/portfolio',
-    technologies: ['Vue.js', 'GSAP', 'Tailwind CSS', 'Firebase'],
-    updatedAt: '2025-02-28T16:30:00Z',
-  },
-  {
-    id: 4,
-    name: 'Weather App',
-    description:
-      'A weather forecast application providing real-time weather data with location detection and 5-day forecasts.',
-    link: 'https://github.com/username/weather-app',
-    technologies: ['Vue.js', 'OpenWeather API', 'Geolocation API'],
-    updatedAt: '2025-01-05T11:15:00Z',
-  },
-  {
-    id: 5,
-    name: 'Task Manager',
-    description:
-      'Collaborative task management application with real-time updates, task assignments, and progress tracking.',
-    link: 'https://github.com/username/task-manager',
-    technologies: ['Vue.js', 'Pinia', 'Firebase', 'Tailwind CSS'],
-    updatedAt: '2025-02-10T13:40:00Z',
-  },
-])
+const { projects, isLoading } = useProjectService()
 
 const searchQuery = ref('')
 const techFilter = ref('all')
@@ -55,14 +10,16 @@ const viewType = ref<'grid' | 'list'>('grid')
 
 const allTechnologies = computed(() => {
   const techSet = new Set<string>()
-  projects.value.forEach((project) => {
-    project.technologies.forEach((tech) => techSet.add(tech))
+  if (!projects.value) return []
+  projects.value?.forEach((project) => {
+    project?.technologies?.forEach((tech) => techSet.add(tech))
   })
   return [...techSet].sort()
 })
 
 const filteredProjects = computed(() => {
-  return projects.value.filter((project) => {
+  if (!projects.value) return []
+  return projects.value?.filter((project) => {
     const matchesSearch =
       searchQuery.value === '' ||
       project.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
@@ -88,11 +45,23 @@ const filteredProjects = computed(() => {
       :allTechnologies="allTechnologies"
     />
 
-    <!-- Grid View -->
-    <ProjectGridView v-if="viewType === 'grid'" :filteredProjects="filteredProjects" />
-    <!-- List View -->
-    <ProjectListView v-else :filteredProjects="filteredProjects" />
-    <!-- Empty State -->
-    <EmptyState :filteredProjects="filteredProjects" />
+    <!-- Loading State -->
+    <div v-if="isLoading" class="py-4">
+      <ProjectsLoading :viewType="viewType" />
+    </div>
+
+    <!-- Content when loaded -->
+    <div v-else>
+      <!-- Grid View -->
+      <ProjectGridView v-if="viewType === 'grid'" :filteredProjects="filteredProjects" />
+      <!-- List View -->
+      <ProjectListView v-else :filteredProjects="filteredProjects" />
+      <!-- Empty State -->
+      <EmptyState
+        v-if="filteredProjects.length === 0 || isLoading"
+        :filteredProjects="filteredProjects"
+        :isLoading="isLoading"
+      />
+    </div>
   </div>
 </template>

@@ -1,7 +1,9 @@
-import axios from 'axios'
 import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios from 'axios'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+const CSRF_TOKEN_COOKIE_NAME = 'csrf_access_token'
+const CSRF_TOKEN_HEADER_NAME = 'X-CSRF-Token'
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: `${API_BASE_URL}/api`,
@@ -11,6 +13,35 @@ const axiosInstance: AxiosInstance = axios.create({
     Accept: 'application/json',
   },
 })
+
+/**
+ * Get CSRF token from cookies
+ * Extracts csrf_access_token from cookies
+ */
+const getCsrfToken = (): string | null => {
+  const cookies = document.cookie.split(';')
+  for (const cookie of cookies) {
+    const [name, value] = cookie.trim().split('=')
+    if (name === CSRF_TOKEN_COOKIE_NAME) {
+      return value
+    }
+  }
+  return null
+}
+
+// Request interceptor for adding CSRF token
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const csrfToken = getCsrfToken()
+    if (csrfToken) {
+      config.headers[CSRF_TOKEN_HEADER_NAME] = csrfToken
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  },
+)
 
 // Response interceptor for handling common errors
 axiosInstance.interceptors.response.use(
