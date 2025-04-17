@@ -30,7 +30,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=["http://localhost:5173"],
-    allow_methods=["*"],
+    allow_methods=["POST", "GET", "PATCH", "DELETE"],
+    allow_headers=["X-CSRF-Token"],
 )
 admin.mount_to(app)
 security.handle_errors(app)
