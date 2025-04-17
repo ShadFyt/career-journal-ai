@@ -1,6 +1,6 @@
 import { useToast } from '@/components/ui/toast'
-import { getProjectsFromApi } from '@/api'
-import { useQuery } from '@tanstack/vue-query'
+import { createProject, getProjectsFromApi } from '@/api'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
 export const queryKeys = {
   projects: {
@@ -12,6 +12,7 @@ export const queryKeys = {
 
 export const useProjectService = () => {
   const { toast } = useToast()
+  const queryClient = useQueryClient()
 
   const getProjects = async () => {
     try {
@@ -24,6 +25,22 @@ export const useProjectService = () => {
       })
     }
   }
+
+  const mutation = useMutation({
+    mutationFn: createProject,
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all })
+    },
+    onError(error) {
+      console.error('createNewProject', error)
+      toast({
+        title: 'Something went wrong while creating the project',
+        description: 'Please try again later.',
+        variant: 'destructive',
+      })
+    },
+  })
 
   const {
     data: projects,
@@ -39,5 +56,6 @@ export const useProjectService = () => {
     projects: projects,
     isLoading,
     isFetched,
+    mutation,
   }
 }
