@@ -42,7 +42,8 @@ const filterTechnologies = computed(
       <CardDescription> Browse and search through your technology stack </CardDescription>
       <Input placeholder="Filter technologies..." v-model="searchQuery" class="mt-2" />
     </CardHeader>
-    <CardContent>
+    <TechnologyLoading v-if="isLoading" />
+    <CardContent v-else>
       <ScrollArea class="h-full">
         <div class="space-y-4">
           <template v-if="filterTechnologies.length > 0">
