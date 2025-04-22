@@ -3,5 +3,5 @@ export type TechnologyRead = {
   name: string
   description: string | null
   language: string | null
-  entries: number
+  journalEntries: number
 }

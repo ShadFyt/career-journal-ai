@@ -1,71 +1,25 @@
 <script setup lang="ts">
-const router = useRouter()
+import { useTechnologyService } from '@/services'
 import { Icon } from '@iconify/vue'
+
+const router = useRouter()
 
 const navigateToHome = () => {
   router.push('/')
 }
 
-const mockTechnologies = ref([
-  {
-    id: '1',
-    name: 'Vue.js',
-    description: 'A progressive JavaScript framework for building user interfaces',
-    language: 'Javascript',
-    journalEntries: [],
-  },
-  {
-    id: '2',
-    name: 'React',
-    description: 'A JavaScript library for building user interfaces',
-    language: 'Javascript',
-    journalEntries: [],
-  },
-  {
-    id: '3',
-    name: 'Python',
-    description: 'A high-level programming language for general-purpose programming',
-    language: 'Python',
-    journalEntries: [],
-  },
-  {
-    id: '4',
-    name: 'Node.js',
-    description: 'A runtime environment for building server-side applications',
-    language: 'Javascript',
-    journalEntries: [],
-  },
-  {
-    id: '5',
-    name: 'Django',
-    description: 'A high-level Python web framework',
-    language: 'Python',
-    journalEntries: [],
-  },
-  {
-    id: '6',
-    name: 'Flask',
-    description: 'A micro web framework for Python',
-    language: 'Python',
-    journalEntries: [],
-  },
-  {
-    id: '7',
-    name: 'Express.js',
-    description: 'A Node.js framework for building APIs',
-    language: 'Javascript',
-    journalEntries: [],
-  },
-])
+const { technologies, isLoading } = useTechnologyService()
 
 const searchQuery = ref('')
 
-const filterTechnologies = computed(() =>
-  mockTechnologies.value.filter(
-    (tech) =>
-      tech.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      tech.description.toLowerCase().includes(searchQuery.value.toLowerCase()),
-  ),
+const filterTechnologies = computed(
+  () =>
+    technologies.value?.filter(
+      (tech) =>
+        (tech.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+          tech?.description?.toLowerCase().includes(searchQuery.value.toLowerCase())) ??
+        '',
+    ) ?? [],
 )
 </script>
 
@@ -73,10 +27,10 @@ const filterTechnologies = computed(() =>
   <Card class="w-full h-full">
     <CardHeader class="pb-2">
       <div class="flex items-center mb-4">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          @click="navigateToHome" 
+        <Button
+          variant="ghost"
+          size="sm"
+          @click="navigateToHome"
           class="mr-2 -ml-2 h-8"
           aria-label="Back to Home"
         >
@@ -100,7 +54,7 @@ const filterTechnologies = computed(() =>
                     {{ tech.language }}
                   </Badge>
                 </div>
-                <Badge variant="outline"> {{ (tech?.journalEntries || []).length }} entries </Badge>
+                <Badge variant="outline"> {{ tech?.journalEntries ?? 0 }} entries </Badge>
               </div>
               <p v-if="tech.description" class="mt-2 text-sm text-gray-500">
                 {{ tech.description }}
