@@ -113,6 +113,7 @@ declare module 'vue' {
     SidebarSeparator: typeof import('./src/components/ui/sidebar/SidebarSeparator.vue')['default']
     SidebarTrigger: typeof import('./src/components/ui/sidebar/SidebarTrigger.vue')['default']
     Skeleton: typeof import('./src/components/ui/skeleton/Skeleton.vue')['default']
+    TechnologyActionBar: typeof import('./src/components/technology/TechnologyActionBar.vue')['default']
     TechnologyLoading: typeof import('./src/components/technology/TechnologyLoading.vue')['default']
     TimelineHeader: typeof import('./src/components/journal/TimelineHeader.vue')['default']
     Toast: typeof import('./src/components/ui/toast/Toast.vue')['default']
