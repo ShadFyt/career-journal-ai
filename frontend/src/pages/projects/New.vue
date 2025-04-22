@@ -22,7 +22,7 @@ const goBack = () => {
   router.push('/projects')
 }
 
-const { handleSubmit, isSubmitting } = useForm({
+const { handleSubmit, isSubmitting, meta } = useForm({
   validationSchema,
   initialValues: {
     name: '',
@@ -32,6 +32,8 @@ const { handleSubmit, isSubmitting } = useForm({
     isPrivate: false,
   },
 })
+
+const isDisabled = computed(() => isSubmitting.value || !meta.value.valid)
 
 // Handle form submission
 const onSubmit = handleSubmit(async (values) => {
@@ -66,7 +68,7 @@ const onSubmit = handleSubmit(async (values) => {
           <span class="ml-1 text-sm text-muted-foreground">Back</span>
         </Button>
       </div>
-      <h1 class="text-3xl font-bold">Create New Project</h1>
+      <h2 class="text-2xl font-bold">Create New Project</h2>
     </div>
 
     <div class="max-w-2xl">
@@ -120,7 +122,7 @@ const onSubmit = handleSubmit(async (values) => {
             </FormItem>
           </FormField>
 
-          <Button type="submit" :disabled="isSubmitting" class="mt-4">
+          <Button type="submit" :disabled="isDisabled" class="mt-4">
             <span v-if="isSubmitting" class="mr-2">
               <i class="i-lucide-loader-2 animate-spin"></i>
             </span>

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useProjectService } from '@/services'
+import { useLocalStorage } from '@vueuse/core'
+import { VIEW_TYPE } from '@/constants'
 
 const { projects, isLoading } = useProjectService()
 
+const viewType = useLocalStorage<'grid' | 'list'>(VIEW_TYPE, 'grid')
+
 const searchQuery = ref('')
 const techFilter = ref('all')
-const viewType = ref<'grid' | 'list'>('grid')
 
 const allTechnologies = computed(() => {
   const techSet = new Set<string>()
@@ -57,11 +60,7 @@ const filteredProjects = computed(() => {
       <!-- List View -->
       <ProjectListView v-else :filteredProjects="filteredProjects" />
       <!-- Empty State -->
-      <EmptyState
-        v-if="filteredProjects.length === 0 || isLoading"
-        :filteredProjects="filteredProjects"
-        :isLoading="isLoading"
-      />
+      <EmptyState v-if="filteredProjects.length === 0" :filteredProjects="filteredProjects" />
     </div>
   </div>
 </template>

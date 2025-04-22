@@ -45,7 +45,7 @@ import { Icon } from '@iconify/vue'
         >
           <div class="flex items-center gap-2">
             <h2 class="text-xl font-semibold mb-4">Technologies</h2>
-            <Icon icon="lucide:atom" width="24" height="24" class="mb-3" />
+            <Icon icon="lucide:code" width="24" height="24" class="mb-3" />
           </div>
           <p class="text-gray-500 dark:text-gray-400 mb-4">
             Manage your technology stack and skills development.
