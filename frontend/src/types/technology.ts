@@ -1,6 +1,7 @@
-export type Technology = {
-    id: string;
-    name: string;
-    description: string | null;
-    language: string | null;
+export type TechnologyRead = {
+  id: string
+  name: string
+  description: string | null
+  language: string | null
+  entries: number
 }
