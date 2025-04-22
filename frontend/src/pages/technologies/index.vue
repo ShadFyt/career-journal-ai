@@ -40,7 +40,12 @@ const filterTechnologies = computed(
       </div>
       <CardTitle>Technologies</CardTitle>
       <CardDescription> Browse and search through your technology stack </CardDescription>
-      <Input placeholder="Filter technologies..." v-model="searchQuery" class="mt-2" />
+      <Input
+        placeholder="Filter technologies..."
+        v-model="searchQuery"
+        class="mt-2"
+        :disabled="isLoading"
+      />
     </CardHeader>
     <TechnologyLoading v-if="isLoading" />
     <CardContent v-else>
