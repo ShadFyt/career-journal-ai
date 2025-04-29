@@ -61,6 +61,7 @@ declare module 'vue' {
     Label: typeof import('./src/components/ui/label/Label.vue')['default']
     Loader: typeof import('./src/components/ui/loader/Loader.vue')['default']
     MainLayout: typeof import('./src/components/layout/MainLayout.vue')['default']
+    NewTechModal: typeof import('./src/components/technology/NewTechModal.vue')['default']
     ProjectGridView: typeof import('./src/components/projects/ProjectGridView.vue')['default']
     ProjectListView: typeof import('./src/components/projects/ProjectListView.vue')['default']
     ProjectsLoading: typeof import('./src/components/projects/ProjectsLoading.vue')['default']
