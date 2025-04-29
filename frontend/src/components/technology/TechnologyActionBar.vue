@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { boolean, string } from 'zod'
-
 defineProps({
-  search: string,
-  isLoading: boolean,
+  search: String,
+  isLoading: Boolean,
 })
 </script>
 
 <template>
-  <Input
-    placeholder="Filter technologies..."
-    v-model="searchQuery"
-    class="mt-2"
-    :disabled="isLoading"
-  />
+  <div class="flex flex-col sm:flex-row justify-between mb-5 gap-5">
+    <Input
+      placeholder="Filter technologies..."
+      :v-model="search"
+      class="mt-2"
+      :disabled="isLoading"
+    />
+    <NewTechModal />
+  </div>
 </template>
