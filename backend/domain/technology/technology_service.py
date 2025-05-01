@@ -2,7 +2,11 @@ from core.exceptions import BaseDomainError
 from database.models import Technology
 from domain.technology.technology_exceptions import TechnologyNotFoundError
 from domain.technology.technology_repo import TechnologyRepo
-from domain.technology.technology_schema import TechnologyCreate, TechnologyWithCount
+from domain.technology.technology_schema import (
+    TechnologyCreate,
+    TechnologyWithCount,
+    TechnologyUpdate,
+)
 from enums import Language
 
 
@@ -45,6 +49,25 @@ class TechnologyService:
             raise TechnologyNotFoundError(message="Not all technologies found")
 
         return technologies
+
+    async def update_technology(
+        self, technology: TechnologyUpdate, tech_id: str
+    ) -> Technology:
+        """Edit a technology by id.
+
+        Returns:
+            Technology: The newly updated technology
+
+        Raises:
+            TechnologyError: If operation fails with a known error
+            Exception: If an unexpected error occurs
+        """
+        try:
+            return await self.repo.update_technology(tech_id, technology)
+        except BaseDomainError as e:
+            raise e
+        except Exception as e:
+            raise Exception(f"Unexpected error in technology service: {str(e)}")
 
     async def add_technology(
         self, technology: TechnologyCreate, user_id: str
