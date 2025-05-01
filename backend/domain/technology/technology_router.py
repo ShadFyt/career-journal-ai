@@ -3,7 +3,11 @@ from authx import TokenPayload
 from core.exceptions import BaseDomainError
 from database.models import Technology
 from domain.technology.technology_dependencies import TechnologyServiceDep
-from domain.technology.technology_schema import TechnologyCreate, TechnologyWithCount
+from domain.technology.technology_schema import (
+    TechnologyCreate,
+    TechnologyWithCount,
+    TechnologyUpdate,
+)
 from enums import Language
 from fastapi import APIRouter, status, Depends
 from domain.auth.auth_config import security
@@ -59,7 +63,31 @@ async def add_technology(
         raise e
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.patch("/{tech_id}", status_code=status.HTTP_200_OK, response_model=Technology)
+async def update_technology(
+    tech_id: str,
+    technology: TechnologyUpdate,
+    service: TechnologyServiceDep,
+    payload: TokenPayload = Depends(security.access_token_required),
+):
+    """Partial update a technology.
+
+    Args:
+        tech_id: Unique identifier of the technology to update
+        technology: technology update data
+        service: Technology service instance
+        payload: Authentication payload
+
+    Returns:
+        Technology: The newly created technology
+    """
+    try:
+        return await service.update_technology(technology, tech_id)
+    except BaseDomainError as e:
+        raise e
+
+
+@router.delete("/{tech_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_technology(
     tech_id: str,
     service: TechnologyServiceDep,
