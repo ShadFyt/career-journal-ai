@@ -31,7 +31,7 @@ class Technology(SQLModel, table=True):
     id: str = Field(
         default_factory=lambda: str(uuid4()), primary_key=True, nullable=False
     )
-    name: str = Field(index=True, unique=True)
+    name: str = Field(index=True)
     description: str | None = Field(default=None)
     language: Language | None = Field(default=None, index=True)
     journal_entries: List["JournalEntry"] = Relationship(
