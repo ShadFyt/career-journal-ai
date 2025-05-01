@@ -41,37 +41,39 @@ async def get_technologies(
 async def add_technology(
     technology: Technology_Create,
     service: TechnologyServiceDep,
+    payload: TokenPayload = Depends(security.access_token_required),
 ):
     """Add a new technology.
 
     Args:
         technology: Technology to add
         service: Technology service instance
+        payload: Authentication payload
 
     Returns:
         Technology: The newly created technology
     """
     try:
-        return await service.add_technology(technology)
+        return await service.add_technology(technology, payload.user_id)
     except BaseDomainError as e:
         raise e
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_technology(
-    id: str,
+    tech_id: str,
     service: TechnologyServiceDep,
 ) -> None:
     """Delete a technology from the database by its ID.
 
     Args:
-        id: Unique identifier of the technology to delete
+        tech_id: Unique identifier of the technology to delete
         service: Technology service instance
 
     Raises:
         HTTPException: If the request fails
     """
     try:
-        await service.delete_technology(id)
+        await service.delete_technology(tech_id)
     except BaseDomainError as e:
         raise e
