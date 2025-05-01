@@ -220,6 +220,75 @@ class TechnologyRepo:
                 params={"error": str(e)},
             )
 
+    async def update_technology(
+        self, tech_id: str, technology_data: TechnologyUpdate
+    ) -> Technology:
+        """Update an existing technology in the database.
+
+        Args:
+            tech_id: Unique identifier of the technology to update
+            technology_data: Pydantic model with fields to update
+
+        Returns:
+            Technology: The updated technology
+
+        Raises:
+            TechnologyNotFoundError: If technology with given ID does not exist
+            TechnologyDatabaseError: If database operation fails or integrity constraint is violated
+        """
+        try:
+            # First check if the technology exists
+            technology = await self.get_technology(tech_id)
+
+            # Get dictionary of fields explicitly set in the request
+            update_data = technology_data.model_dump(exclude_unset=True)
+
+            # Update only the provided fields
+            updated = False
+            for key, value in update_data.items():
+                if getattr(technology, key) != value:
+                    setattr(technology, key, value)  # Update attributes dynamically
+                    updated = True
+
+            # Commit the changes only if something actually changed
+            if updated:
+                self.session.add(
+                    technology
+                )  # Add the modified object back to the session context
+                await self.session.commit()
+                await self.session.refresh(technology)
+                logger.info(f"Updated technology with id {tech_id}")
+            else:
+                logger.info(f"No updates needed for technology with id {tech_id}")
+
+            return technology
+
+        except IntegrityError as e:
+            await self.session.rollback()
+            # Use .get() for safer access in the error message, provide default if name wasn't in update
+            updated_name = technology_data.model_dump().get("name", technology.name)
+            if "unique constraint" in str(e).lower():
+                raise TechnologyDatabaseError(
+                    code=ErrorCode.DUPLICATE_TECHNOLOGY,
+                    message="Technology with this name already exists",
+                    params={"name": updated_name},  # Use the potentially updated name
+                    status_code=status.HTTP_409_CONFLICT,
+                )
+            raise TechnologyDatabaseError(
+                code=ErrorCode.DATABASE_ERROR,
+                message="Failed to update technology due to integrity error",
+                params={"error": str(e)},
+            )
+
+        except SQLAlchemyError as e:
+            await self.session.rollback()
+            logger.error(f"Failed to update technology with id {tech_id}: {str(e)}")
+            raise TechnologyDatabaseError(
+                code=ErrorCode.DATABASE_ERROR,
+                message="Failed to update technology",
+                params={"error": str(e)},
+            )
+
     @staticmethod
     def _build_usage_count_subquery():
         """Build a subquery to count technology usage in journal entries."""
