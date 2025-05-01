@@ -3,7 +3,7 @@ from authx import TokenPayload
 from core.exceptions import BaseDomainError
 from database.models import Technology
 from domain.technology.technology_dependencies import TechnologyServiceDep
-from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
+from domain.technology.technology_schema import TechnologyCreate, TechnologyWithCount
 from enums import Language
 from fastapi import APIRouter, status, Depends
 from domain.auth.auth_config import security
@@ -39,7 +39,7 @@ async def get_technologies(
 
 @router.post("", status_code=status.HTTP_201_CREATED, response_model=Technology)
 async def add_technology(
-    technology: Technology_Create,
+    technology: TechnologyCreate,
     service: TechnologyServiceDep,
     payload: TokenPayload = Depends(security.access_token_required),
 ):

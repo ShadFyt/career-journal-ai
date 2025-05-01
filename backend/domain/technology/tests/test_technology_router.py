@@ -8,7 +8,7 @@ from domain.technology.technology_exceptions import (
     TechnologyNotFoundError,
 )
 from domain.technology.technology_router import router
-from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
+from domain.technology.technology_schema import TechnologyCreate, TechnologyWithCount
 from domain.technology.technology_service import TechnologyService
 from enums import Language
 from fastapi import FastAPI, status
@@ -110,7 +110,7 @@ def test_get_technologies_handles_error(client, mock_technology_service):
 def test_add_technology_success(client, mock_technology_service):
     """Test successful POST /api/technologies."""
     # Prepare test data
-    new_tech = Technology_Create(
+    new_tech = TechnologyCreate(
         name="TypeScript",
         description="JavaScript with types",
         language=Language.JAVASCRIPT,

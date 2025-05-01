@@ -9,7 +9,7 @@ from domain.technology.technology_exceptions import (
     TechnologyNotFoundError,
 )
 from domain.technology.technology_repo import TechnologyRepo
-from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
+from domain.technology.technology_schema import TechnologyCreate, TechnologyWithCount
 from enums import Language
 from fastapi import status
 from sqlalchemy.exc import SQLAlchemyError
@@ -193,7 +193,7 @@ async def test_get_technology_database_error(technology_repo: TechnologyRepo, mo
 @pytest.mark.asyncio
 async def test_add_technology_success(technology_repo: TechnologyRepo):
     """Test successfully adding a new technology."""
-    new_tech = Technology_Create(
+    new_tech = TechnologyCreate(
         name="TypeScript",
         description="JavaScript with types",
         language=Language.JAVASCRIPT,
@@ -215,7 +215,7 @@ async def test_add_technology_duplicate_name(
     technology_repo: TechnologyRepo, sample_technologies
 ):
     """Test that adding a technology with duplicate name raises correct error."""
-    duplicate_tech = Technology_Create(
+    duplicate_tech = TechnologyCreate(
         name="Python",  # Same name as in sample_technologies
         description="Different description",
         language=Language.PYTHON,
@@ -241,7 +241,7 @@ async def test_add_technology_database_error(technology_repo: TechnologyRepo, mo
         side_effect=SQLAlchemyError("Database error"),
     )
 
-    new_tech = Technology_Create(
+    new_tech = TechnologyCreate(
         name="NewTech",
         description="Test tech",
         language=Language.PYTHON,
@@ -256,7 +256,7 @@ async def test_add_technology_database_error(technology_repo: TechnologyRepo, mo
 @pytest.mark.asyncio
 async def test_add_technology_with_minimal_data(technology_repo: TechnologyRepo):
     """Test adding a technology with only required fields."""
-    minimal_tech = Technology_Create(name="MinimalTech")
+    minimal_tech = TechnologyCreate(name="MinimalTech")
 
     result = await technology_repo.add_technology(minimal_tech)
 

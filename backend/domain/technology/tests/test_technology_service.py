@@ -8,7 +8,7 @@ from domain.technology.technology_exceptions import (
     TechnologyNotFoundError,
 )
 from domain.technology.technology_repo import TechnologyRepo
-from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
+from domain.technology.technology_schema import TechnologyCreate, TechnologyWithCount
 from domain.technology.technology_service import TechnologyService
 from enums import Language
 from fastapi import status
@@ -79,7 +79,7 @@ async def test_get_technologies_handles_error(technology_service, mock_technolog
 async def test_add_technology_success(technology_service, mock_technology_repo):
     """Test successful technology creation."""
     # Prepare test data
-    new_tech = Technology_Create(
+    new_tech = TechnologyCreate(
         name="TypeScript",
         description="JavaScript with types",
         language=Language.JAVASCRIPT,
@@ -114,7 +114,7 @@ async def test_add_technology_handles_error(technology_service, mock_technology_
     )
 
     # Prepare test data
-    new_tech = Technology_Create(name="Existing")
+    new_tech = TechnologyCreate(name="Existing")
 
     # Verify error is propagated
     with pytest.raises(TechnologyDatabaseError) as exc_info:

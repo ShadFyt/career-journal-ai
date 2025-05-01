@@ -2,7 +2,7 @@ from core.exceptions import BaseDomainError
 from database.models import Technology
 from domain.technology.technology_exceptions import TechnologyNotFoundError
 from domain.technology.technology_repo import TechnologyRepo
-from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
+from domain.technology.technology_schema import TechnologyCreate, TechnologyWithCount
 from enums import Language
 
 
@@ -47,7 +47,7 @@ class TechnologyService:
         return technologies
 
     async def add_technology(
-        self, technology: Technology_Create, user_id: str
+        self, technology: TechnologyCreate, user_id: str
     ) -> Technology:
         """Create a new technology.
 

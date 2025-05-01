@@ -8,7 +8,12 @@ from domain.technology.technology_exceptions import (
     TechnologyDatabaseError,
     TechnologyNotFoundError,
 )
-from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
+from domain.technology.technology_schema import (
+    TechnologyCreate,
+    TechnologyWithCount,
+    TechnologyUpdate,
+)
+
 from enums import Language
 from fastapi import status
 from sqlalchemy import func, label, text
@@ -129,7 +134,7 @@ class TechnologyRepo:
             )
 
     async def add_technology(
-        self, technology: Technology_Create, user_id: str
+        self, technology: TechnologyCreate, user_id: str
     ) -> Technology:
         """Add a new technology to the database.
 

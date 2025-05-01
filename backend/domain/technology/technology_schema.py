@@ -12,7 +12,7 @@ class TechnologyRead(TechnologyBase):
     id: str
 
 
-class Technology_Create(TechnologyBase):
+class TechnologyCreate(TechnologyBase):
     """Data transfer object for creating a new Technology record"""
 
 
