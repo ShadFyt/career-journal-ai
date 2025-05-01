@@ -23,8 +23,24 @@ class TechnologyRepo:
     def __init__(self, session: SessionDep):
         self.session = session
 
+    @staticmethod
+    def _build_base_query(usage_count, user_id: str):
+        """Build the base query for retrieving technologies with usage counts."""
+        return (
+            select(
+                Technology,
+                label("usage_count", func.coalesce(usage_count.c.usage_count, 0)),
+            )
+            .where(Technology.user_id == user_id)
+            .outerjoin(
+                usage_count,
+                Technology.id == usage_count.c.technology_id,
+            )
+            .order_by(text("usage_count DESC"), Technology.name)
+        )
+
     async def get_technologies(
-        self, language: Language | None = None
+        self, user_id: str, language: Language | None = None
     ) -> list[TechnologyWithCount]:
         """Get all technologies from the database with their usage counts.
 
@@ -39,7 +55,7 @@ class TechnologyRepo:
         """
         try:
             usage_count = self._build_usage_count_subquery()
-            query = self._build_base_query(usage_count)
+            query = self._build_base_query(usage_count, user_id)
             query = self._apply_filters(query, language)
 
             results = await self.session.exec(query)
@@ -192,7 +208,8 @@ class TechnologyRepo:
                 params={"error": str(e)},
             )
 
-    def _build_usage_count_subquery(self):
+    @staticmethod
+    def _build_usage_count_subquery():
         """Build a subquery to count technology usage in journal entries."""
         return (
             select(
@@ -205,27 +222,15 @@ class TechnologyRepo:
             .subquery()
         )
 
-    def _build_base_query(self, usage_count):
-        """Build the base query for retrieving technologies with usage counts."""
-        return (
-            select(
-                Technology,
-                label("usage_count", func.coalesce(usage_count.c.usage_count, 0)),
-            )
-            .outerjoin(
-                usage_count,
-                Technology.id == usage_count.c.technology_id,
-            )
-            .order_by(text("usage_count DESC"), Technology.name)
-        )
-
-    def _apply_filters(self, query, language: Language | None):
+    @staticmethod
+    def _apply_filters(query, language: Language | None):
         """Apply filters to the query."""
         if language:
             query = query.filter(Technology.language == language)
         return query
 
-    def _map_to_domain(self, results) -> list[TechnologyWithCount]:
+    @staticmethod
+    def _map_to_domain(results) -> list[TechnologyWithCount]:
         """Map database results to domain models."""
         return [
             TechnologyWithCount(

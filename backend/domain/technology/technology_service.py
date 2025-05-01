@@ -11,12 +11,13 @@ class TechnologyService:
         self.repo = repo
 
     async def get_technologies(
-        self, language: Language | None = None
+        self, user_id: str, language: Language | None = None
     ) -> list[TechnologyWithCount]:
         """Get all technologies with their usage counts.
 
         Args:
             language: Optional filter by programming language
+            user_id: Unique identifier of the user
 
         Returns:
             list[TechnologyWithCount]: List of technologies with their usage counts
@@ -24,7 +25,7 @@ class TechnologyService:
         Raises:
             TechnologyError: If database operation fails
         """
-        return await self.repo.get_technologies(language=language)
+        return await self.repo.get_technologies(language=language, user_id=user_id)
 
     async def get_technologies_by_ids(self, ids: list[str]) -> list[Technology]:
         """Get technologies by their IDs.

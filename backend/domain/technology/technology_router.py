@@ -1,9 +1,13 @@
+from authx import TokenPayload
+
 from core.exceptions import BaseDomainError
 from database.models import Technology
 from domain.technology.technology_dependencies import TechnologyServiceDep
 from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
 from enums import Language
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Depends
+from domain.auth.auth_config import security
+
 
 router = APIRouter()
 
@@ -12,18 +16,22 @@ router = APIRouter()
 async def get_technologies(
     service: TechnologyServiceDep,
     language: Language | None = None,
+    payload: TokenPayload = Depends(security.access_token_required),
 ):
     """Get all technologies with their usage counts.
 
     Args:
         language: Optional filter by programming language
         service: Technology service instance
+        payload: Authentication payload
 
     Returns:
         list[TechnologyWithCount]: List of technologies with their usage counts
     """
     try:
-        return await service.get_technologies(language)
+        return await service.get_technologies(
+            user_id=payload.user_id, language=language
+        )
     except BaseDomainError as e:
         # Domain exceptions are already properly formatted with status code and detail
         raise e
