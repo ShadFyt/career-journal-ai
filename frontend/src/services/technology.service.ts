@@ -38,6 +38,11 @@ export const useTechnologyMutationService = () => {
   const createMutation = useMutation({
     mutationFn: createTechnology,
     onSuccess() {
+      toast({
+        title: 'Technology created',
+        description: 'Your technology has been created successfully.',
+        variant: 'default',
+      })
       queryClient.invalidateQueries({ queryKey: technologyQueryKeys.all })
     },
     onError(error) {
@@ -50,5 +55,5 @@ export const useTechnologyMutationService = () => {
     },
   })
 
-  return { create: createMutation }
+  return { createMutation }
 }
