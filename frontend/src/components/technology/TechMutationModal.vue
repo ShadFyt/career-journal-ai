@@ -8,23 +8,39 @@ import { FormField, FormItem } from '@/components/ui/form'
 import { useTextareaAutosize } from '@vueuse/core'
 import type { Textarea } from '@/components/ui/textarea'
 
-const { createMutation } = useTechnologyMutationService()
+const { technologies } = useTechnologyFetchService()
+const { createMutation, updateMutation } = useTechnologyMutationService()
 const { textarea, input } = useTextareaAutosize()
 
 const { profile } = useAuthStore()
-
 const router = useRouter()
-const isOpen = computed(() => router.currentRoute.value.name === '/technologies/new')
+
+const route = useRoute('/technologies/edit.[id]')
+
 const textareaComponentRef = ref<InstanceType<typeof Textarea> | null>(null)
+
+const isEdit = computed(() => router.currentRoute.value.name.includes('edit'))
+
+const tech = computed(() => {
+  const techId = route.params?.id
+  if (!techId || !isEdit) return null
+  return technologies.value?.find((tech) => tech.id === techId) ?? null
+})
+
+const isOpen = computed(
+  () =>
+    router.currentRoute.value.name === '/technologies/new' ||
+    router.currentRoute.value.name.includes('edit'),
+)
 
 const validationSchema = toTypedSchema(techSchemaCreate)
 
 const { handleSubmit, isSubmitting, meta } = useForm({
   validationSchema,
   initialValues: {
-    name: '',
-    description: '',
-    language: '',
+    name: tech.value?.name ?? '',
+    description: tech.value?.description ?? '',
+    language: tech.value?.language ?? '',
     userId: profile.userId,
   },
 })
@@ -41,6 +57,15 @@ const closeModal = (isOpen: boolean | globalThis.ComputedRef<boolean>) => {
 }
 
 const onSubmit = handleSubmit(async (values) => {
+  if (isEdit && tech.value?.id) {
+    updateMutation.mutate(
+      { ...values, id: tech.value.id },
+      {
+        onSettled: () => closeModal(!isOpen),
+      },
+    )
+    return
+  }
   await createMutation.mutateAsync(values, {
     onSettled: () => closeModal(!isOpen),
   })
@@ -95,7 +120,7 @@ watch(
             <span v-if="isSubmitting" class="mr-2">
               <i class="i-lucide-loader-2 animate-spin"></i>
             </span>
-            Add
+            {{ isEdit ? 'Update' : 'Add' }}
           </Button>
         </DialogFooter>
       </form>

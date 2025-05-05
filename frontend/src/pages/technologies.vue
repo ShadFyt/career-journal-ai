@@ -67,12 +67,17 @@ const filterTechnologies = computed(
                     {{ tech.description }}
                   </p>
                 </header>
-                <aside class="border-l border-gray-200 ml-3 flex flex-col justify-evenly">
+                <aside class="border-l border-gray-200 ml-3 flex flex-col justify-center gap-3">
                   <Button
                     variant="outline"
                     size="sm"
                     class="ml-2 h-8"
                     :aria-label="`edit ${tech.name}`"
+                    @click="
+                      () => {
+                        router.push('/technologies/edit/' + tech.id)
+                      }
+                    "
                   >
                     <span class="text-sm text-muted-foreground">Edit</span>
                     <Icon icon="lucide:edit" width="18" height="18" />
