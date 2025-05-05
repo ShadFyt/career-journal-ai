@@ -1,6 +1,6 @@
 import { useToast } from '@/components/ui/toast'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import { createTechnology, getTechnologiesFromApi } from '@/api'
+import { createTechnology, getTechnologiesFromApi, updateTechnology } from '@/api'
 
 export const technologyQueryKeys = {
   all: ['technologies'] as const,
@@ -55,5 +55,25 @@ export const useTechnologyMutationService = () => {
     },
   })
 
-  return { createMutation }
+  const updateMutation = useMutation({
+    mutationFn: updateTechnology,
+    onSuccess(values) {
+      toast({
+        title: `Technology ${values.name} updated`,
+        description: 'Your technology has been updated successfully.',
+        variant: 'default',
+      })
+      queryClient.invalidateQueries({ queryKey: technologyQueryKeys.all })
+    },
+    onError(error) {
+      console.error('updateTechnology', error)
+      toast({
+        title: 'Something went wrong while updating the technology',
+        description: 'Please try again later.',
+        variant: 'destructive',
+      })
+    },
+  })
+
+  return { createMutation, updateMutation }
 }
