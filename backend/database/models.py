@@ -33,7 +33,7 @@ class Technology(SQLModel, table=True):
     )
     name: str = Field(index=True)
     description: str | None = Field(default=None)
-    language: Language | None = Field(default=None, index=True)
+    language: str | None = Field(default=None, index=True)
     journal_entries: List["JournalEntry"] = Relationship(
         back_populates="technologies", link_model=JournalEntryTechnologyLink
     )

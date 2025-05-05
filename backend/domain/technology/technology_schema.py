@@ -6,7 +6,7 @@ from typing import Optional
 class TechnologyBase(BaseSchema):
     name: str
     description: str | None = None
-    language: Language | None = None
+    language: str | None = None
 
 
 class TechnologyRead(TechnologyBase):
@@ -28,4 +28,4 @@ class TechnologyUpdate(BaseSchema):
 
     name: Optional[str] = None
     description: Optional[str] = None
-    language: Optional[Language] = None
+    language: Optional[str] = None
