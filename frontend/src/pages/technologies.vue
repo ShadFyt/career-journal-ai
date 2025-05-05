@@ -45,27 +45,55 @@ const filterTechnologies = computed(
     <TechnologyLoading v-if="isLoading" />
     <CardContent v-else>
       <ScrollArea class="h-full">
-        <div class="space-y-4">
+        <section class="space-y-4">
           <template v-if="filterTechnologies.length > 0">
-            <div v-for="tech in filterTechnologies" :key="tech.id" class="p-4 border rounded-lg">
-              <div class="flex justify-between items-start">
-                <div>
-                  <h3 class="font-semibold text-lg">{{ tech.name || 'Unnamed Technology' }}</h3>
-                  <Badge v-if="tech.language" class="mt-1" variant="secondary">
-                    {{ tech.language }}
-                  </Badge>
-                </div>
-                <Badge variant="outline"> {{ tech?.journalEntries ?? 0 }} entries </Badge>
+            <article
+              v-for="tech in filterTechnologies"
+              :key="tech.id"
+              class="p-4 border rounded-lg"
+            >
+              <div class="flex flex-row">
+                <header class="flex-1">
+                  <div class="flex justify-between items-start">
+                    <hgroup>
+                      <h3 class="font-semibold text-lg">{{ tech.name || 'Unnamed Technology' }}</h3>
+                      <Badge v-if="tech.language" class="mt-1" variant="secondary">
+                        {{ tech.language }}
+                      </Badge>
+                    </hgroup>
+                    <Badge variant="outline"> {{ tech?.journalEntries ?? 0 }} entries </Badge>
+                  </div>
+                  <p v-if="tech.description" class="mt-2 text-sm text-gray-500">
+                    {{ tech.description }}
+                  </p>
+                </header>
+                <aside class="border-l border-gray-200 ml-3 flex flex-col justify-evenly">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    class="ml-2 h-8"
+                    :aria-label="`edit ${tech.name}`"
+                  >
+                    <span class="text-sm text-muted-foreground">Edit</span>
+                    <Icon icon="lucide:edit" width="18" height="18" />
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    class="ml-2 h-8"
+                    :aria-label="`delete ${tech.name}`"
+                  >
+                    <span class="text-sm text-muted-foreground">Delete</span>
+                    <Icon icon="lucide:delete" width="18" height="18" />
+                  </Button>
+                </aside>
               </div>
-              <p v-if="tech.description" class="mt-2 text-sm text-gray-500">
-                {{ tech.description }}
-              </p>
-            </div>
+            </article>
           </template>
           <div v-else class="text-center p-4 text-gray-500">
             No technologies found matching your filter.
           </div>
-        </div>
+        </section>
       </ScrollArea>
     </CardContent>
     <router-view />
