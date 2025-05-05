@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { techSchemaCreate } from '@/schemas/technology.schema.ts'
+import { techSchemaCreate, techSchemaUpdate } from '@/schemas/technology.schema.ts'
 
 export type TechnologyRead = {
   id: string
@@ -10,3 +10,4 @@ export type TechnologyRead = {
 }
 
 export type TechnologyCreateDto = z.infer<typeof techSchemaCreate>
+export type TechnologyUpdateDto = z.infer<typeof techSchemaUpdate>

@@ -24,6 +24,7 @@ const { handleSubmit, isSubmitting, meta } = useForm({
   initialValues: {
     name: '',
     description: '',
+    language: '',
     userId: profile.userId,
   },
 })
@@ -71,6 +72,12 @@ watch(
           <FormItem class="mb-2">
             <Label for="name" class="text-right"> Name </Label>
             <Input id="name" v-bind="componentField" class="col-span-3" />
+          </FormItem>
+        </FormField>
+        <FormField v-slot="{ componentField }" name="language">
+          <FormItem class="mb-2">
+            <Label for="language" class="text-right"> Language </Label>
+            <Input id="language" v-bind="componentField" class="col-span-3" />
           </FormItem>
         </FormField>
         <FormField v-slot="{ componentField }" name="description">
