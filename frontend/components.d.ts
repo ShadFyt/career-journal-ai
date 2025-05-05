@@ -114,6 +114,7 @@ declare module 'vue' {
     SidebarSeparator: typeof import('./src/components/ui/sidebar/SidebarSeparator.vue')['default']
     SidebarTrigger: typeof import('./src/components/ui/sidebar/SidebarTrigger.vue')['default']
     Skeleton: typeof import('./src/components/ui/skeleton/Skeleton.vue')['default']
+    TechMutationModal: typeof import('./src/components/technology/TechMutationModal.vue')['default']
     TechnologyActionBar: typeof import('./src/components/technology/TechnologyActionBar.vue')['default']
     TechnologyLoading: typeof import('./src/components/technology/TechnologyLoading.vue')['default']
     Textarea: typeof import('./src/components/ui/textarea/Textarea.vue')['default']

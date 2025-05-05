@@ -57,17 +57,18 @@ const closeModal = (isOpen: boolean | globalThis.ComputedRef<boolean>) => {
 }
 
 const onSubmit = handleSubmit(async (values) => {
+  const onSettled = () => closeModal(!isOpen)
   if (isEdit && tech.value?.id) {
     updateMutation.mutate(
       { ...values, id: tech.value.id },
       {
-        onSettled: () => closeModal(!isOpen),
+        onSettled,
       },
     )
     return
   }
   await createMutation.mutateAsync(values, {
-    onSettled: () => closeModal(!isOpen),
+    onSettled,
   })
 })
 

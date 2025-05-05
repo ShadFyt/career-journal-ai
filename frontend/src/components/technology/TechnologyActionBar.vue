@@ -13,6 +13,6 @@ defineProps({
       class="mt-2"
       :disabled="isLoading"
     />
-    <NewTechModal />
+    <TechMutationModal />
   </div>
 </template>
