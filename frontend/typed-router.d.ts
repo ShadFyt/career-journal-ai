@@ -26,6 +26,7 @@ declare module 'vue-router/auto-routes' {
     '/projects/new': RouteRecordInfo<'/projects/new', '/projects/new', Record<never, never>, Record<never, never>>,
     '/technologies': RouteRecordInfo<'/technologies', '/technologies', Record<never, never>, Record<never, never>>,
     '/technologies/': RouteRecordInfo<'/technologies/', '/technologies', Record<never, never>, Record<never, never>>,
+    '/technologies/edit.[id]': RouteRecordInfo<'/technologies/edit.[id]', '/technologies/edit/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/technologies/new': RouteRecordInfo<'/technologies/new', '/technologies/new', Record<never, never>, Record<never, never>>,
   }
 }
