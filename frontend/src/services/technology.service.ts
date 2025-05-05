@@ -1,6 +1,6 @@
 import { useToast } from '@/components/ui/toast'
-import { useQuery, useQueryClient } from '@tanstack/vue-query'
-import { getTechnologiesFromApi } from '@/api'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { createTechnology, getTechnologiesFromApi } from '@/api'
 
 export const technologyQueryKeys = {
   all: ['technologies'] as const,
@@ -8,9 +8,8 @@ export const technologyQueryKeys = {
   list: () => [...technologyQueryKeys.all, 'list'] as const,
 }
 
-export const useTechnologyService = () => {
+export const useTechnologyFetchService = () => {
   const { toast } = useToast()
-  const queryClient = useQueryClient()
 
   const getTechnologies = async () => {
     try {
@@ -30,4 +29,26 @@ export const useTechnologyService = () => {
   })
 
   return { technologies, isLoading }
+}
+
+export const useTechnologyMutationService = () => {
+  const { toast } = useToast()
+  const queryClient = useQueryClient()
+
+  const createMutation = useMutation({
+    mutationFn: createTechnology,
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: technologyQueryKeys.all })
+    },
+    onError(error) {
+      console.error('createTechnology', error)
+      toast({
+        title: 'Something went wrong while creating the technology',
+        description: 'Please try again later.',
+        variant: 'destructive',
+      })
+    },
+  })
+
+  return { create: createMutation }
 }

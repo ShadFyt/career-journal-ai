@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useTechnologyService } from '@/services'
+import { useTechnologyFetchService } from '@/services'
 import { Icon } from '@iconify/vue'
 
 const router = useRouter()
@@ -8,7 +8,7 @@ const navigateToHome = () => {
   router.push('/')
 }
 
-const { technologies, isLoading } = useTechnologyService()
+const { technologies, isLoading } = useTechnologyFetchService()
 
 const searchQuery = ref('')
 
