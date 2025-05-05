@@ -1,16 +1,21 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
-import { useTechnologyMutationService } from '@/services'
+import { useTechnologyFetchService, useTechnologyMutationService } from '@/services'
 import { toTypedSchema } from '@vee-validate/zod'
 import { techSchemaCreate } from '@/schemas/technology.schema.ts'
 import { useForm } from 'vee-validate'
 import { FormField, FormItem } from '@/components/ui/form'
+import { useTextareaAutosize } from '@vueuse/core'
+import type { Textarea } from '@/components/ui/textarea'
 
 const { createMutation } = useTechnologyMutationService()
+const { textarea, input } = useTextareaAutosize()
+
 const { profile } = useAuthStore()
 
 const router = useRouter()
 const isOpen = computed(() => router.currentRoute.value.name === '/technologies/new')
+const textareaComponentRef = ref<InstanceType<typeof Textarea> | null>(null)
 
 const validationSchema = toTypedSchema(techSchemaCreate)
 
@@ -39,6 +44,16 @@ const onSubmit = handleSubmit(async (values) => {
     onSettled: () => closeModal(!isOpen),
   })
 })
+
+watch(
+  textareaComponentRef,
+  (instance) => {
+    if (instance && instance.textareaElement) {
+      textarea.value = instance.textareaElement // Assign the exposed HTMLTextAreaElement
+    }
+  },
+  { immediate: true },
+) // immediate: true to run on mount
 </script>
 <template>
   <Dialog :open="isOpen" @update:open="closeModal">
@@ -60,7 +75,13 @@ const onSubmit = handleSubmit(async (values) => {
         </FormField>
         <FormField v-slot="{ componentField }" name="description">
           <Label for="description" class="text-right"> Description </Label>
-          <Textarea id="description" v-bind="componentField" class="col-span-3" />
+          <Textarea
+            id="description"
+            ref="textareaComponentRef"
+            v-bind="componentField"
+            :v-model="input"
+            class="col-span-3"
+          />
         </FormField>
         <DialogFooter class="mt-3">
           <Button :disabled="isDisabled" type="submit">
