@@ -60,7 +60,7 @@ const onSubmit = handleSubmit(async (values) => {
         </FormField>
         <FormField v-slot="{ componentField }" name="description">
           <Label for="description" class="text-right"> Description </Label>
-          <Input id="description" v-bind="componentField" class="col-span-3" />
+          <Textarea id="description" v-bind="componentField" class="col-span-3" />
         </FormField>
         <DialogFooter class="mt-3">
           <Button :disabled="isDisabled" type="submit">

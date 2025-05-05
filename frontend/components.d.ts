@@ -116,6 +116,7 @@ declare module 'vue' {
     Skeleton: typeof import('./src/components/ui/skeleton/Skeleton.vue')['default']
     TechnologyActionBar: typeof import('./src/components/technology/TechnologyActionBar.vue')['default']
     TechnologyLoading: typeof import('./src/components/technology/TechnologyLoading.vue')['default']
+    Textarea: typeof import('./src/components/ui/textarea/Textarea.vue')['default']
     TimelineHeader: typeof import('./src/components/journal/TimelineHeader.vue')['default']
     Toast: typeof import('./src/components/ui/toast/Toast.vue')['default']
     ToastAction: typeof import('./src/components/ui/toast/ToastAction.vue')['default']
