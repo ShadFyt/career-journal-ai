@@ -18,3 +18,9 @@ export const updateTechnology = async (tech: TechnologyUpdateDto) => {
     withCredentials: true,
   })
 }
+
+export const deleteTechnology = async (techId: string) => {
+  return await apiClient.delete(`${BASE_URL}/${techId}`, {
+    withCredentials: true,
+  })
+}

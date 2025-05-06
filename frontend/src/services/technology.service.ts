@@ -1,6 +1,6 @@
 import { useToast } from '@/components/ui/toast'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import { createTechnology, getTechnologiesFromApi, updateTechnology } from '@/api'
+import { createTechnology, deleteTechnology, getTechnologiesFromApi, updateTechnology } from '@/api'
 
 export const technologyQueryKeys = {
   all: ['technologies'] as const,
@@ -75,5 +75,25 @@ export const useTechnologyMutationService = () => {
     },
   })
 
-  return { createMutation, updateMutation }
+  const deleteMutation = useMutation({
+    mutationFn: deleteTechnology,
+    onSuccess() {
+      toast({
+        title: 'Technology deleted',
+        description: 'Your technology has been deleted successfully.',
+        variant: 'default',
+      })
+      queryClient.invalidateQueries({ queryKey: technologyQueryKeys.all })
+    },
+    onError(error) {
+      console.error('deleteTechnology', error)
+      toast({
+        title: 'Something went wrong while deleting the technology',
+        description: 'Please try again later.',
+        variant: 'destructive',
+      })
+    },
+  })
+
+  return { createMutation, updateMutation, deleteMutation }
 }

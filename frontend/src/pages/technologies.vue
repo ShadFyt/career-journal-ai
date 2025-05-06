@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useTechnologyFetchService } from '@/services'
+import { useTechnologyFetchService, useTechnologyMutationService } from '@/services'
 import { Icon } from '@iconify/vue'
 
 const router = useRouter()
@@ -9,6 +9,7 @@ const navigateToHome = () => {
 }
 
 const { technologies, isLoading } = useTechnologyFetchService()
+const { deleteMutation } = useTechnologyMutationService()
 
 const searchQuery = ref('')
 
@@ -90,6 +91,11 @@ const filterTechnologies = computed(
                         class="ml-2 h-8"
                         :aria-label="`delete ${tech.name}`"
                         :disabled="tech.journalEntries && tech.journalEntries > 0"
+                        @click="
+                          () => {
+                            deleteMutation.mutate(tech.id)
+                          }
+                        "
                       >
                         <span class="text-sm text-muted-foreground">Delete</span>
                         <Icon icon="lucide:delete" width="18" height="18" />
