@@ -82,15 +82,29 @@ const filterTechnologies = computed(
                     <span class="text-sm text-muted-foreground">Edit</span>
                     <Icon icon="lucide:edit" width="18" height="18" />
                   </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    class="ml-2 h-8"
-                    :aria-label="`delete ${tech.name}`"
-                  >
-                    <span class="text-sm text-muted-foreground">Delete</span>
-                    <Icon icon="lucide:delete" width="18" height="18" />
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        class="ml-2 h-8"
+                        :aria-label="`delete ${tech.name}`"
+                        :disabled="tech.journalEntries && tech.journalEntries > 0"
+                      >
+                        <span class="text-sm text-muted-foreground">Delete</span>
+                        <Icon icon="lucide:delete" width="18" height="18" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        {{
+                          tech.journalEntries && tech.journalEntries
+                            ? 'Unable to delete technologies that are used in journal entries'
+                            : 'delete technology'
+                        }}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
                 </aside>
               </div>
             </article>
