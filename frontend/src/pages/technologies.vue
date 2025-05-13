@@ -41,7 +41,7 @@ const filterTechnologies = computed(
       </div>
       <CardTitle>Technologies</CardTitle>
       <CardDescription> Browse and search through your technology stack </CardDescription>
-      <TechnologyActionBar :search="searchQuery" :isLoading />
+      <TechnologyActionBar v-model:search="searchQuery" :isLoading />
     </CardHeader>
     <TechnologyLoading v-if="isLoading" />
     <CardContent v-else>
