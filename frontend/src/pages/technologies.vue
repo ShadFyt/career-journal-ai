@@ -57,7 +57,9 @@ const filterTechnologies = computed(
                 <header class="flex-1">
                   <div class="flex justify-between items-start">
                     <hgroup>
-                      <h3 class="font-semibold text-lg">{{ tech.name || 'Unnamed Technology' }}</h3>
+                      <h3 class="text-lg font-bold">
+                        {{ tech.name || 'Unnamed Technology' }}
+                      </h3>
                       <Badge v-if="tech.language" class="mt-1" variant="secondary">
                         {{ tech.language }}
                       </Badge>

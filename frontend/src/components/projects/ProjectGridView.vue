@@ -17,7 +17,7 @@ defineProps<{
     >
       <CardHeader class="pb-2">
         <div class="flex justify-between items-start">
-          <CardTitle class="text-xl font-semibold text-blue-700">{{ project.name }}</CardTitle>
+          <CardTitle class="text-lg font-bold">{{ project.name }}</CardTitle>
           <a
             v-if="project.link"
             :href="project.link"

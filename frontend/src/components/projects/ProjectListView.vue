@@ -17,7 +17,7 @@ defineProps<{
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex-grow">
           <div class="flex items-start justify-between">
-            <h3 class="text-lg font-medium text-blue-700">{{ project.name }}</h3>
+            <h3 class="text-lg font-bold">{{ project.name }}</h3>
             <a
               v-if="project.link"
               :href="project.link"
