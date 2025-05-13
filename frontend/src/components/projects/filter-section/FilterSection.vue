@@ -1,45 +1,16 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const props = defineProps<{
-  searchQuery: string
-  techFilter: string
+defineProps<{
   allTechnologies: string[]
-  viewType: 'grid' | 'list'
 }>()
 
-const emit = defineEmits(['update:searchQuery', 'update:techFilter', 'update:viewType'])
-
-const searchQuery = computed({
-  get() {
-    return props.searchQuery
-  },
-  set(value) {
-    emit('update:searchQuery', value)
-  },
-})
-
-const techFilter = computed({
-  get() {
-    return props.techFilter
-  },
-  set(value) {
-    emit('update:techFilter', value)
-  },
-})
-
-const viewType = computed({
-  get() {
-    return props.viewType
-  },
-  set(value) {
-    emit('update:viewType', value)
-  },
-})
+const searchQuery = defineModel<string>('searchQuery')
+const techFilter = defineModel<string>('techFilter')
+const viewType = defineModel<'grid' | 'list'>('viewType')
 
 const goToNewProject = () => {
   router.push('/projects/new')

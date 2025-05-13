@@ -1,19 +1,9 @@
 <script setup lang="ts">
-const props = defineProps<{
-  search: string
+defineProps<{
   isLoading: boolean
 }>()
 
-const emit = defineEmits(['update:search'])
-
-const search = computed({
-  get() {
-    return props.search
-  },
-  set(value) {
-    emit('update:search', value)
-  },
-})
+const search = defineModel<string>('search')
 </script>
 
 <template>
