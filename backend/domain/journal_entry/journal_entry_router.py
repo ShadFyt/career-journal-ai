@@ -6,7 +6,7 @@ from domain.journal_entry.journal_entry_schema import (
 )
 from fastapi import APIRouter, HTTPException, status
 
-router = APIRouter(prefix="/journal-entries", tags=["journal-entries"])
+router = APIRouter()
 
 
 @router.get("/", response_model=list[JournalEntryRead])

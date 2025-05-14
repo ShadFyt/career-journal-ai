@@ -31,6 +31,7 @@ class JournalEntryRepo:
             statement = (
                 select(JournalEntry)
                 .options(selectinload(JournalEntry.technologies))
+                .options(selectinload(JournalEntry.project))
                 .order_by(JournalEntry.date.desc())
             )
             results = await self.session.exec(statement)
