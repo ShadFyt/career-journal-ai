@@ -85,11 +85,13 @@ const handleDelete = (e: MouseEvent) => {
                       <h3 class="text-lg font-bold">
                         {{ tech.name || 'Unnamed Technology' }}
                       </h3>
-                      <Badge v-if="tech.language" class="mt-1" variant="secondary">
+                      <p v-if="tech.language" class="mt-1">
                         {{ tech.language }}
-                      </Badge>
+                      </p>
                     </hgroup>
-                    <Badge variant="outline"> {{ tech?.journalEntries ?? 0 }} entries </Badge>
+                    <p class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                      {{ tech?.journalEntries ?? 0 }} entries
+                    </p>
                   </div>
                   <p v-if="tech.description" class="mt-2 text-sm text-gray-500">
                     {{ tech.description }}
