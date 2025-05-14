@@ -2,7 +2,11 @@ from core.exceptions import BaseDomainError
 from database.models import Technology
 from domain.technology.technology_exceptions import TechnologyNotFoundError
 from domain.technology.technology_repo import TechnologyRepo
-from domain.technology.technology_schema import Technology_Create, TechnologyWithCount
+from domain.technology.technology_schema import (
+    TechnologyCreate,
+    TechnologyWithCount,
+    TechnologyUpdate,
+)
 from enums import Language
 
 
@@ -11,12 +15,13 @@ class TechnologyService:
         self.repo = repo
 
     async def get_technologies(
-        self, language: Language | None = None
+        self, user_id: str, language: Language | None = None
     ) -> list[TechnologyWithCount]:
         """Get all technologies with their usage counts.
 
         Args:
             language: Optional filter by programming language
+            user_id: Unique identifier of the user
 
         Returns:
             list[TechnologyWithCount]: List of technologies with their usage counts
@@ -24,7 +29,7 @@ class TechnologyService:
         Raises:
             TechnologyError: If database operation fails
         """
-        return await self.repo.get_technologies(language=language)
+        return await self.repo.get_technologies(language=language, user_id=user_id)
 
     async def get_technologies_by_ids(self, ids: list[str]) -> list[Technology]:
         """Get technologies by their IDs.
@@ -45,7 +50,28 @@ class TechnologyService:
 
         return technologies
 
-    async def add_technology(self, technology: Technology_Create) -> Technology:
+    async def update_technology(
+        self, technology: TechnologyUpdate, tech_id: str
+    ) -> Technology:
+        """Edit a technology by id.
+
+        Returns:
+            Technology: The newly updated technology
+
+        Raises:
+            TechnologyError: If operation fails with a known error
+            Exception: If an unexpected error occurs
+        """
+        try:
+            return await self.repo.update_technology(tech_id, technology)
+        except BaseDomainError as e:
+            raise e
+        except Exception as e:
+            raise Exception(f"Unexpected error in technology service: {str(e)}")
+
+    async def add_technology(
+        self, technology: TechnologyCreate, user_id: str
+    ) -> Technology:
         """Create a new technology.
 
         Returns:
@@ -56,17 +82,17 @@ class TechnologyService:
             Exception: If an unexpected error occurs
         """
         try:
-            return await self.repo.add_technology(technology)
+            return await self.repo.add_technology(technology, user_id)
         except BaseDomainError as e:
             raise e
         except Exception as e:
             raise Exception(f"Unexpected error in technology service: {str(e)}")
 
-    async def delete_technology(self, id: str):
+    async def delete_technology(self, tech_id: str):
         """Delete a technology from the database by its ID.
 
         Args:
-            id: Unique identifier of the technology to delete
+            tech_id: Unique identifier of the technology to delete
 
         Raises:
             TechnologyNotFoundError: If technology with given ID does not exist
@@ -74,7 +100,7 @@ class TechnologyService:
                 or if database operation fails
         """
         try:
-            await self.repo.delete_technology(id)
+            await self.repo.delete_technology(tech_id)
         except BaseDomainError as e:
             raise e
         except Exception as e:

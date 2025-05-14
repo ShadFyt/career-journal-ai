@@ -17,6 +17,7 @@ class User(SQLModel, table=True):
     password: str
     projects: List["Project"] = Relationship(back_populates="user")
     journal_entries: List["JournalEntry"] = Relationship(back_populates="user")
+    technologies: List["Technology"] = Relationship(back_populates="user")
 
 
 class JournalEntryTechnologyLink(SQLModel, table=True):
@@ -30,12 +31,14 @@ class Technology(SQLModel, table=True):
     id: str = Field(
         default_factory=lambda: str(uuid4()), primary_key=True, nullable=False
     )
-    name: str = Field(index=True, unique=True)
+    name: str = Field(index=True)
     description: str | None = Field(default=None)
-    language: Language | None = Field(default=None, index=True)
+    language: str | None = Field(default=None, index=True)
     journal_entries: List["JournalEntry"] = Relationship(
         back_populates="technologies", link_model=JournalEntryTechnologyLink
     )
+    user_id: str = Field(foreign_key="user.id", index=True)
+    user: User = Relationship(back_populates="technologies")
 
 
 class JournalEntry(SQLModel, table=True):

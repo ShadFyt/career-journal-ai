@@ -55,7 +55,8 @@ clean:
 	powershell -Command "Get-ChildItem -Path . -Include *.egg-info,*.egg,.pytest_cache,.coverage,htmlcov,.mypy_cache -Recurse -Directory | Remove-Item -Recurse -Force"
 
 migrate-revision:
-	$(POETRY) run alembic revision --autogenerate -m $(message)
+	poetry run alembic revision --autogenerate -m "$(M)"
+
 # Usage: make migrate-revision message="your migration message"
 
 migrate-up:
