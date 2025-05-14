@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import { Icon } from '@iconify/vue';
+</script>
+
 <template>
   <div class="flex h-screen w-full items-center justify-center">
     <div class="flex flex-col items-center gap-4">
