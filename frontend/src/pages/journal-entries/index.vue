@@ -11,7 +11,11 @@ const { journalEntries } = useJournalEntryService()
 
 // Group entries by date
 const groupedEntries = computed(() => {
-  return journalEntries.value?.reduce((groups: Record<string, JournalEntry[]>, entry) => {
+  const entries = journalEntries.value ?? []
+  if (entries.length === 0) {
+    return {}
+  }
+  return entries.reduce((groups: Record<string, JournalEntry[]>, entry) => {
     const date = entry.date ? new Date(entry.date) : new Date()
     const dateStr = date.toISOString().split('T')[0]
 
@@ -24,11 +28,11 @@ const groupedEntries = computed(() => {
 })
 
 // Sort dates in descending order
-const sortedDates = computed(() => {
-  return Object.keys(groupedEntries.value ?? {}).sort(
+const sortedDates = computed(() =>
+  Object.keys(groupedEntries.value ?? {}).sort(
     (a, b) => new Date(b).getTime() - new Date(a).getTime(),
-  )
-})
+  ),
+)
 
 const toggleExpanded = (id: string) => {
   if (!id) return
