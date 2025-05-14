@@ -22,6 +22,8 @@ const filterTechnologies = computed(
         '',
     ) ?? [],
 )
+
+const isNotEmpty = computed(() => filterTechnologies.value.length > 0)
 </script>
 
 <template>
@@ -47,7 +49,7 @@ const filterTechnologies = computed(
     <CardContent v-else>
       <ScrollArea class="h-full">
         <section class="space-y-4">
-          <template v-if="filterTechnologies.length > 0">
+          <template v-if="isNotEmpty">
             <article
               v-for="tech in filterTechnologies"
               :key="tech.id"
