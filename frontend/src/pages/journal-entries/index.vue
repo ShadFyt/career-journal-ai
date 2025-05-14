@@ -2,77 +2,16 @@
 import type { JournalEntry } from '@/types'
 import { Icon } from '@iconify/vue'
 import { Header as MainHeader } from '@/components/journal'
+import { useJournalEntryService } from '@/services'
 
 const mockUser = '1'
 const expandedEntries = ref<Record<string, boolean>>({})
 
-// Mock data for journal entries
-const journalEntries = ref<JournalEntry[]>([
-  {
-    id: '1',
-    content:
-      'Started learning Vue.js today. The composition API is really powerful!Started learning Vue.js today. The composition API is really powerful!Started learning Vue.js today. The composition API is really powerful!Started learning Vue.js today. The composition API is really powerful!Started learning Vue.js today. The composition API is really powerful!Started learning Vue.js today. The composition API is really powerful!Started learning Vue.js today. The composition API is really powerful!Started learning Vue.js today. The composition API is really powerful!',
-    date: new Date().toISOString(),
-    isPrivate: false,
-    userId: '1',
-    technologies: [
-      {
-        id: '2',
-        name: 'React',
-        description: 'A JavaScript library for building user interfaces',
-        language: 'Javascript',
-      },
-    ],
-    project: {
-      id: 1,
-      name: 'Vue Dashboard',
-      description:
-        'A responsive admin dashboard built with Vue.js and Tailwind CSS with dark mode support and customizable widgets.',
-      link: 'https://github.com/username/vue-dashboard',
-      technologies: ['Vue.js', 'Tailwind CSS', 'Chart.js', 'Vite'],
-      updatedAt: '2025-02-15T14:22:00Z',
-    },
-  },
-  {
-    id: '2',
-    content:
-      'This is a private entry that contains confidential information about my career plans.',
-    date: new Date().toISOString(),
-    isPrivate: true,
-    userId: '1',
-    technologies: [],
-    project: null,
-  },
-  {
-    id: '3',
-    content:
-      'Started learning Vue.js today. The composition API is really powerful!Started learning Vue.js today. ',
-    date: '2025-02-15T14:22:00Z',
-    isPrivate: false,
-    userId: '1',
-    technologies: [
-      {
-        id: '2',
-        name: 'React',
-        description: 'A JavaScript library for building user interfaces',
-        language: 'Javascript',
-      },
-    ],
-    project: {
-      id: 1,
-      name: 'Vue Dashboard',
-      description:
-        'A responsive admin dashboard built with Vue.js and Tailwind CSS with dark mode support and customizable widgets.',
-      link: 'https://github.com/username/vue-dashboard',
-      technologies: ['Vue.js', 'Tailwind CSS', 'Chart.js', 'Vite'],
-      updatedAt: '2025-02-15T14:22:00Z',
-    },
-  },
-])
+const { journalEntries } = useJournalEntryService()
 
 // Group entries by date
 const groupedEntries = computed(() => {
-  return journalEntries.value.reduce((groups: Record<string, JournalEntry[]>, entry) => {
+  return journalEntries.value?.reduce((groups: Record<string, JournalEntry[]>, entry) => {
     const date = entry.date ? new Date(entry.date) : new Date()
     const dateStr = date.toISOString().split('T')[0]
 
@@ -86,7 +25,7 @@ const groupedEntries = computed(() => {
 
 // Sort dates in descending order
 const sortedDates = computed(() => {
-  return Object.keys(groupedEntries.value).sort(
+  return Object.keys(groupedEntries.value ?? {}).sort(
     (a, b) => new Date(b).getTime() - new Date(a).getTime(),
   )
 })
@@ -105,7 +44,7 @@ const canViewEntry = (entry: JournalEntry) => !entry.isPrivate || entry.userId =
 </script>
 
 <template>
-  <div class="bg-background h-full flex flex-col">
+  <div v-if="journalEntries && groupedEntries" class="bg-background h-full flex flex-col">
     <Card class="border h-full flex flex-col">
       <MainHeader :journal-entries="journalEntries" :mock-user="mockUser" />
 
