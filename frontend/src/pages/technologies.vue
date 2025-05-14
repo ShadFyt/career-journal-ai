@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { InvalidUiElementError } from '@/errors'
 import { useTechnologyFetchService, useTechnologyMutationService } from '@/services'
 import { Icon } from '@iconify/vue'
 
@@ -6,6 +7,17 @@ const router = useRouter()
 
 const navigateToHome = () => {
   router.push('/')
+}
+
+const navigateToEdit = (e: MouseEvent) => {
+  const currentTarget = e.currentTarget
+  if (currentTarget instanceof HTMLElement) {
+    router.push('/technologies/edit/' + currentTarget.id)
+    return
+  }
+  const error = new InvalidUiElementError('navigate to edit', currentTarget)
+  console.error(error.message, { eventTarget: currentTarget })
+  throw error
 }
 
 const { technologies, isLoading } = useTechnologyFetchService()
@@ -24,6 +36,17 @@ const filterTechnologies = computed(
 )
 
 const isNotEmpty = computed(() => filterTechnologies.value.length > 0)
+
+const handleDelete = (e: MouseEvent) => {
+  const currentTarget = e.currentTarget
+  if (currentTarget instanceof HTMLElement) {
+    deleteMutation.mutate(currentTarget.id)
+    return
+  }
+  const error = new InvalidUiElementError('delete technology', currentTarget)
+  console.error(error.message, { eventTarget: currentTarget })
+  throw error
+}
 </script>
 
 <template>
@@ -74,15 +97,12 @@ const isNotEmpty = computed(() => filterTechnologies.value.length > 0)
                 </header>
                 <aside class="border-l border-gray-200 ml-3 flex flex-col justify-center gap-3">
                   <Button
+                    :id="tech.id"
                     variant="outline"
                     size="sm"
                     class="ml-2 h-8"
                     :aria-label="`edit ${tech.name}`"
-                    @click="
-                      () => {
-                        router.push('/technologies/edit/' + tech.id)
-                      }
-                    "
+                    @click="navigateToEdit"
                   >
                     <span class="text-sm text-muted-foreground">Edit</span>
                     <Icon icon="lucide:edit" width="18" height="18" />
@@ -90,16 +110,13 @@ const isNotEmpty = computed(() => filterTechnologies.value.length > 0)
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
+                        :id="tech.id"
                         variant="destructive"
                         size="sm"
                         class="ml-2 h-8"
                         :aria-label="`delete ${tech.name}`"
                         :disabled="tech.journalEntries && tech.journalEntries > 0"
-                        @click="
-                          () => {
-                            deleteMutation.mutate(tech.id)
-                          }
-                        "
+                        @click="handleDelete"
                       >
                         <span class="text-sm text-muted-foreground">Delete</span>
                         <Icon icon="lucide:delete" width="18" height="18" />
