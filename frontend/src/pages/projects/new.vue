@@ -56,22 +56,6 @@ const onSubmit = handleSubmit(async (values) => {
 <template>
   <main class="container mx-auto px-4 py-8">
     <TitleWithBackButton title="Create New Project" />
-    <!-- <header class="flex items-center mb-6">
-      <div class="flex items-center">
-        <Button
-          variant="ghost"
-          size="sm"
-          @click="goBack"
-          class="mr-2 -ml-2 h-8"
-          aria-label="Back to Projects page"
-        >
-          <Icon icon="lucide:arrow-left" width="18" height="18" />
-          <span class="ml-1 text-sm text-muted-foreground">Back</span>
-        </Button>
-      </div>
-      <h2 class="text-2xl font-bold">Create New Project</h2>
-    </header> -->
-
     <section class="max-w-2xl">
       <form :validation-schema="validationSchema" @submit="onSubmit">
         <div class="space-y-6">
