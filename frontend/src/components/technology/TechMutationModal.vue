@@ -84,11 +84,6 @@ watch(
 </script>
 <template>
   <Dialog :open="isOpen" @update:open="closeModal">
-    <DialogTrigger as-child>
-      <Button variant="outline" size="icon" class="bg-blue-100 mt-2" :onclick="openModal">
-        <Icon icon="lucide:file-plus-2" width="20" height="20" />
-      </Button>
-    </DialogTrigger>
     <DialogContent class="sm:max-w-[425px]">
       <form :validation-schema="validationSchema" @submit="onSubmit" class="gap-4 py-4">
         <DialogHeader class="mb-3">
