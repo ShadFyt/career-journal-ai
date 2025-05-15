@@ -54,52 +54,50 @@ const onSubmit = handleSubmit(async (values) => {
   <main class="container mx-auto px-4 py-8">
     <TitleWithBackButton title="Create New Project" />
     <section class="max-w-2xl">
-      <form :validation-schema="validationSchema" @submit="onSubmit">
-        <div class="space-y-6">
-          <FormField v-slot="{ componentField }" name="name">
-            <FormItem>
-              <FormLabel>Project Name</FormLabel>
-              <FormControl>
-                <Input v-bind="componentField" placeholder="Enter project name" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
+      <form :validation-schema="validationSchema" @submit="onSubmit" class="space-y-6">
+        <FormField v-slot="{ componentField }" name="name">
+          <FormItem>
+            <FormLabel>Project Name</FormLabel>
+            <FormControl>
+              <Input v-bind="componentField" placeholder="Enter project name" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
 
-          <FormField v-slot="{ componentField }" n name="description">
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <textarea
-                  v-bind="componentField"
-                  class="flex min-h-24 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Describe your project"
-                ></textarea>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
+        <FormField v-slot="{ componentField }" n name="description">
+          <FormItem>
+            <FormLabel>Description</FormLabel>
+            <FormControl>
+              <textarea
+                v-bind="componentField"
+                class="flex min-h-24 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                placeholder="Describe your project"
+              ></textarea>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
 
-          <FormField v-slot="{ componentField }" n name="link">
-            <FormItem>
-              <FormLabel>Project Link (Optional)</FormLabel>
-              <FormControl>
-                <Input v-bind="componentField" placeholder="https://example.com" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
+        <FormField v-slot="{ componentField }" n name="link">
+          <FormItem>
+            <FormLabel>Project Link (Optional)</FormLabel>
+            <FormControl>
+              <Input v-bind="componentField" placeholder="https://example.com" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
 
-          <PrivateCheckboxForm
-            name="isPrivate"
-            title="Private Project"
-            description="Make this project private and visible only to you"
-          />
+        <PrivateCheckboxForm
+          name="isPrivate"
+          title="Private Project"
+          description="Make this project private and visible only to you"
+        />
 
-          <FormSubmitButton :disabled="isDisabled" :is-submitting="isSubmitting">
-            Create Project
-          </FormSubmitButton>
-        </div>
+        <FormSubmitButton :disabled="isDisabled" :is-submitting="isSubmitting">
+          Create Project
+        </FormSubmitButton>
       </form>
     </section>
   </main>
