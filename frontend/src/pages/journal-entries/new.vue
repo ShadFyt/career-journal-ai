@@ -84,7 +84,7 @@ const onSubmit = handleSubmit(async (values) => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <PrivateCheckbox
+          <PrivateCheckboxForm
             name="isPrivate"
             title="Private Entry"
             description="Make this entry private and visible only to you"
