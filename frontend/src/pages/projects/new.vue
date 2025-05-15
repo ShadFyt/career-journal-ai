@@ -54,8 +54,8 @@ const onSubmit = handleSubmit(async (values) => {
 </script>
 
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <div class="flex items-center mb-6">
+  <main class="container mx-auto px-4 py-8">
+    <header class="flex items-center mb-6">
       <div class="flex items-center">
         <Button
           variant="ghost"
@@ -69,9 +69,9 @@ const onSubmit = handleSubmit(async (values) => {
         </Button>
       </div>
       <h2 class="text-2xl font-bold">Create New Project</h2>
-    </div>
+    </header>
 
-    <div class="max-w-2xl">
+    <section class="max-w-2xl">
       <form :validation-schema="validationSchema" @submit="onSubmit">
         <div class="space-y-6">
           <FormField v-slot="{ componentField }" name="name">
@@ -130,6 +130,6 @@ const onSubmit = handleSubmit(async (values) => {
           </Button>
         </div>
       </form>
-    </div>
-  </div>
+    </section>
+  </main>
 </template>

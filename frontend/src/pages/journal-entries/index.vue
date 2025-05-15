@@ -35,12 +35,18 @@ const sortedDates = computed(() =>
 )
 
 const toggleExpanded = (id: string) => {
-  if (!id) return
+  if (!id) {
+    console.warn('No id provided, returning early')
+    return
+  }
   expandedEntries.value[id] = !expandedEntries.value[id]
 }
 
 const isExpanded = (id: string) => {
-  if (!id) return false
+  if (!id) {
+    console.warn('No id provided, returning false')
+    return false
+  }
   return expandedEntries.value[id]
 }
 
