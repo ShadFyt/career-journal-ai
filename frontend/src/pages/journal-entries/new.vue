@@ -84,20 +84,11 @@ const onSubmit = handleSubmit(async (values) => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ value, handleChange }" type="checkbox" name="isPrivate">
-            <FormItem
-              class="flex flex-row items-start gap-x-3 space-y-0 rounded-md border p-4 shadow"
-            >
-              <FormControl>
-                <Checkbox :model-value="value" @update:model-value="handleChange" />
-              </FormControl>
-              <div class="space-y-1 leading-none">
-                <FormLabel>Private Entry</FormLabel>
-                <FormDescription> Make this entry private and visible only to you </FormDescription>
-                <FormMessage />
-              </div>
-            </FormItem>
-          </FormField>
+          <PrivateCheckbox
+            name="isPrivate"
+            title="Private Entry"
+            description="Make this entry private and visible only to you"
+          />
           <Button type="submit" :disabled="isDisabled" class="mt-4">
             <span v-if="isSubmitting" class="mr-2">
               <i class="i-lucide-loader-2 animate-spin"></i>

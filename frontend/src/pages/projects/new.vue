@@ -92,19 +92,11 @@ const onSubmit = handleSubmit(async (values) => {
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ componentField }" name="isPrivate" type="checkbox">
-            <FormItem class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-              <FormControl>
-                <Checkbox v-bind="componentField" />
-              </FormControl>
-              <div class="space-y-1 leading-none">
-                <FormLabel>Private Project</FormLabel>
-                <p class="text-sm text-muted-foreground">
-                  Make this project private and visible only to you
-                </p>
-              </div>
-            </FormItem>
-          </FormField>
+          <PrivateCheckbox
+            name="isPrivate"
+            title="Private Project"
+            description="Make this project private and visible only to you"
+          />
 
           <Button type="submit" :disabled="isDisabled" class="mt-4">
             <span v-if="isSubmitting" class="mr-2">
