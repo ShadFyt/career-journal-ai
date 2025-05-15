@@ -145,6 +145,7 @@ const canViewEntry = (entry: JournalEntry) => !entry.isPrivate || entry.userId =
           </div>
         </div>
       </ScrollArea>
+      <FabRoutingButton to="/journal-entries/new" message="Add new journal entry" />
     </Card>
   </div>
 </template>
