@@ -55,7 +55,8 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
   <main class="container mx-auto px-4 py-8">
-    <header class="flex items-center mb-6">
+    <TitleWithBackButton title="Create New Project" />
+    <!-- <header class="flex items-center mb-6">
       <div class="flex items-center">
         <Button
           variant="ghost"
@@ -69,7 +70,7 @@ const onSubmit = handleSubmit(async (values) => {
         </Button>
       </div>
       <h2 class="text-2xl font-bold">Create New Project</h2>
-    </header>
+    </header> -->
 
     <section class="max-w-2xl">
       <form :validation-schema="validationSchema" @submit="onSubmit">

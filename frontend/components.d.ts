@@ -122,6 +122,7 @@ declare module 'vue' {
     TechnologyLoading: typeof import('./src/components/technology/TechnologyLoading.vue')['default']
     Textarea: typeof import('./src/components/ui/textarea/Textarea.vue')['default']
     TimelineHeader: typeof import('./src/components/journal/TimelineHeader.vue')['default']
+    TitleWithBackButton: typeof import('./src/components/shared/TitleWithBackButton.vue')['default']
     Toast: typeof import('./src/components/ui/toast/Toast.vue')['default']
     ToastAction: typeof import('./src/components/ui/toast/ToastAction.vue')['default']
     ToastClose: typeof import('./src/components/ui/toast/ToastClose.vue')['default']
