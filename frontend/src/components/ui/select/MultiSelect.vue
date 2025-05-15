@@ -92,7 +92,10 @@ const showClearButton = computed<boolean>(() => props.clearable && selectedValue
       <span class="truncate">{{ triggerLabel }}</span>
       <ChevronDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
     </DropdownMenuTrigger>
-    <DropdownMenuContent align="start" class="w-[var(--reka-popper-anchor-width)] p-1">
+    <DropdownMenuContent
+      align="start"
+      class="max-h-[20rem] overflow-y-auto w-[var(--reka-popper-anchor-width)] p-1"
+    >
       <DropdownMenuItem
         v-if="showClearButton"
         @select="
