@@ -89,12 +89,9 @@ const onSubmit = handleSubmit(async (values) => {
             title="Private Entry"
             description="Make this entry private and visible only to you"
           />
-          <Button type="submit" :disabled="isDisabled" class="mt-4">
-            <span v-if="isSubmitting" class="mr-2">
-              <i class="i-lucide-loader-2 animate-spin"></i>
-            </span>
+          <FormSubmitButton :disabled="isDisabled" :is-submitting="isSubmitting">
             Add Entry
-          </Button>
+          </FormSubmitButton>
         </div>
       </form>
     </section>

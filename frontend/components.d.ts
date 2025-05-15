@@ -53,6 +53,7 @@ declare module 'vue' {
     FormItem: typeof import('./src/components/ui/form/FormItem.vue')['default']
     FormLabel: typeof import('./src/components/ui/form/FormLabel.vue')['default']
     FormMessage: typeof import('./src/components/ui/form/FormMessage.vue')['default']
+    FormSubmitButton: typeof import('./src/components/shared/FormSubmitButton.vue')['default']
     Header: typeof import('./src/components/journal/Header.vue')['default']
     IconCommunity: typeof import('./src/components/icons/IconCommunity.vue')['default']
     IconDocumentation: typeof import('./src/components/icons/IconDocumentation.vue')['default']

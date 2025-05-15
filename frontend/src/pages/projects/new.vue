@@ -6,9 +6,7 @@ import { ProjectSchemaCreate } from '@/schemas/project.schema'
 import { useProjectService } from '@/services'
 import { useToast } from '@/components/ui/toast'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
 
 const router = useRouter()
 const { toast } = useToast()
@@ -98,12 +96,9 @@ const onSubmit = handleSubmit(async (values) => {
             description="Make this project private and visible only to you"
           />
 
-          <Button type="submit" :disabled="isDisabled" class="mt-4">
-            <span v-if="isSubmitting" class="mr-2">
-              <i class="i-lucide-loader-2 animate-spin"></i>
-            </span>
+          <FormSubmitButton :disabled="isDisabled" :is-submitting="isSubmitting">
             Create Project
-          </Button>
+          </FormSubmitButton>
         </div>
       </form>
     </section>
