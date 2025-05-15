@@ -9,7 +9,6 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/comp
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Icon } from '@iconify/vue'
 
 const router = useRouter()
 const { toast } = useToast()
