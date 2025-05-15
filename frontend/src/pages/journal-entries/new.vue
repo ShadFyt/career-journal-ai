@@ -3,11 +3,16 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { journalEntryCreate } from '@/schemas/journal-entry.schema'
 import { useForm } from 'vee-validate'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { useProjectService } from '@/services'
+import { useProjectService, useTechnologyFetchService } from '@/services'
+import { MultiSelect, type MultiSelectOption } from '@/components/ui/select'
 
 const { projects, isLoading } = useProjectService()
+const { technologies } = useTechnologyFetchService()
 const validationSchema = toTypedSchema(journalEntryCreate)
 
+const techOptions = computed<MultiSelectOption[]>(
+  () => technologies.value?.map((tech) => ({ label: tech.name, value: tech.id })) ?? [],
+)
 const { handleSubmit, isSubmitting, meta } = useForm({
   validationSchema,
   initialValues: {
@@ -64,6 +69,41 @@ const onSubmit = handleSubmit(async (values) => {
               <FormMessage />
             </FormItem>
           </FormField>
+          <FormField v-slot="{ value, handleChange }" name="technologyIds">
+            <FormItem>
+              <FormLabel>Technologies</FormLabel>
+              <FormControl>
+                <MultiSelect
+                  :modelValue="value"
+                  @update:modelValue="handleChange"
+                  :options="techOptions"
+                  placeholder="Select technologies"
+                  clearable
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ value, handleChange }" type="checkbox" name="isPrivate">
+            <FormItem
+              class="flex flex-row items-start gap-x-3 space-y-0 rounded-md border p-4 shadow"
+            >
+              <FormControl>
+                <Checkbox :model-value="value" @update:model-value="handleChange" />
+              </FormControl>
+              <div class="space-y-1 leading-none">
+                <FormLabel>Private Entry</FormLabel>
+                <FormDescription> Make this entry private and visible only to you </FormDescription>
+                <FormMessage />
+              </div>
+            </FormItem>
+          </FormField>
+          <Button type="submit" :disabled="isDisabled" class="mt-4">
+            <span v-if="isSubmitting" class="mr-2">
+              <i class="i-lucide-loader-2 animate-spin"></i>
+            </span>
+            Add Entry
+          </Button>
         </div>
       </form>
     </section>
