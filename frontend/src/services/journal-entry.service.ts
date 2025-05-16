@@ -40,10 +40,14 @@ export const useJournalEntryMutationService = () => {
 
   const createMutation = useMutation({
     mutationFn: createJournalEntry,
-    onSuccess() {
+    onSuccess({ project }) {
+      const message = project
+        ? `Entry for "${project.name}" has been created successfully.`
+        : 'Journal entry created successfully.'
+
       toast({
         title: 'Journal entry created',
-        description: 'Your journal entry has been created successfully.',
+        description: message,
         variant: 'default',
       })
     },
