@@ -1,4 +1,16 @@
 <script setup lang="ts">
+/**
+ * A floating action button with tooltip and routing capabilities.
+ *
+ * @example
+ * <FabRoutingButton
+ *   to="/new-entry"
+ *   message="Create new entry"
+ *   iconName="plus"
+ *   position="bottom-right"
+ *   size="m"
+ * />
+ */
 import { useRouter, type RouteLocationRaw } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { cn } from '@/lib/utils'
@@ -30,15 +42,15 @@ const sizeClasses = {
 const fabClass = computed(() =>
   cn('rounded-full text-white shadow-lg hover:bg-primary/90 transition', sizeClasses[props.size]),
 )
-const positionClasses = computed(() => {
-  const positions = {
-    'top-left': 'top-6 left-6',
-    'top-right': 'top-6 right-6',
-    'bottom-left': 'bottom-6 left-6',
-    'bottom-right': 'bottom-6 right-6',
-  }
-  return positions[props.position] || positions['bottom-right']
-})
+const positionClasses = computed(
+  () =>
+    ({
+      'top-left': 'top-6 left-6',
+      'top-right': 'top-6 right-6',
+      'bottom-left': 'bottom-6 left-6',
+      'bottom-right': 'bottom-6 right-6',
+    })[props.position] || 'bottom-right',
+)
 
 const goToNewEntry = () => {
   router.push(props.to)
@@ -75,6 +87,7 @@ const goToNewEntry = () => {
         @click="goToNewEntry"
         :class="fabClass"
         :aria-label="props.message"
+        data-testid="fab-button"
       >
         <Icon :icon="props.iconName || 'lucide:plus'" class="text-2xl" />
       </Button>
