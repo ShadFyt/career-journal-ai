@@ -62,5 +62,6 @@ const filteredProjects = computed(() => {
       <!-- Empty State -->
       <EmptyState v-if="filteredProjects.length === 0" :filteredProjects="filteredProjects" />
     </div>
+    <FabRoutingButton to="/projects/new" message="Add new project" iconName="lucide:folder-plus" />
   </div>
 </template>

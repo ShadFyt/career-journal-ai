@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { InvalidUiElementError } from '@/errors'
 import { useTechnologyFetchService, useTechnologyMutationService } from '@/services'
 import { Icon } from '@iconify/vue'
 
@@ -6,6 +7,17 @@ const router = useRouter()
 
 const navigateToHome = () => {
   router.push('/')
+}
+
+const navigateToEdit = (e: MouseEvent) => {
+  const currentTarget = e.currentTarget
+  if (currentTarget instanceof HTMLElement) {
+    router.push('/technologies/edit/' + currentTarget.id)
+    return
+  }
+  const error = new InvalidUiElementError('navigate to edit', currentTarget)
+  console.error(error.message, { eventTarget: currentTarget })
+  throw error
 }
 
 const { technologies, isLoading } = useTechnologyFetchService()
@@ -22,6 +34,19 @@ const filterTechnologies = computed(
         '',
     ) ?? [],
 )
+
+const isNotEmpty = computed(() => filterTechnologies.value.length > 0)
+
+const handleDelete = (e: MouseEvent) => {
+  const currentTarget = e.currentTarget
+  if (currentTarget instanceof HTMLElement) {
+    deleteMutation.mutate(currentTarget.id)
+    return
+  }
+  const error = new InvalidUiElementError('delete technology', currentTarget)
+  console.error(error.message, { eventTarget: currentTarget })
+  throw error
+}
 </script>
 
 <template>
@@ -47,7 +72,7 @@ const filterTechnologies = computed(
     <CardContent v-else>
       <ScrollArea class="h-full">
         <section class="space-y-4">
-          <template v-if="filterTechnologies.length > 0">
+          <template v-if="isNotEmpty">
             <article
               v-for="tech in filterTechnologies"
               :key="tech.id"
@@ -57,12 +82,16 @@ const filterTechnologies = computed(
                 <header class="flex-1">
                   <div class="flex justify-between items-start">
                     <hgroup>
-                      <h3 class="font-semibold text-lg">{{ tech.name || 'Unnamed Technology' }}</h3>
-                      <Badge v-if="tech.language" class="mt-1" variant="secondary">
+                      <h3 class="text-lg font-bold">
+                        {{ tech.name || 'Unnamed Technology' }}
+                      </h3>
+                      <p v-if="tech.language" class="mt-1">
                         {{ tech.language }}
-                      </Badge>
+                      </p>
                     </hgroup>
-                    <Badge variant="outline"> {{ tech?.journalEntries ?? 0 }} entries </Badge>
+                    <p class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                      {{ tech?.usageCount ?? 0 }} {{ tech?.usageCount === 1 ? 'entry' : 'entries' }}
+                    </p>
                   </div>
                   <p v-if="tech.description" class="mt-2 text-sm text-gray-500">
                     {{ tech.description }}
@@ -70,15 +99,12 @@ const filterTechnologies = computed(
                 </header>
                 <aside class="border-l border-gray-200 ml-3 flex flex-col justify-center gap-3">
                   <Button
+                    :id="tech.id"
                     variant="outline"
                     size="sm"
                     class="ml-2 h-8"
                     :aria-label="`edit ${tech.name}`"
-                    @click="
-                      () => {
-                        router.push('/technologies/edit/' + tech.id)
-                      }
-                    "
+                    @click="navigateToEdit"
                   >
                     <span class="text-sm text-muted-foreground">Edit</span>
                     <Icon icon="lucide:edit" width="18" height="18" />
@@ -86,16 +112,13 @@ const filterTechnologies = computed(
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
+                        :id="tech.id"
                         variant="destructive"
                         size="sm"
                         class="ml-2 h-8"
                         :aria-label="`delete ${tech.name}`"
-                        :disabled="tech.journalEntries && tech.journalEntries > 0"
-                        @click="
-                          () => {
-                            deleteMutation.mutate(tech.id)
-                          }
-                        "
+                        :disabled="tech.usageCount > 0"
+                        @click="handleDelete"
                       >
                         <span class="text-sm text-muted-foreground">Delete</span>
                         <Icon icon="lucide:delete" width="18" height="18" />
@@ -104,7 +127,7 @@ const filterTechnologies = computed(
                     <TooltipContent>
                       <p>
                         {{
-                          tech.journalEntries && tech.journalEntries
+                          tech.usageCount > 0
                             ? 'Unable to delete technologies that are used in journal entries'
                             : 'delete technology'
                         }}

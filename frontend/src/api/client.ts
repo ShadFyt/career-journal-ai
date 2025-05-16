@@ -1,5 +1,6 @@
 import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import axios from 'axios'
+import { useAuthStore } from '@/stores/auth'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 const CSRF_TOKEN_COOKIE_NAME = 'csrf_access_token'
@@ -47,13 +48,18 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
+    const authStore = useAuthStore()
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean }
 
     // Handle 401 Unauthorized errors (token expired)
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      // Could add refresh token logic here
-      console.error('Unauthorized: Token expired')
-      return Promise.reject(error)
+    if (error.response?.status === 401 && originalRequest.url !== '/auth/refresh-token') {
+      if (originalRequest._retry) {
+        await authStore.handleLogout()
+        return Promise.reject(error)
+      }
+      originalRequest._retry = true
+      await authStore.handleRefreshToken()
+      return axiosInstance(originalRequest)
     }
 
     // Handle other errors

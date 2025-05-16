@@ -33,9 +33,11 @@ async def get_technologies(
         list[TechnologyWithCount]: List of technologies with their usage counts
     """
     try:
-        return await service.get_technologies(
+        technologies = await service.get_technologies(
             user_id=payload.user_id, language=language
         )
+        print(technologies)
+        return technologies
     except BaseDomainError as e:
         # Domain exceptions are already properly formatted with status code and detail
         raise e

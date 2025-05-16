@@ -1,8 +1,7 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from uuid import uuid4
 
-from enums import Language
 from sqlmodel import Field, Relationship, SQLModel
 
 
@@ -53,6 +52,7 @@ class JournalEntry(SQLModel, table=True):
         back_populates="journal_entries", link_model=JournalEntryTechnologyLink
     )
     project_id: str | None = Field(default=None, foreign_key="project.id", index=True)
+    project: Optional["Project"] = Relationship(back_populates="journal_entries")
     user_id: str = Field(foreign_key="user.id", index=True)
     user: User = Relationship(back_populates="journal_entries")
 
@@ -67,6 +67,10 @@ class Project(SQLModel, table=True):
     link: str | None = Field(default=None)
     is_private: bool = Field(default=True)
     last_entry_date: datetime | None = Field(default=None)
-    journal_entries: List[JournalEntry] = Relationship()
+    journal_entries: List[JournalEntry] = Relationship(back_populates="project")
     user_id: str = Field(foreign_key="user.id", index=True)
     user: User = Relationship(back_populates="projects")
+
+
+JournalEntry.model_rebuild()
+Project.model_rebuild()

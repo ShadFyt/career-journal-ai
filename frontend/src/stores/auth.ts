@@ -1,4 +1,4 @@
-import { getUserSession, login, logoutCurrentUser } from '@/api/auth'
+import { getUserSession, login, logoutCurrentUser, refreshToken } from '@/api/auth'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -68,11 +68,22 @@ export const useAuthStore = defineStore('auth-store', () => {
     }
   }
 
+  const handleRefreshToken = async () => {
+    try {
+      const { email, userId } = await refreshToken()
+      profile.value = { email, userId }
+    } catch (error) {
+      console.error('Refresh token failed:', error)
+      await handleLogout()
+    }
+  }
+
   return {
     isAuthenticated,
     setIsAuthenticated,
     handleLogin,
     handleLogout,
+    handleRefreshToken,
     checkSession,
     isLoading,
     profile,

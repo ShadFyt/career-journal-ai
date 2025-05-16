@@ -2,4 +2,5 @@
 
 <template>
   <router-view />
+  <FabRoutingButton to="/technologies/new" message="Add new technology" />
 </template>

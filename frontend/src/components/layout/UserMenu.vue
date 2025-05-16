@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Icon } from '@iconify/vue'
 const { profile } = storeToRefs(useAuthStore())
 const { handleLogout } = useAuthStore()
 </script>
@@ -13,14 +14,14 @@ const { handleLogout } = useAuthStore()
             class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
             <Avatar class="h-8 w-8 rounded-lg">
-              <AvatarImage alt="Ryan" />
+              <!-- <AvatarImage alt="Ryan" /> -->
               <AvatarFallback class="rounded-lg"> RD </AvatarFallback>
             </Avatar>
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-semibold">Ryan</span>
               <span class="truncate text-xs">{{ profile.email }}</span>
             </div>
-            <ChevronsUpDown class="ml-auto size-4" />
+            <Icon icon="lucide:chevron-right" width="24" height="24" />
           </SidebarMenuButton>
         </DropdownMenuTrigger>
         <DropdownMenuContent

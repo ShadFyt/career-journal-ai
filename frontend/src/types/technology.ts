@@ -6,7 +6,7 @@ export type TechnologyRead = {
   name: string
   description: string | null
   language: string | null
-  journalEntries: number
+  usageCount: number
 }
 
 export type TechnologyCreateDto = z.infer<typeof techSchemaCreate>

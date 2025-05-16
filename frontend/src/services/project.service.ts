@@ -53,7 +53,7 @@ export const useProjectService = () => {
 
   return {
     getProjects,
-    projects: projects,
+    projects,
     isLoading,
     isFetched,
     mutation,

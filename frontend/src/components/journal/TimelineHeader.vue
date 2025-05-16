@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { formatDate } from '@/utils/date.utils'
+import { Icon } from '@iconify/vue'
 
 defineProps<{
   dateStr: string

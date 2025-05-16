@@ -37,7 +37,7 @@ onMounted(async () => {
   <Toaster />
   <MainLayout>
     <!-- Show loading spinner while checking auth -->
-    <Loader v-if="isLoading && showLoader" />
+    <Loader full-screen size="xl" v-if="isLoading && showLoader" />
     <AppErrorPage v-else-if="activeError !== null" />
     <template v-else>
       <RouterView v-slot="{ Component, route }">
