@@ -68,10 +68,15 @@ class JournalEntryRepo:
             )
 
     async def add_journal_entry(
-        self, journal_entry_create: JournalEntryCreate, technologies: list[Technology]
+        self,
+        journal_entry_create: JournalEntryCreate,
+        technologies: list[Technology],
+        user_id: str,
     ):
         new_journal_entry = JournalEntry(
-            **journal_entry_create.model_dump(), technologies=technologies
+            **journal_entry_create.model_dump(),
+            technologies=technologies,
+            user_id=user_id,
         )
         return await self._save_journal_entry(new_journal_entry)
 

@@ -4,7 +4,9 @@ from domain.journal_entry.journal_entry_schema import (
     JournalEntryRead,
     JournalEntryUpdate,
 )
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
+from domain.auth.auth_config import security
+from authx import TokenPayload
 
 router = APIRouter()
 
@@ -25,6 +27,7 @@ async def get_journal_entries(
 async def add_journal_entry(
     service: JournalEntryServiceDep,
     journal_entry_create: JournalEntryCreate,
+    payload: TokenPayload = Depends(security.access_token_required),
 ):
     """Create a new journal entry.
 
@@ -34,7 +37,7 @@ async def add_journal_entry(
     Returns:
         JournalEntryRead: The created journal entry with associated technologies
     """
-    return await service.add_journal_entry(journal_entry_create)
+    return await service.add_journal_entry(journal_entry_create, payload.user_id)
 
 
 @router.get("/{id}")

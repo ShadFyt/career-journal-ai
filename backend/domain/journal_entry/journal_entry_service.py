@@ -42,7 +42,9 @@ class JournalEntryService:
         """
         return await self.repo.get_journal_entry(id)
 
-    async def add_journal_entry(self, journal_entry_create: JournalEntryCreate):
+    async def add_journal_entry(
+        self, journal_entry_create: JournalEntryCreate, user_id: str
+    ):
         """Create a new journal entry.
 
         Args:
@@ -60,7 +62,7 @@ class JournalEntryService:
             journal_entry_create.technologyIds
         )
         journal_entry = await self.repo.add_journal_entry(
-            journal_entry_create, technologies
+            journal_entry_create, technologies, user_id
         )
         return JournalEntryRead(**journal_entry.model_dump(), technologies=technologies)
 
