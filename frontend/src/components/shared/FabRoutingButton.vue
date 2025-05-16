@@ -3,12 +3,19 @@ import { useRouter, type RouteLocationRaw } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { cn } from '@/lib/utils'
 
-const props = defineProps<{
-  to: RouteLocationRaw
-  message: string
-  iconName?: string
-  size?: 's' | 'm' | 'l' | 'xl'
-}>()
+const props = withDefaults(
+  defineProps<{
+    to: RouteLocationRaw
+    message: string
+    iconName?: string
+    size?: 's' | 'm' | 'l' | 'xl'
+    position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+  }>(),
+  {
+    position: 'bottom-right',
+    size: 'm',
+  },
+)
 const router = useRouter()
 
 const showTooltip = ref(false)
@@ -21,11 +28,17 @@ const sizeClasses = {
 } as const
 
 const fabClass = computed(() =>
-  cn(
-    'rounded-full text-white shadow-lg hover:bg-primary/90 transition',
-    sizeClasses[props.size || 'm'],
-  ),
+  cn('rounded-full text-white shadow-lg hover:bg-primary/90 transition', sizeClasses[props.size]),
 )
+const positionClasses = computed(() => {
+  const positions = {
+    'top-left': 'top-6 left-6',
+    'top-right': 'top-6 right-6',
+    'bottom-left': 'bottom-6 left-6',
+    'bottom-right': 'bottom-6 right-6',
+  }
+  return positions[props.position] || positions['bottom-right']
+})
 
 const goToNewEntry = () => {
   router.push(props.to)
@@ -33,27 +46,39 @@ const goToNewEntry = () => {
 </script>
 
 <template>
-  <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-    <transition name="fade">
-      <div
-        v-if="showTooltip"
-        class="mb-2 px-3 py-2 rounded-lg bg-gray-900 text-white text-sm shadow-lg whitespace-nowrap"
-        style="pointer-events: none"
+  <div
+    :class="[
+      'fixed z-50 flex flex-col',
+      positionClasses.includes('top-') ? 'items-start' : 'items-end',
+      positionClasses,
+    ]"
+  >
+    <div class="relative">
+      <transition name="fade">
+        <div
+          v-if="showTooltip"
+          :class="[
+            'absolute px-3 py-2 rounded-lg bg-gray-900 text-white text-sm shadow-lg whitespace-nowrap',
+            positionClasses.includes('right-') ? 'right-full mr-2' : 'left-full ml-2',
+            positionClasses.includes('bottom-') ? 'bottom-0' : 'top-0',
+          ]"
+          style="pointer-events: none"
+        >
+          {{ props.message }}
+        </div>
+      </transition>
+      <Button
+        @mouseenter="showTooltip = true"
+        @mouseleave="showTooltip = false"
+        @focus="showTooltip = true"
+        @blur="showTooltip = false"
+        @click="goToNewEntry"
+        :class="fabClass"
+        :aria-label="props.message"
       >
-        {{ props.message }}
-      </div>
-    </transition>
-    <Button
-      @mouseenter="showTooltip = true"
-      @mouseleave="showTooltip = false"
-      @focus="showTooltip = true"
-      @blur="showTooltip = false"
-      @click="goToNewEntry"
-      :class="fabClass"
-      :aria-label="props.message"
-    >
-      <Icon :icon="props.iconName || 'lucide:plus'" class="text-2xl" />
-    </Button>
+        <Icon :icon="props.iconName || 'lucide:plus'" class="text-2xl" />
+      </Button>
+    </div>
   </div>
 </template>
 
