@@ -90,7 +90,7 @@ const handleDelete = (e: MouseEvent) => {
                       </p>
                     </hgroup>
                     <p class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                      {{ tech?.journalEntries ?? 0 }} entries
+                      {{ tech?.usageCount ?? 0 }} {{ tech?.usageCount === 1 ? 'entry' : 'entries' }}
                     </p>
                   </div>
                   <p v-if="tech.description" class="mt-2 text-sm text-gray-500">
@@ -117,7 +117,7 @@ const handleDelete = (e: MouseEvent) => {
                         size="sm"
                         class="ml-2 h-8"
                         :aria-label="`delete ${tech.name}`"
-                        :disabled="tech.journalEntries && tech.journalEntries > 0"
+                        :disabled="tech.usageCount > 0"
                         @click="handleDelete"
                       >
                         <span class="text-sm text-muted-foreground">Delete</span>
@@ -127,7 +127,7 @@ const handleDelete = (e: MouseEvent) => {
                     <TooltipContent>
                       <p>
                         {{
-                          tech.journalEntries && tech.journalEntries
+                          tech.usageCount > 0
                             ? 'Unable to delete technologies that are used in journal entries'
                             : 'delete technology'
                         }}
