@@ -1,6 +1,6 @@
-import { getJournalEntriesFromApi } from '@/api'
+import { createJournalEntry, getJournalEntriesFromApi } from '@/api'
 import { useToast } from '@/components/ui/toast'
-import { useQuery } from '@tanstack/vue-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
 export const journalEntryQueryKeys = {
   all: ['journal-entries'] as const,
@@ -32,4 +32,33 @@ export const useJournalEntryService = () => {
   })
 
   return { journalEntries, isLoading, isFetched }
+}
+
+export const useJournalEntryMutationService = () => {
+  const { toast } = useToast()
+  const queryClient = useQueryClient()
+
+  const createMutation = useMutation({
+    mutationFn: createJournalEntry,
+    onSuccess() {
+      toast({
+        title: 'Journal entry created',
+        description: 'Your journal entry has been created successfully.',
+        variant: 'default',
+      })
+    },
+    onError(error) {
+      console.error('createJournalEntry', error)
+      toast({
+        title: 'Something went wrong while creating the journal entry',
+        description: 'Please try again later.',
+        variant: 'destructive',
+      })
+    },
+    onSettled() {
+      queryClient.invalidateQueries({ queryKey: journalEntryQueryKeys.all })
+    },
+  })
+
+  return { createMutation }
 }

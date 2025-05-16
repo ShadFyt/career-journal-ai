@@ -3,11 +3,18 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { journalEntryCreate } from '@/schemas/journal-entry.schema'
 import { useForm } from 'vee-validate'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { useProjectService, useTechnologyFetchService } from '@/services'
+import {
+  useProjectService,
+  useTechnologyFetchService,
+  useJournalEntryMutationService,
+} from '@/services'
 import { MultiSelect, type MultiSelectOption } from '@/components/ui/select'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const { projects, isLoading } = useProjectService()
 const { technologies } = useTechnologyFetchService()
+const { createMutation } = useJournalEntryMutationService()
 const validationSchema = toTypedSchema(journalEntryCreate)
 
 const techOptions = computed<MultiSelectOption[]>(
@@ -26,7 +33,8 @@ const { handleSubmit, isSubmitting, meta } = useForm({
 const isDisabled = computed(() => isSubmitting.value || !meta.value.valid)
 
 const onSubmit = handleSubmit(async (values) => {
-  console.log(values)
+  createMutation.mutate(values)
+  router.push('/journal-entries')
 })
 </script>
 
