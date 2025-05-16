@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { Icon } from '@iconify/vue'
 import { useTechnologyFetchService, useTechnologyMutationService } from '@/services'
 import { toTypedSchema } from '@vee-validate/zod'
 import { techSchemaCreate } from '@/schemas/technology.schema.ts'
@@ -47,9 +46,6 @@ const { handleSubmit, isSubmitting, meta } = useForm({
 
 const isDisabled = computed(() => isSubmitting.value || !meta.value.valid)
 
-const openModal = () => {
-  router.push('/technologies/new')
-}
 const closeModal = (isOpen: boolean | globalThis.ComputedRef<boolean>) => {
   if (!isOpen) {
     router.push('/technologies')
