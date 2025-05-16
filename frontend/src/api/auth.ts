@@ -29,11 +29,26 @@ export const getUserSession = async () => {
 
 export const logoutCurrentUser = async () => {
   try {
-    await apiClient.post('/auth/logout', {}, {
+    await apiClient.post(
+      '/auth/logout',
+      {},
+      {
+        withCredentials: true,
+      },
+    )
+  } catch (error) {
+    console.error('Logout failed:', error)
+    throw error
+  }
+}
+
+export const refreshToken = async () => {
+  try {
+    return await apiClient.get<AuthResponse>('/auth/refresh-token', {
       withCredentials: true,
     })
   } catch (error) {
-    console.error('Logout failed:', error)
+    console.error('Failed to refresh token:', error)
     throw error
   }
 }
