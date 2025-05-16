@@ -63,7 +63,6 @@ axiosInstance.interceptors.response.use(
     }
 
     // Handle other errors
-    await authStore.handleLogout()
     return Promise.reject(error)
   },
 )
